@@ -18,7 +18,7 @@ import resume from '../data/resume.json';
       method="POST"
       data-netlify="true"
       netlify-honeypot="bot-field"
-      class="panel mt-8 max-w-xl rounded-lg p-6"
+      class="panel mt-8 max-w-xl rounded-xl p-6"
     >
       <input type="hidden" name="form-name" value="contact" />
       <p class="hidden">
@@ -34,7 +34,7 @@ import resume from '../data/resume.json';
             type="text"
             name="name"
             required
-            class="mt-1 w-full rounded border border-border bg-ink-900 px-3 py-2 text-paper outline-none focus:border-accent"
+            class="mt-1 w-full rounded-lg border border-border bg-ink-900 px-3 py-2 text-paper outline-none transition-colors focus:border-accent"
           />
         </label>
 
@@ -44,7 +44,7 @@ import resume from '../data/resume.json';
             type="email"
             name="email"
             required
-            class="mt-1 w-full rounded border border-border bg-ink-900 px-3 py-2 text-paper outline-none focus:border-accent"
+            class="mt-1 w-full rounded-lg border border-border bg-ink-900 px-3 py-2 text-paper outline-none transition-colors focus:border-accent"
           />
         </label>
 
@@ -54,13 +54,13 @@ import resume from '../data/resume.json';
             name="message"
             rows="5"
             required
-            class="mt-1 w-full rounded border border-border bg-ink-900 px-3 py-2 text-paper outline-none focus:border-accent"
+            class="mt-1 w-full rounded-lg border border-border bg-ink-900 px-3 py-2 text-paper outline-none transition-colors focus:border-accent"
           ></textarea>
         </label>
 
         <button
           type="submit"
-          class="rounded bg-accent px-5 py-3 font-mono text-sm font-medium text-ink-950 transition-transform hover:scale-105"
+          class="rounded-lg bg-accent px-5 py-3 font-mono text-sm font-medium text-ink-950 transition-transform duration-200 hover:-translate-y-0.5 hover:scale-105"
         >
           send_message()
         </button>

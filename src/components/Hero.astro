@@ -3,7 +3,7 @@ import resume from '../data/resume.json';
 ---
 
 <section class="relative flex min-h-[85vh] items-center overflow-hidden border-b border-border">
-  <div class="grid-bg absolute inset-0"></div>
+  <div id="hero-grid" class="grid-bg absolute inset-0 -inset-y-20"></div>
 
   <video
     class="absolute inset-0 h-full w-full object-cover opacity-30"
@@ -30,17 +30,38 @@ import resume from '../data/resume.json';
     <div class="mt-10 flex flex-wrap items-center gap-4">
       <a
         href="#projects"
-        class="rounded bg-accent px-5 py-3 font-mono text-sm font-medium text-ink-950 transition-transform hover:scale-105"
+        class="rounded-lg bg-accent px-5 py-3 font-mono text-sm font-medium text-ink-950 transition-transform duration-200 hover:-translate-y-0.5 hover:scale-105"
       >
         view_projects()
       </a>
       <a
         href={resume.cvUrl}
         download
-        class="rounded border border-border px-5 py-3 font-mono text-sm text-paper transition-colors hover:border-accent hover:text-accent"
+        class="rounded-lg border border-border px-5 py-3 font-mono text-sm text-paper transition-all duration-200 hover:-translate-y-0.5 hover:border-accent hover:text-accent"
       >
         ↓ download_cv.pdf
       </a>
     </div>
   </div>
 </section>
+
+<script>
+  const grid = document.getElementById('hero-grid');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (grid && !prefersReducedMotion) {
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          grid.style.transform = `translate3d(0, ${window.scrollY * 0.25}px, 0)`;
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+  }
+</script>

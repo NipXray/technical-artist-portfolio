@@ -9,6 +9,9 @@ Astro + React + Tailwind CSS, content managed through a Decap CMS admin dashboar
 - **React** — interactive islands (the project card)
 - **Tailwind CSS v4** — dark, IDE-style theme (`src/styles/global.css`)
 - **`<model-viewer>`** — optional interactive 3D preview (`.glb`/`.gltf`) on project detail pages
+- **Interaction layer** — hover tilt/glow on project cards, a per-project click "transition" effect
+  (leaf/smoke/converge particles) before navigating, scroll parallax on the hero grid, and a
+  slide-in Career Timeline sidebar (see below)
 - **Decap CMS** — visual admin dashboard for editing content without touching code
 - **Netlify** — hosting + Decap CMS git-gateway auth + form handling
 
@@ -25,8 +28,9 @@ Astro + React + Tailwind CSS, content managed through a Decap CMS admin dashboar
 ├── src/
 │   ├── components/       # Hero, Skills, ProjectGallery, ProjectCard (React), Contact
 │   ├── content/
-│   │   └── projects/     # one markdown file per project (edited via CMS)
-│   ├── content.config.ts # Astro content collection schema for "projects"
+│   │   ├── projects/     # one markdown file per project (edited via CMS)
+│   │   └── history/      # one markdown file per career timeline entry (edited via CMS)
+│   ├── content.config.ts # Astro content collection schemas for "projects" and "history"
 │   ├── data/
 │   │   └── resume.json   # name, tagline, CV link, socials, skills (edited via CMS)
 │   ├── layouts/
@@ -65,15 +69,34 @@ routes CMS writes straight to your working copy (`src/content/projects/*.md` and
 - **Projects** (`Projects` collection in the CMS) — one markdown file per project in
   `src/content/projects/`. Fields: Title, Slug, Cover Image, Video Link (YouTube/Vimeo URL,
   optional), 3D Model (`.glb`/`.gltf`, optional — renders as an interactive `<model-viewer>` with
-  `camera-controls` so visitors can drag-to-rotate/scroll-to-zoom a rig or topology example), Tech
-  Stack, Short Description, Order (controls gallery position — lower first), and a markdown Body
-  for the full technical breakdown.
+  `camera-controls` so visitors can drag-to-rotate/scroll-to-zoom a rig or topology example), Click
+  Effect (`none`/`leaf`/`smoke`/`converge` — the particle animation that plays when the card is
+  clicked, before navigating to the project), Tech Stack, Short Description, Order (controls
+  gallery position — lower first), and a markdown Body for the full technical breakdown.
+- **History** (`History` collection in the CMS) — one markdown file per career-timeline entry in
+  `src/content/history/`. Fields: Date (`YYYY` or `YYYY-MM` — controls sort order), Title,
+  Description, and Tag (`origin`/`education`/`job`/`release`/`current` — controls the timeline
+  marker color). Rendered oldest-to-newest in the slide-in "history" sidebar.
 - **Resume / Skills** (`settings` files collection) — a single file, `src/data/resume.json`:
   name, headline, tagline, contact email, GitHub/ArtStation links, CV PDF, hero reel video, and the
   categorized skills list.
 
-Adding a project, changing the CV link, or reordering the gallery is all done through `/admin` —
-no code changes required.
+Adding a project, changing the CV link, adding a career milestone, or reordering the gallery is all
+done through `/admin` — no code changes required.
+
+## Interaction layer
+
+- **Hover tilt/glow** — `ProjectCard.tsx` tracks the cursor and applies a subtle 3D tilt plus an
+  accent-colored glow on hover, so cards feel reactive rather than static.
+- **Click transition effects** — clicking a project card fires a `project-navigate` custom event
+  (`src/components/ProjectCard.tsx`) that `ClickEffectLayer.tsx` (mounted once in `Layout.astro`)
+  picks up to play a short particle animation — falling leaves, rising smoke, or converging sparks
+  — before navigating to the project page. Set per-project via the Click Effect field in the CMS.
+  Respects `prefers-reduced-motion` (skips straight to navigation).
+- **Parallax** — the hero section's grid background drifts at a slower rate than the page scroll
+  (`src/components/Hero.astro`), also skipped under `prefers-reduced-motion`.
+- **History sidebar** — clicking "history" in the nav opens `HistorySidebar.tsx`, a slide-in panel
+  with a backdrop; clicking outside the panel (or pressing Escape) closes it.
 
 ## Deploying to Netlify (and activating the CMS)
 

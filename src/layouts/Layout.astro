@@ -1,6 +1,9 @@
 ---
+import { getCollection } from 'astro:content';
 import '../styles/global.css';
 import resume from '../data/resume.json';
+import HistorySidebar from '../components/HistorySidebar';
+import ClickEffectLayer from '../components/ClickEffectLayer';
 
 interface Props {
   title: string;
@@ -17,6 +20,10 @@ const navLinks = [
   { href: '/#skills', label: 'skills' },
   { href: '/#contact', label: 'contact' }
 ];
+
+const historyEntries = (await getCollection('history'))
+  .map((entry) => entry.data)
+  .sort((a, b) => a.date.localeCompare(b.date));
 ---
 
 <!doctype html>
@@ -37,18 +44,19 @@ const navLinks = [
   </head>
   <body class="min-h-screen bg-ink-950 text-paper antialiased">
     <header class="sticky top-0 z-50 border-b border-border bg-ink-950/80 backdrop-blur">
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <a href="/" class="font-mono text-sm text-paper hover:text-accent">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
+        <a href="/" class="max-w-[40vw] truncate font-mono text-sm text-paper hover:text-accent sm:max-w-none">
           <span class="text-paper-dim">~/</span>{resume.name.toLowerCase().replace(/\s+/g, '-')}
         </a>
-        <nav class="flex items-center gap-6 font-mono text-sm text-paper-dim">
+        <nav class="flex items-center gap-3 font-mono text-sm text-paper-dim sm:gap-6">
           {navLinks.map((link) => (
-            <a href={link.href} class="transition-colors hover:text-accent">{link.label}</a>
+            <a href={link.href} class="hidden transition-colors hover:text-accent sm:inline">{link.label}</a>
           ))}
+          <button id="history-trigger" class="transition-colors hover:text-accent">history</button>
           <a
             href={resume.cvUrl}
             download
-            class="rounded border border-accent/40 px-3 py-1.5 text-accent transition-colors hover:bg-accent hover:text-ink-950"
+            class="whitespace-nowrap rounded-lg border border-accent/40 px-2.5 py-1.5 text-accent transition-all duration-150 hover:-translate-y-0.5 hover:bg-accent hover:text-ink-950 sm:px-3"
           >
             resume.pdf
           </a>
@@ -70,5 +78,8 @@ const navLinks = [
         </div>
       </div>
     </footer>
+
+    <HistorySidebar client:load entries={historyEntries} />
+    <ClickEffectLayer client:load />
   </body>
 </html>

@@ -9,11 +9,11 @@ import resume from '../data/resume.json';
 
     <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {resume.skills.map((group) => (
-        <div class="panel rounded-lg p-6">
+        <div class="panel rounded-xl p-6 transition-colors hover:border-accent/50">
           <h4 class="font-mono text-xs uppercase tracking-wider text-paper-dim">{group.category}</h4>
           <div class="mt-4 flex flex-wrap gap-2">
             {group.items.map((item) => (
-              <span class="rounded border border-border bg-ink-900 px-3 py-1 font-mono text-sm text-paper">
+              <span class="rounded-full border border-border bg-ink-900 px-3 py-1 font-mono text-sm text-paper transition-all duration-150 hover:-translate-y-0.5 hover:border-accent hover:text-accent">
                 {item}
               </span>
             ))}

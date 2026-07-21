@@ -19,6 +19,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
           cover={project.data.cover}
           description={project.data.description}
           techStack={project.data.techStack}
+          clickEffect={project.data.clickEffect}
         />
       ))}
     </div>

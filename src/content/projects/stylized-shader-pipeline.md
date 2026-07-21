@@ -2,6 +2,7 @@
 title: "Stylized Shader Pipeline"
 slug: "stylized-shader-pipeline"
 cover: "/uploads/stylized-shader-pipeline.svg"
+clickEffect: "leaf"
 techStack: ["Unity", "HLSL", "Shader Graph"]
 description: "A layered toon-shading pipeline with rim light, custom shadow banding, and an in-editor debug view for lighting artists."
 order: 3

@@ -49,6 +49,15 @@ collections:
           hint: "Optional — an interactive 3D preview (rig, topology, prop) rendered with <model-viewer>",
         }
       - {
+          label: "Click Effect",
+          name: "clickEffect",
+          widget: "select",
+          options: ["none", "leaf", "smoke", "converge"],
+          default: "none",
+          required: false,
+          hint: "A playful particle effect that plays when this card is clicked, before opening the project",
+        }
+      - {
           label: "Tech Stack",
           name: "techStack",
           widget: "list",
@@ -68,6 +77,40 @@ collections:
           hint: "Lower numbers appear first — use this to reorder the gallery",
         }
       - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: "history"
+    label: "History"
+    label_singular: "History Entry"
+    folder: "src/content/history"
+    create: true
+    delete: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{fields.date}}-{{fields.title}}"
+    summary: "{{date}} — {{title}}"
+    sortable_fields: ["date", "title"]
+    fields:
+      - {
+          label: "Date",
+          name: "date",
+          widget: "string",
+          hint: "YYYY or YYYY-MM, e.g. 2021-02 — controls the timeline order",
+          pattern: ["^\\d{4}(-\\d{2})?$", "Use YYYY or YYYY-MM"],
+        }
+      - { label: "Title", name: "title", widget: "string" }
+      - {
+          label: "Description",
+          name: "description",
+          widget: "text",
+        }
+      - {
+          label: "Tag",
+          name: "tag",
+          widget: "select",
+          options: ["origin", "education", "job", "release", "current"],
+          required: false,
+          hint: "Controls the timeline marker color",
+        }
 
   - name: "settings"
     label: "Resume / Skills"

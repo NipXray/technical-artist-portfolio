@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { ClickEffectType } from './ClickEffectLayer';
 
 export interface ProjectCardProps {
   slug: string;
@@ -6,15 +7,55 @@ export interface ProjectCardProps {
   cover: string;
   description: string;
   techStack: string[];
+  clickEffect?: ClickEffectType;
 }
 
-export default function ProjectCard({ slug, title, cover, description, techStack }: ProjectCardProps) {
+export default function ProjectCard({
+  slug,
+  title,
+  cover,
+  description,
+  techStack,
+  clickEffect = 'none'
+}: ProjectCardProps) {
   const [imgFailed, setImgFailed] = useState(false);
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const href = `/projects/${slug}`;
+
+  function handleMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    setTilt({ rx: py * -8, ry: px * 8 });
+  }
+
+  function handleMouseLeave() {
+    setTilt({ rx: 0, ry: 0 });
+  }
+
+  function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    window.dispatchEvent(
+      new CustomEvent('project-navigate', {
+        detail: { type: clickEffect, href, x: e.clientX, y: e.clientY }
+      })
+    );
+  }
 
   return (
     <a
-      href={`/projects/${slug}`}
-      className="group panel flex flex-col overflow-hidden rounded-lg border border-border transition-colors hover:border-accent"
+      ref={cardRef}
+      href={href}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+      style={{
+        transform: `perspective(800px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`
+      }}
+      className="group panel flex flex-col overflow-hidden rounded-xl border border-border transition-[transform,box-shadow,border-color] duration-150 ease-out hover:border-accent hover:shadow-[0_0_28px_-8px_var(--color-accent)]"
     >
       <div className="relative aspect-video overflow-hidden bg-ink-900">
         {!imgFailed ? (
@@ -42,7 +83,7 @@ export default function ProjectCard({ slug, title, cover, description, techStack
           {techStack.map((tech) => (
             <span
               key={tech}
-              className="rounded border border-border bg-ink-900 px-2 py-0.5 font-mono text-xs text-accent-2"
+              className="rounded border border-border bg-ink-900 px-2 py-0.5 font-mono text-xs text-accent-2 transition-colors group-hover:border-accent-2/60"
             >
               {tech}
             </span>
