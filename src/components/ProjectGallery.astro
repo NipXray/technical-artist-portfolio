@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import ProjectCard from './ProjectCard';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<section id="projects" class="border-b border-border">
+  <div class="mx-auto max-w-6xl px-6 py-20">
+    <h2 class="font-mono text-sm text-accent">// projects/</h2>
+    <h3 class="mt-2 text-2xl font-bold text-paper sm:text-3xl">Selected Work</h3>
+
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((project) => (
+        <ProjectCard
+          client:visible
+          slug={project.data.slug}
+          title={project.data.title}
+          cover={project.data.cover}
+          description={project.data.description}
+          techStack={project.data.techStack}
+        />
+      ))}
+    </div>
+  </div>
+</section>

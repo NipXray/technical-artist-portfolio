@@ -1,0 +1,105 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Lets you run the CMS locally against the filesystem with `npx decap-server`
+# alongside `npm run dev`. Netlify Identity + Git Gateway handle auth in production.
+local_backend: true
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+publish_mode: simple
+
+collections:
+  - name: "projects"
+    label: "Projects"
+    label_singular: "Project"
+    folder: "src/content/projects"
+    create: true
+    delete: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{fields.slug}}"
+    summary: "{{order}} — {{title}}"
+    sortable_fields: ["order", "title"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - {
+          label: "Slug",
+          name: "slug",
+          widget: "string",
+          hint: "Used in the project URL, e.g. rigging-toolkit -> /projects/rigging-toolkit",
+        }
+      - { label: "Cover Image", name: "cover", widget: "image" }
+      - {
+          label: "Video Link",
+          name: "video",
+          widget: "string",
+          required: false,
+          hint: "YouTube or Vimeo URL for the project breakdown video",
+        }
+      - {
+          label: "3D Model (.glb / .gltf)",
+          name: "model",
+          widget: "file",
+          required: false,
+          media_folder: "public/models",
+          public_folder: "/models",
+          hint: "Optional — an interactive 3D preview (rig, topology, prop) rendered with <model-viewer>",
+        }
+      - {
+          label: "Tech Stack",
+          name: "techStack",
+          widget: "list",
+          hint: "e.g. Python, Houdini, HLSL",
+        }
+      - {
+          label: "Short Description",
+          name: "description",
+          widget: "text",
+          hint: "Shown on the project card in the gallery",
+        }
+      - {
+          label: "Order",
+          name: "order",
+          widget: "number",
+          default: 0,
+          hint: "Lower numbers appear first — use this to reorder the gallery",
+        }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: "settings"
+    label: "Resume / Skills"
+    files:
+      - name: "resume"
+        label: "Resume & Skills"
+        file: "src/data/resume.json"
+        fields:
+          - { label: "Full Name", name: "name", widget: "string" }
+          - { label: "Headline / Title", name: "title", widget: "string" }
+          - { label: "Tagline", name: "tagline", widget: "text" }
+          - { label: "Contact Email", name: "email", widget: "string" }
+          - { label: "GitHub URL", name: "githubUrl", widget: "string" }
+          - { label: "ArtStation URL", name: "artstationUrl", widget: "string" }
+          - {
+              label: "CV / Resume PDF",
+              name: "cvUrl",
+              widget: "file",
+              media_folder: "public/cv",
+              public_folder: "/cv",
+            }
+          - {
+              label: "Reel Background Video",
+              name: "reelVideoUrl",
+              widget: "file",
+              media_folder: "public/videos",
+              public_folder: "/videos",
+            }
+          - label: "Skills"
+            name: "skills"
+            widget: "list"
+            summary: "{{category}}"
+            fields:
+              - { label: "Category", name: "category", widget: "string" }
+              - { label: "Items", name: "items", widget: "list" }

@@ -1,0 +1,52 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# --- 3D / game-dev source files ---
+# DCC project files are huge and belong in the art repo / asset manager,
+# not this web repo — only optimized exports (.glb, .mp4) get committed.
+*.blend
+*.blend1
+*.blend2
+*.hip
+*.hipnc
+*.hiplc
+*.unity
+*.ma
+*.mb
+
+# raw / uncompressed render output and simulation caches
+*.exr
+*.dpx
+*.abc
+*.vdb
+/renders/
+/render_output/
+
+# explicitly keep optimized web assets tracked even though the
+# patterns above are broad — these are the only 3D/video formats
+# meant to ship inside public/
+!public/**/*.glb
+!public/**/*.gltf
+!public/**/*.mp4

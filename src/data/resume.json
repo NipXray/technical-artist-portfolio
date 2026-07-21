@@ -1,0 +1,24 @@
+{
+  "name": "Your Name",
+  "title": "Technical Artist — Rigging / Tools / Shaders",
+  "tagline": "I build the pipelines, rigs, and shaders that let artists move fast without breaking things.",
+  "email": "you@example.com",
+  "githubUrl": "https://github.com/yourhandle",
+  "artstationUrl": "https://www.artstation.com/yourhandle",
+  "cvUrl": "/cv/resume.pdf",
+  "reelVideoUrl": "/videos/reel-placeholder.mp4",
+  "skills": [
+    {
+      "category": "Languages",
+      "items": ["Python", "C#", "VEX"]
+    },
+    {
+      "category": "Software",
+      "items": ["Blender", "Unity", "Houdini"]
+    },
+    {
+      "category": "Specialties",
+      "items": ["3D Rigging", "Procedural Generation", "Custom Tool Development", "Pipeline Development"]
+    }
+  ]
+}

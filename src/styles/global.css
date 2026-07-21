@@ -1,0 +1,63 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --color-ink-950: #05070a;
+  --color-ink-900: #0a0d13;
+  --color-ink-800: #10141c;
+  --color-ink-700: #171c27;
+  --color-ink-600: #1f2532;
+  --color-ink-500: #2a3140;
+  --color-border: #212734;
+
+  --color-paper: #e6e9ef;
+  --color-paper-dim: #8891a1;
+
+  --color-accent: #22d3ee;
+  --color-accent-2: #f7b955;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-ink-950);
+  }
+}
+
+@layer utilities {
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center top;
+    mask-image: linear-gradient(to bottom, black, transparent 85%);
+  }
+
+  .panel {
+    background-color: var(--color-ink-800);
+    border: 1px solid var(--color-border);
+  }
+}
+
+/* Shiki code blocks pick up the theme's own background; make sure it fits the panel aesthetic */
+pre.astro-code {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}

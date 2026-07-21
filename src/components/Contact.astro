@@ -1,0 +1,70 @@
+---
+import resume from '../data/resume.json';
+---
+
+<section id="contact">
+  <div class="mx-auto max-w-6xl px-6 py-20">
+    <h2 class="font-mono text-sm text-accent">// contact.send()</h2>
+    <h3 class="mt-2 text-2xl font-bold text-paper sm:text-3xl">Let's Work Together</h3>
+    <p class="mt-4 max-w-xl text-paper-dim">
+      Have a rigging, tooling, or shader problem that needs solving? Send a message, or find me on{' '}
+      <a href={resume.githubUrl} target="_blank" rel="noreferrer" class="text-accent hover:underline">GitHub</a>{' '}
+      and{' '}
+      <a href={resume.artstationUrl} target="_blank" rel="noreferrer" class="text-accent hover:underline">ArtStation</a>.
+    </p>
+
+    <form
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      class="panel mt-8 max-w-xl rounded-lg p-6"
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <p class="hidden">
+        <label>
+          Don't fill this out if you're human: <input name="bot-field" />
+        </label>
+      </p>
+
+      <div class="grid gap-4">
+        <label class="block">
+          <span class="font-mono text-xs text-paper-dim">name</span>
+          <input
+            type="text"
+            name="name"
+            required
+            class="mt-1 w-full rounded border border-border bg-ink-900 px-3 py-2 text-paper outline-none focus:border-accent"
+          />
+        </label>
+
+        <label class="block">
+          <span class="font-mono text-xs text-paper-dim">email</span>
+          <input
+            type="email"
+            name="email"
+            required
+            class="mt-1 w-full rounded border border-border bg-ink-900 px-3 py-2 text-paper outline-none focus:border-accent"
+          />
+        </label>
+
+        <label class="block">
+          <span class="font-mono text-xs text-paper-dim">message</span>
+          <textarea
+            name="message"
+            rows="5"
+            required
+            class="mt-1 w-full rounded border border-border bg-ink-900 px-3 py-2 text-paper outline-none focus:border-accent"
+          ></textarea>
+        </label>
+
+        <button
+          type="submit"
+          class="rounded bg-accent px-5 py-3 font-mono text-sm font-medium text-ink-950 transition-transform hover:scale-105"
+        >
+          send_message()
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

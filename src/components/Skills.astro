@@ -1,0 +1,25 @@
+---
+import resume from '../data/resume.json';
+---
+
+<section id="skills" class="border-b border-border">
+  <div class="mx-auto max-w-6xl px-6 py-20">
+    <h2 class="font-mono text-sm text-accent">// skills.json</h2>
+    <h3 class="mt-2 text-2xl font-bold text-paper sm:text-3xl">Toolkit &amp; Capabilities</h3>
+
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {resume.skills.map((group) => (
+        <div class="panel rounded-lg p-6">
+          <h4 class="font-mono text-xs uppercase tracking-wider text-paper-dim">{group.category}</h4>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {group.items.map((item) => (
+              <span class="rounded border border-border bg-ink-900 px-3 py-1 font-mono text-sm text-paper">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

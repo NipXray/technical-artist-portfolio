@@ -1,0 +1,78 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { getEmbedUrl } from '../../lib/embed';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+
+  return projects.map((project) => ({
+    params: { slug: project.data.slug },
+    props: { project }
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const embedUrl = getEmbedUrl(project.data.video);
+---
+
+<Layout title={project.data.title} description={project.data.description}>
+  <article class="mx-auto max-w-3xl px-6 py-16">
+    <a href="/#projects" class="font-mono text-sm text-paper-dim hover:text-accent">&larr; back to projects</a>
+
+    <h1 class="mt-4 text-3xl font-bold text-paper sm:text-4xl">{project.data.title}</h1>
+    <p class="mt-3 text-lg text-paper-dim">{project.data.description}</p>
+
+    <div class="mt-4 flex flex-wrap gap-2">
+      {project.data.techStack.map((tech) => (
+        <span class="rounded border border-border bg-ink-900 px-2 py-0.5 font-mono text-xs text-accent-2">
+          {tech}
+        </span>
+      ))}
+    </div>
+
+    {embedUrl && (
+      <div class="mt-8 aspect-video overflow-hidden rounded-lg border border-border">
+        <iframe
+          class="h-full w-full"
+          src={embedUrl}
+          title={`${project.data.title} video`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+    )}
+
+    {!embedUrl && (
+      <img
+        src={project.data.cover}
+        alt={project.data.title}
+        class="mt-8 w-full rounded-lg border border-border object-cover"
+      />
+    )}
+
+    {project.data.model && (
+      <div class="mt-8">
+        <p class="mb-2 font-mono text-xs text-paper-dim">// interactive 3D preview — drag to rotate, scroll to zoom</p>
+        <model-viewer
+          src={project.data.model}
+          alt={`Interactive 3D preview of ${project.data.title}`}
+          camera-controls
+          auto-rotate
+          ar
+          shadow-intensity="1"
+          class="h-[420px] w-full rounded-lg border border-border bg-ink-900"
+        ></model-viewer>
+      </div>
+    )}
+
+    <div class="prose prose-invert prose-headings:font-mono prose-a:text-accent mt-10 max-w-none">
+      <Content />
+    </div>
+  </article>
+</Layout>
+
+<script>
+  import '@google/model-viewer';
+</script>
