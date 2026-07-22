@@ -27,10 +27,13 @@
   ],
   "name": "M Ali Fikri A",
   "githubUrl": "No Github ❌",
+  "youtubeUrl": "",
+  "introTitle": "",
   "tagline": "I craft characters, worlds, and the pipelines that bring them to life — with a little bit of this and that in every works. ✨",
   "reelVideoUrl": "/videos/reel-placeholder.mp4",
+  "linkedinUrl": "",
+  "xUrl": "",
   "title": "M Ali Fikri A",
-  "introTitle": "",
   "heroSlides": [
     {
       "type": "image",
@@ -52,22 +55,19 @@
     },
     {
       "type": "image",
-      "src": "/hero/slide-fx.svg",
+      "src": "/hero/rally_solid.mp4",
       "duration": 6,
       "caption": "FX & Simulation"
     },
     {
       "type": "image",
-      "src": "/hero/slide-shading.svg",
+      "src": "/hero/rally_material.mp4",
       "duration": 6,
       "caption": "Shading & Light"
     }
   ],
   "email": "alifiteris@gmail.com",
   "cvUrl": "/cv/resume.pdf",
-  "artstationUrl": "https://www.artstation.com/alifikri",
-  "youtubeUrl": "",
-  "xUrl": "",
   "instagramUrl": "",
-  "linkedinUrl": ""
+  "artstationUrl": "https://www.artstation.com/alifikri"
 }
