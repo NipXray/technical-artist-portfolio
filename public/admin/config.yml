@@ -33,6 +33,14 @@ collections:
         }
       - { label: "Cover Image", name: "cover", widget: "image" }
       - {
+          label: "Gallery",
+          name: "gallery",
+          widget: "list",
+          field: { label: "Image", name: "image", widget: "image" },
+          required: false,
+          hint: "Extra images shown in the project's slideshow popup, in addition to the cover image",
+        }
+      - {
           label: "Video Link",
           name: "video",
           widget: "string",
@@ -52,7 +60,8 @@ collections:
           label: "Click Effect",
           name: "clickEffect",
           widget: "select",
-          options: ["none", "leaf", "smoke", "converge"],
+          options:
+            ["none", "leaf", "smoke", "converge", "slash", "skull", "glass", "explosion", "bubble", "wind", "sparkle"],
           default: "none",
           required: false,
           hint: "A playful particle effect that plays when this card is clicked, before opening the project",
@@ -139,6 +148,33 @@ collections:
               media_folder: "public/videos",
               public_folder: "/videos",
             }
+          - label: "Hero Slideshow"
+            name: "heroSlides"
+            widget: "list"
+            summary: "{{caption}}"
+            hint: "Background slides for the homepage hero — fades between them on a timer"
+            fields:
+              - {
+                  label: "Type",
+                  name: "type",
+                  widget: "select",
+                  options: ["image", "video"],
+                  default: "image",
+                }
+              - {
+                  label: "Media",
+                  name: "src",
+                  widget: "file",
+                  media_folder: "public/hero",
+                  public_folder: "/hero",
+                }
+              - {
+                  label: "Duration (seconds)",
+                  name: "duration",
+                  widget: "number",
+                  default: 6,
+                }
+              - { label: "Caption", name: "caption", widget: "string", required: false }
           - label: "Skills"
             name: "skills"
             widget: "list"

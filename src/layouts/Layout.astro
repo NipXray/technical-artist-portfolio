@@ -16,9 +16,9 @@ const {
 } = Astro.props;
 
 const navLinks = [
-  { href: '/#projects', label: 'projects' },
-  { href: '/#skills', label: 'skills' },
-  { href: '/#contact', label: 'contact' }
+  { href: '/#projects', label: 'Projects' },
+  { href: '/#skills', label: 'Skills' },
+  { href: '/#contact', label: 'Contact' }
 ];
 
 const historyEntries = (await getCollection('history'))
@@ -36,29 +36,29 @@ const historyEntries = (await getCollection('history'))
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <meta name="generator" content={Astro.generator} />
     <title>{title} · {resume.name}</title>
   </head>
   <body class="min-h-screen bg-ink-950 text-paper antialiased">
-    <header class="sticky top-0 z-50 border-b border-border bg-ink-950/80 backdrop-blur">
-      <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
-        <a href="/" class="max-w-[40vw] truncate font-mono text-sm text-paper hover:text-accent sm:max-w-none">
-          <span class="text-paper-dim">~/</span>{resume.name.toLowerCase().replace(/\s+/g, '-')}
+    <header class="fixed inset-x-0 top-0 z-50 bg-gradient-to-b from-ink-950/90 to-transparent">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-5 sm:px-8">
+        <a href="/" class="truncate font-display text-lg font-extrabold tracking-tight text-paper hover:text-accent-2">
+          {resume.name}
         </a>
-        <nav class="flex items-center gap-3 font-mono text-sm text-paper-dim sm:gap-6">
+        <nav class="flex items-center gap-4 text-sm font-semibold uppercase tracking-wider text-paper-dim sm:gap-8">
           {navLinks.map((link) => (
-            <a href={link.href} class="hidden transition-colors hover:text-accent sm:inline">{link.label}</a>
+            <a href={link.href} class="hidden transition-colors hover:text-accent-2 sm:inline">{link.label}</a>
           ))}
-          <button id="history-trigger" class="transition-colors hover:text-accent">history</button>
+          <button id="history-trigger" class="transition-colors hover:text-accent-2">History</button>
           <a
             href={resume.cvUrl}
             download
-            class="whitespace-nowrap rounded-lg border border-accent/40 px-2.5 py-1.5 text-accent transition-all duration-150 hover:-translate-y-0.5 hover:bg-accent hover:text-ink-950 sm:px-3"
+            class="whitespace-nowrap rounded-full bg-accent px-4 py-2 text-xs font-bold uppercase tracking-wider text-ink-950 transition-all duration-150 hover:-translate-y-0.5 hover:bg-accent-2"
           >
-            resume.pdf
+            Resume
           </a>
         </nav>
       </div>
@@ -69,12 +69,12 @@ const historyEntries = (await getCollection('history'))
     </main>
 
     <footer class="border-t border-border">
-      <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 font-mono text-xs text-paper-dim sm:flex-row">
+      <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-8 text-xs text-paper-dim sm:flex-row">
         <p>&copy; {new Date().getFullYear()} {resume.name}. All rights reserved.</p>
-        <div class="flex gap-4">
-          <a href={resume.githubUrl} class="hover:text-accent" target="_blank" rel="noreferrer">github</a>
-          <a href={resume.artstationUrl} class="hover:text-accent" target="_blank" rel="noreferrer">artstation</a>
-          <a href={`mailto:${resume.email}`} class="hover:text-accent">{resume.email}</a>
+        <div class="flex gap-5 font-semibold uppercase tracking-wide">
+          <a href={resume.githubUrl} class="hover:text-accent-2" target="_blank" rel="noreferrer">GitHub</a>
+          <a href={resume.artstationUrl} class="hover:text-accent-2" target="_blank" rel="noreferrer">ArtStation</a>
+          <a href={`mailto:${resume.email}`} class="hover:text-accent-2">{resume.email}</a>
         </div>
       </div>
     </footer>

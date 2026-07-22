@@ -1,12 +1,18 @@
 {
   "name": "Your Name",
-  "title": "Technical Artist — Rigging / Tools / Shaders",
-  "tagline": "I build the pipelines, rigs, and shaders that let artists move fast without breaking things.",
+  "title": "3D Artist — Characters / Worlds / Tools",
+  "tagline": "I craft characters, worlds, and the pipelines that bring them to life — with a little bit of magic in every rig.",
   "email": "you@example.com",
   "githubUrl": "https://github.com/yourhandle",
   "artstationUrl": "https://www.artstation.com/yourhandle",
   "cvUrl": "/cv/resume.pdf",
   "reelVideoUrl": "/videos/reel-placeholder.mp4",
+  "heroSlides": [
+    { "type": "image", "src": "/hero/slide-character.svg", "duration": 6, "caption": "Character Art" },
+    { "type": "image", "src": "/hero/slide-world.svg", "duration": 6, "caption": "World Building" },
+    { "type": "image", "src": "/hero/slide-fx.svg", "duration": 6, "caption": "FX & Simulation" },
+    { "type": "image", "src": "/hero/slide-shading.svg", "duration": 6, "caption": "Shading & Light" }
+  ],
   "skills": [
     {
       "category": "Languages",

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2d1b3d"/>
+      <stop offset="100%" stop-color="#0c0a12"/>
+    </linearGradient>
+    <linearGradient id="isle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5ee6b8"/>
+      <stop offset="100%" stop-color="#2f6b56"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <circle cx="260" cy="140" r="6" fill="#ffb238"/>
+  <circle cx="560" cy="100" r="4" fill="#ffb238"/>
+  <circle cx="620" cy="200" r="5" fill="#ffb238"/>
+  <ellipse cx="250" cy="260" rx="110" ry="26" fill="url(#isle)"/>
+  <rect x="235" y="200" width="8" height="60" fill="#ffb238"/>
+  <circle cx="239" cy="195" r="12" fill="#ffe6a8"/>
+  <ellipse cx="520" cy="330" rx="150" ry="32" fill="url(#isle)"/>
+  <rect x="555" y="255" width="8" height="75" fill="#ffb238"/>
+  <circle cx="559" cy="248" r="14" fill="#ffe6a8"/>
+</svg>

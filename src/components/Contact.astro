@@ -3,14 +3,14 @@ import resume from '../data/resume.json';
 ---
 
 <section id="contact">
-  <div class="mx-auto max-w-6xl px-6 py-20">
-    <h2 class="font-mono text-sm text-accent">// contact.send()</h2>
-    <h3 class="mt-2 text-2xl font-bold text-paper sm:text-3xl">Let's Work Together</h3>
+  <div class="mx-auto max-w-7xl px-6 py-20 sm:px-8">
+    <p class="text-sm font-bold uppercase tracking-[0.3em] text-accent-2">Get In Touch</p>
+    <h2 class="mt-2 font-display text-3xl font-extrabold text-paper sm:text-4xl">Let's Work Together</h2>
     <p class="mt-4 max-w-xl text-paper-dim">
-      Have a rigging, tooling, or shader problem that needs solving? Send a message, or find me on{' '}
-      <a href={resume.githubUrl} target="_blank" rel="noreferrer" class="text-accent hover:underline">GitHub</a>{' '}
+      Have a character, world, or effect you'd like brought to life? Send a message, or find me on{' '}
+      <a href={resume.githubUrl} target="_blank" rel="noreferrer" class="text-accent-2 hover:underline">GitHub</a>{' '}
       and{' '}
-      <a href={resume.artstationUrl} target="_blank" rel="noreferrer" class="text-accent hover:underline">ArtStation</a>.
+      <a href={resume.artstationUrl} target="_blank" rel="noreferrer" class="text-accent-2 hover:underline">ArtStation</a>.
     </p>
 
     <form
@@ -18,7 +18,7 @@ import resume from '../data/resume.json';
       method="POST"
       data-netlify="true"
       netlify-honeypot="bot-field"
-      class="panel mt-8 max-w-xl rounded-xl p-6"
+      class="mt-8 max-w-xl rounded-2xl bg-ink-800 p-6"
     >
       <input type="hidden" name="form-name" value="contact" />
       <p class="hidden">
@@ -29,40 +29,40 @@ import resume from '../data/resume.json';
 
       <div class="grid gap-4">
         <label class="block">
-          <span class="font-mono text-xs text-paper-dim">name</span>
+          <span class="text-xs font-bold uppercase tracking-wide text-paper-dim">Name</span>
           <input
             type="text"
             name="name"
             required
-            class="mt-1 w-full rounded-lg border border-border bg-ink-900 px-3 py-2 text-paper outline-none transition-colors focus:border-accent"
+            class="mt-1 w-full rounded-lg bg-ink-900 px-3 py-2 text-paper outline-none ring-1 ring-transparent transition-all focus:ring-accent"
           />
         </label>
 
         <label class="block">
-          <span class="font-mono text-xs text-paper-dim">email</span>
+          <span class="text-xs font-bold uppercase tracking-wide text-paper-dim">Email</span>
           <input
             type="email"
             name="email"
             required
-            class="mt-1 w-full rounded-lg border border-border bg-ink-900 px-3 py-2 text-paper outline-none transition-colors focus:border-accent"
+            class="mt-1 w-full rounded-lg bg-ink-900 px-3 py-2 text-paper outline-none ring-1 ring-transparent transition-all focus:ring-accent"
           />
         </label>
 
         <label class="block">
-          <span class="font-mono text-xs text-paper-dim">message</span>
+          <span class="text-xs font-bold uppercase tracking-wide text-paper-dim">Message</span>
           <textarea
             name="message"
             rows="5"
             required
-            class="mt-1 w-full rounded-lg border border-border bg-ink-900 px-3 py-2 text-paper outline-none transition-colors focus:border-accent"
+            class="mt-1 w-full rounded-lg bg-ink-900 px-3 py-2 text-paper outline-none ring-1 ring-transparent transition-all focus:ring-accent"
           ></textarea>
         </label>
 
         <button
           type="submit"
-          class="rounded-lg bg-accent px-5 py-3 font-mono text-sm font-medium text-ink-950 transition-transform duration-200 hover:-translate-y-0.5 hover:scale-105"
+          class="rounded-full bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent-2"
         >
-          send_message()
+          Send Message
         </button>
       </div>
     </form>

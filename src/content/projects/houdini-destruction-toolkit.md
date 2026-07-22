@@ -2,7 +2,7 @@
 title: "Houdini Destruction Toolkit"
 slug: "houdini-destruction-toolkit"
 cover: "/uploads/houdini-destruction-toolkit.svg"
-clickEffect: "smoke"
+clickEffect: "explosion"
 techStack: ["Houdini", "VEX", "PDG"]
 description: "A set of HDAs for fracturing, wiring simulation constraints, and baking destruction caches through a PDG batch pipeline."
 order: 2

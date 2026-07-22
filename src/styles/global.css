@@ -2,22 +2,22 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
+  --font-display: "Poppins", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  --color-ink-950: #05070a;
-  --color-ink-900: #0a0d13;
-  --color-ink-800: #10141c;
-  --color-ink-700: #171c27;
-  --color-ink-600: #1f2532;
-  --color-ink-500: #2a3140;
-  --color-border: #212734;
+  --color-ink-950: #0c0a12;
+  --color-ink-900: #14111b;
+  --color-ink-800: #1d1825;
+  --color-ink-700: #282130;
+  --color-ink-600: #362c40;
+  --color-border: #362b42;
 
-  --color-paper: #e6e9ef;
-  --color-paper-dim: #8891a1;
+  --color-paper: #f6f1ee;
+  --color-paper-dim: #ab9fb3;
 
-  --color-accent: #22d3ee;
-  --color-accent-2: #f7b955;
+  --color-accent: #ff6b4a;
+  --color-accent-2: #ffb238;
+  --color-accent-3: #a855f7;
 }
 
 @layer base {
@@ -33,6 +33,10 @@
     overflow-x: hidden;
   }
 
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
+
   ::selection {
     background-color: var(--color-accent);
     color: var(--color-ink-950);
@@ -40,37 +44,38 @@
 }
 
 @layer utilities {
-  .grid-bg {
-    background-image:
-      linear-gradient(to right, var(--color-border) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
-    background-size: 40px 40px;
-    background-position: center top;
-    mask-image: linear-gradient(to bottom, black, transparent 85%);
-  }
-
   .panel {
     background-color: var(--color-ink-800);
     border: 1px solid var(--color-border);
   }
+
+  .gradient-text {
+    background-image: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
 }
 
-/* Shiki code blocks pick up the theme's own background; make sure it fits the panel aesthetic */
+/* Shiki code blocks */
 pre.astro-code {
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--color-border);
   font-size: 0.875rem;
   line-height: 1.6;
 }
 
-/* Click-transition particles (ClickEffectLayer.tsx) */
+/* ---------------------------------------------------------------- */
+/* Click-transition particles (ClickEffectLayer.tsx)                */
+/* ---------------------------------------------------------------- */
 .particle {
   position: fixed;
   pointer-events: none;
   will-change: transform, opacity;
 }
 
+/* leaf */
 .particle-leaf {
   top: -24px;
   width: 10px;
@@ -81,18 +86,28 @@ pre.astro-code {
   animation-timing-function: ease-in;
   animation-fill-mode: forwards;
 }
+@keyframes leaf-fall {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--sway, 40px), 100vh) rotate(var(--spin, 220deg)); opacity: 0.9; }
+}
 
+/* smoke */
 .particle-smoke {
   width: 26px;
   height: 26px;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(230, 233, 239, 0.7) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(246, 241, 238, 0.7) 0%, transparent 70%);
   filter: blur(2px);
   animation-name: smoke-rise;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
 }
+@keyframes smoke-rise {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0.55; }
+  100% { transform: translate(var(--drift, 0px), var(--rise, -140px)) scale(1.8); opacity: 0; }
+}
 
+/* converge */
 .particle-converge {
   width: 8px;
   height: 8px;
@@ -103,41 +118,157 @@ pre.astro-code {
   animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
   animation-fill-mode: forwards;
 }
-
-@keyframes leaf-fall {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--sway, 40px), 100vh) rotate(var(--spin, 220deg));
-    opacity: 0.9;
-  }
-}
-
-@keyframes smoke-rise {
-  0% {
-    transform: translate(0, 0) scale(0.6);
-    opacity: 0.55;
-  }
-  100% {
-    transform: translate(var(--drift, 0px), var(--rise, -140px)) scale(1.8);
-    opacity: 0;
-  }
-}
-
 @keyframes converge-in {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0;
-  }
-  60% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--target-x, 0px), var(--target-y, 0px)) scale(0.2);
-    opacity: 0;
-  }
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  60% { opacity: 1; }
+  100% { transform: translate(var(--target-x, 0px), var(--target-y, 0px)) scale(0.2); opacity: 0; }
+}
+
+/* slash */
+.particle-slash {
+  height: 4px;
+  width: 360px;
+  background: linear-gradient(90deg, transparent, var(--color-paper) 20%, var(--color-accent-2) 50%, var(--color-paper) 80%, transparent);
+  box-shadow: 0 0 16px var(--color-accent-2);
+  transform-origin: left center;
+  animation-name: slash-sweep;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-fill-mode: forwards;
+}
+@keyframes slash-sweep {
+  0% { transform: scaleX(0) rotate(var(--angle, -25deg)); opacity: 1; }
+  55% { transform: scaleX(1) rotate(var(--angle, -25deg)); opacity: 1; }
+  100% { transform: scaleX(1) rotate(var(--angle, -25deg)); opacity: 0; }
+}
+
+/* skull */
+.particle-skull {
+  font-size: 46px;
+  line-height: 1;
+  animation-name: skull-pop;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.7));
+}
+@keyframes skull-pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  30% { transform: scale(1.15); opacity: 1; }
+  65% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; filter: blur(6px) drop-shadow(0 0 10px rgba(168, 85, 247, 0.7)); }
+}
+.particle-skull-bit {
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--color-accent-3);
+  box-shadow: 0 0 6px var(--color-accent-3);
+  animation-name: converge-in;
+  animation-direction: reverse;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+/* glass fracture */
+.particle-glass {
+  height: 2px;
+  width: 140px;
+  background: linear-gradient(90deg, var(--color-paper), transparent);
+  transform-origin: left center;
+  animation-name: glass-crack;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+@keyframes glass-crack {
+  0% { transform: scaleX(0) rotate(var(--angle, 0deg)); opacity: 1; }
+  35% { transform: scaleX(1) rotate(var(--angle, 0deg)); opacity: 1; }
+  100% { transform: scaleX(1) rotate(var(--angle, 0deg)); opacity: 0; }
+}
+.particle-glass-flash {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(246, 241, 238, 0.9), transparent 70%);
+  animation-name: glass-flash;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+@keyframes glass-flash {
+  0% { transform: scale(0.2); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+/* explosion */
+.particle-explosion-flash {
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff8e6, var(--color-accent-2) 40%, var(--color-accent) 70%, transparent 75%);
+  animation-name: explosion-flash;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+@keyframes explosion-flash {
+  0% { transform: scale(0.2); opacity: 1; }
+  100% { transform: scale(5); opacity: 0; }
+}
+.particle-explosion-ember {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent-2);
+  animation-name: ember-fly;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  animation-fill-mode: forwards;
+}
+@keyframes ember-fly {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--target-x, 0px), calc(var(--target-y, 0px) + 40px)) scale(0.3); opacity: 0; }
+}
+
+/* bubble */
+.particle-bubble {
+  border-radius: 9999px;
+  border: 1.5px solid rgba(246, 241, 238, 0.55);
+  background: radial-gradient(circle at 30% 30%, rgba(246, 241, 238, 0.45), rgba(246, 241, 238, 0.05) 60%, transparent 70%);
+  animation-name: bubble-float;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+@keyframes bubble-float {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0.85; }
+  70% { transform: translate(var(--wobble, 10px), var(--rise, -160px)) scale(1); opacity: 0.9; }
+  100% { transform: translate(var(--wobble2, -6px), calc(var(--rise, -160px) - 30px)) scale(1.7); opacity: 0; }
+}
+
+/* wind gust */
+.particle-wind {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-paper), transparent);
+  animation-name: wind-gust;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+@keyframes wind-gust {
+  0% { transform: translateX(-140px); opacity: 0; }
+  15% { opacity: 0.9; }
+  100% { transform: translateX(140vw); opacity: 0; }
+}
+
+/* sparkle */
+.particle-sparkle {
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-accent-2);
+  animation-name: sparkle-twinkle;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+@keyframes sparkle-twinkle {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  40% { transform: scale(1.3) rotate(90deg); opacity: 1; }
+  70% { transform: scale(0.9) rotate(160deg); opacity: 1; }
+  100% { transform: scale(0) rotate(200deg); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
