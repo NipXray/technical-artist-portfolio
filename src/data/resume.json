@@ -33,7 +33,7 @@
   "heroSlides": [
     {
       "type": "image",
-      "src": "/hero/slide-character.svg",
+      "src": "/hero/pose.png",
       "duration": 6,
       "caption": "Character Art"
     },
