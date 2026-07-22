@@ -9,13 +9,17 @@ export interface HeroSlide {
 
 export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
   const [active, setActive] = useState(0);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (slides.length < 2) return undefined;
+    setReduceMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }, []);
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) return undefined;
+  // Slides always advance on a timer — "reduce motion" trims the fade
+  // transition below, it doesn't freeze the slideshow on slide one.
+  useEffect(() => {
+    if (slides.length < 2) return undefined;
 
     const duration = Math.max(2, slides[active]?.duration ?? 6) * 1000;
     timeoutRef.current = window.setTimeout(() => {
@@ -34,7 +38,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
       {slides.map((slide, i) => (
         <div
           key={slide.src + i}
-          className="absolute inset-0 transition-opacity duration-[1500ms] ease-in-out"
+          className={`absolute inset-0 ease-in-out ${reduceMotion ? 'transition-opacity duration-200' : 'transition-opacity duration-[1500ms]'}`}
           style={{ opacity: i === active ? 1 : 0 }}
           aria-hidden={i !== active}
         >

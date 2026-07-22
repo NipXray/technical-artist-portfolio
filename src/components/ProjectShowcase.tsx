@@ -13,54 +13,38 @@ export interface ShowcaseProject {
   clickEffect: ClickEffectType;
 }
 
-function ModalSlideshow({ project }: { project: ShowcaseProject }) {
-  const embedUrl = getEmbedUrl(project.video);
-  const slides = useMemo(() => {
-    const images = [project.cover, ...project.gallery].filter(
-      (src, i, arr) => src && arr.indexOf(src) === i
-    );
-    const list: Array<{ kind: 'image' | 'video'; src: string }> = images.map((src) => ({
-      kind: 'image',
-      src
-    }));
-    if (embedUrl) list.push({ kind: 'video', src: embedUrl });
-    return list;
-  }, [project, embedUrl]);
-
+function ModalBackground({ project, active }: { project: ShowcaseProject; active: boolean }) {
+  const images = useMemo(
+    () => [project.cover, ...project.gallery].filter((src, i, arr) => src && arr.indexOf(src) === i),
+    [project]
+  );
   const [index, setIndex] = useState(0);
   useEffect(() => setIndex(0), [project]);
 
   useEffect(() => {
-    if (slides.length < 2 || slides[index]?.kind === 'video') return undefined;
-    const t = window.setTimeout(() => setIndex((i) => (i + 1) % slides.length), 4000);
+    if (images.length < 2) return undefined;
+    const t = window.setTimeout(() => setIndex((i) => (i + 1) % images.length), 5000);
     return () => window.clearTimeout(t);
-  }, [index, slides]);
+  }, [index, images]);
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-ink-900">
-      {slides.map((slide, i) => (
-        <div
-          key={slide.src + i}
-          className="absolute inset-0 transition-opacity duration-700 ease-in-out"
-          style={{ opacity: i === index ? 1 : 0, pointerEvents: i === index ? 'auto' : 'none' }}
-        >
-          {slide.kind === 'video' ? (
-            <iframe
-              className="h-full w-full"
-              src={slide.src}
-              title={`${project.title} video`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          ) : (
-            <img src={slide.src} alt={project.title} className="h-full w-full object-cover" />
-          )}
-        </div>
-      ))}
+    <>
+      <div className="absolute inset-0 overflow-hidden bg-ink-900">
+        {images.map((src, i) => (
+          <img
+            key={src + i}
+            src={src}
+            alt={project.title}
+            className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1200ms] ease-out ${
+              i === index ? 'opacity-100' : 'opacity-0'
+            } ${active ? 'scale-100' : 'scale-105'}`}
+          />
+        ))}
+      </div>
 
-      {slides.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
-          {slides.map((_, i) => (
+      {images.length > 1 && (
+        <div className="absolute bottom-6 left-6 z-10 flex gap-2 sm:bottom-10 sm:left-10">
+          {images.map((_, i) => (
             <button
               key={i}
               onClick={() => setIndex(i)}
@@ -72,6 +56,23 @@ function ModalSlideshow({ project }: { project: ShowcaseProject }) {
           ))}
         </div>
       )}
+    </>
+  );
+}
+
+function DescriptionReveal({ description }: { description: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <p className="flex cursor-default items-center gap-2 text-xs font-bold uppercase tracking-wider text-paper-dim">
+        Overview
+        <span className={`inline-block transition-transform duration-200 ${open ? 'rotate-180' : ''}`} aria-hidden="true">
+          ⌄
+        </span>
+      </p>
+      <div className={`overflow-hidden transition-all duration-300 ${open ? 'mt-2 max-h-40' : 'max-h-0'}`}>
+        <p className="text-sm text-paper-dim">{description}</p>
+      </div>
     </div>
   );
 }
@@ -90,7 +91,7 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
 
   function closeProject() {
     setActiveProject(null);
-    closeTimeout.current = window.setTimeout(() => setDisplayedProject(null), 350);
+    closeTimeout.current = window.setTimeout(() => setDisplayedProject(null), 400);
   }
 
   function handlePanelClick(project: ShowcaseProject, e: React.MouseEvent) {
@@ -117,6 +118,8 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
       document.body.style.overflow = previousOverflow;
     };
   }, [displayedProject]);
+
+  const videoEmbedUrl = displayedProject ? getEmbedUrl(displayedProject.video) : null;
 
   return (
     <>
@@ -183,59 +186,72 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
         })}
       </div>
 
-      {/* Fade-in project modal */}
-      <div
-        onClick={closeProject}
-        aria-hidden="true"
-        className={`fixed inset-0 z-[150] bg-ink-950/95 backdrop-blur transition-opacity duration-[350ms] ${
-          activeProject ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
-        }`}
-      />
-
+      {/* Full-screen project takeover */}
       {displayedProject && (
         <div
           role="dialog"
           aria-modal="true"
           aria-label={displayedProject.title}
-          className={`fixed inset-0 z-[160] flex items-center justify-center overflow-y-auto p-4 transition-all duration-[350ms] sm:p-8 ${
-            activeProject ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
+          onClick={closeProject}
+          className={`fixed inset-0 z-[150] overflow-hidden transition-opacity duration-[400ms] ${
+            activeProject ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
         >
+          <ModalBackground project={displayedProject} active={!!activeProject} />
+
+          {/* legibility gradients: dark toward the info panel edge */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-ink-950/30 to-ink-950/90 md:via-ink-950/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-transparent to-transparent md:hidden" />
+
           <button
-            onClick={closeProject}
-            className="fixed right-5 top-5 z-10 flex items-center gap-2 rounded-full bg-ink-900/80 px-4 py-2 text-xs font-bold uppercase tracking-widest text-paper transition-colors hover:bg-ink-800 hover:text-accent-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              closeProject();
+            }}
+            className="absolute right-6 top-8 z-20 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-paper transition-colors hover:text-accent-2 sm:right-10 sm:top-10"
           >
             Close <span aria-hidden="true">✕</span>
           </button>
 
           <div
             onClick={(e) => e.stopPropagation()}
-            className="grid w-full max-w-5xl gap-8 py-10 md:grid-cols-2 md:items-center md:py-0"
+            className="absolute inset-x-0 bottom-0 z-10 flex flex-col justify-end gap-4 p-6 pt-24 sm:p-10 md:inset-y-0 md:left-auto md:right-0 md:w-full md:max-w-md md:justify-center md:gap-5 md:p-14"
           >
-            <ModalSlideshow project={displayedProject} />
-
-            <div>
-              <h2 className="font-display text-3xl font-extrabold text-paper sm:text-4xl">
-                {displayedProject.title}
-              </h2>
-              <p className="mt-4 text-paper-dim">{displayedProject.description}</p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {displayedProject.techStack.map((tech) => (
-                  <span
-                    key={tech}
-                    className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-accent-2"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-              <a
-                href={`/projects/${displayedProject.slug}`}
-                className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all hover:-translate-y-0.5 hover:bg-accent-2"
-              >
-                View Full Case Study →
-              </a>
+            <div className="flex flex-wrap gap-2">
+              {displayedProject.techStack.map((tech) => (
+                <span
+                  key={tech}
+                  className="rounded-full border border-paper/30 px-3 py-1 text-xs font-semibold text-paper"
+                >
+                  {tech}
+                </span>
+              ))}
             </div>
+
+            <h2 className="font-display text-3xl font-extrabold text-paper drop-shadow sm:text-4xl">
+              {displayedProject.title}
+            </h2>
+
+            <DescriptionReveal description={displayedProject.description} />
+
+            {videoEmbedUrl && (
+              <div className="aspect-video w-full max-w-xs overflow-hidden rounded-lg bg-ink-900 shadow-lg">
+                <iframe
+                  className="h-full w-full"
+                  src={videoEmbedUrl}
+                  title={`${displayedProject.title} video`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
+
+            <a
+              href={`/projects/${displayedProject.slug}`}
+              className="inline-flex w-fit items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all hover:-translate-y-0.5 hover:bg-accent-2"
+            >
+              View Full Case Study →
+            </a>
           </div>
         </div>
       )}

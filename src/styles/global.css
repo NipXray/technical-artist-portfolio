@@ -271,8 +271,23 @@ pre.astro-code {
   100% { transform: scale(0) rotate(200deg); opacity: 0; }
 }
 
+/* pulse — the reduced-motion fallback for click effects */
+.particle-pulse {
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  border: 2px solid var(--color-accent);
+  animation-name: pulse-ping;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+@keyframes pulse-ping {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .particle {
+  .particle:not(.particle-pulse) {
     display: none;
   }
 }

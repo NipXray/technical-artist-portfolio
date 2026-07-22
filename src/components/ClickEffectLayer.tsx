@@ -222,6 +222,19 @@ function buildSparkle(x: number, y: number): Particle[] {
   }));
 }
 
+function buildPulse(x: number, y: number): Particle[] {
+  // A single brief, low-motion ring — used instead of the full particle
+  // burst when the OS/browser signals prefers-reduced-motion, so a click
+  // still gets *some* visible acknowledgement rather than none at all.
+  return [
+    {
+      id: 0,
+      className: 'particle particle-pulse',
+      style: { left: `${x - 18}px`, top: `${y - 18}px`, animationDuration: '260ms' }
+    }
+  ];
+}
+
 function buildParticles(type: ClickEffectType, x: number, y: number): Particle[] {
   switch (type) {
     case 'leaf':
@@ -257,8 +270,17 @@ export default function ClickEffectLayer() {
       const { type, x, y, onComplete } = (e as CustomEvent<EffectTriggerDetail>).detail;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      if (type === 'none' || reduceMotion) {
+      if (type === 'none') {
         onComplete?.();
+        return;
+      }
+
+      if (reduceMotion) {
+        setEffect({ type, particles: buildPulse(x, y) });
+        window.setTimeout(() => {
+          setEffect(null);
+          onComplete?.();
+        }, 260);
         return;
       }
 
