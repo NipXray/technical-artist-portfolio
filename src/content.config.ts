@@ -15,6 +15,8 @@ const CLICK_EFFECTS = [
   'sparkle'
 ] as const;
 
+const AMBIENT_EFFECTS = ['none', 'smoke', 'embers', 'dust', 'snow', 'fireflies'] as const;
+
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
   schema: z.object({
@@ -25,6 +27,8 @@ const projects = defineCollection({
     video: z.string().optional(),
     model: z.string().optional(),
     clickEffect: z.enum(CLICK_EFFECTS).default('none'),
+    ambientEffect: z.enum(AMBIENT_EFFECTS).default('none'),
+    ambientVideoUrl: z.string().optional(),
     techStack: z.array(z.string()).default([]),
     description: z.string(),
     order: z.number().default(0)

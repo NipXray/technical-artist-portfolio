@@ -29,6 +29,12 @@ interface Particle {
 }
 
 const EFFECT_DURATION = 750;
+// Smoke/explosion now carry longer-tailed particles (billowing puffs, drifting
+// aftermath) that outlast the default window — give them room to finish.
+const EFFECT_DURATION_OVERRIDES: Partial<Record<ClickEffectType, number>> = {
+  smoke: 1900,
+  explosion: 1350
+};
 
 function rand(min: number, max: number) {
   return min + Math.random() * (max - min);
@@ -49,18 +55,46 @@ function buildLeaf(): Particle[] {
 }
 
 function buildSmoke(x: number, y: number): Particle[] {
-  return Array.from({ length: 8 }, (_, i) => ({
-    id: i,
-    className: 'particle particle-smoke',
-    style: {
-      left: `${x + rand(-20, 20)}px`,
-      top: `${y + rand(-10, 10)}px`,
-      animationDelay: `${rand(0, 150)}ms`,
-      animationDuration: `${rand(600, 1000)}ms`,
-      ['--rise' as string]: `${-rand(100, 200)}px`,
-      ['--drift' as string]: `${rand(-40, 40)}px`
-    }
-  }));
+  // Layered: a few large slow-billowing puffs behind several smaller,
+  // faster wisps in front, so the plume reads as volumetric rather than
+  // a handful of flat identical circles.
+  const puffs = Array.from({ length: 5 }, (_, i) => {
+    const size = rand(70, 130);
+    return {
+      id: i,
+      className: 'particle particle-smoke',
+      style: {
+        left: `${x + rand(-16, 16) - size / 2}px`,
+        top: `${y + rand(-8, 8) - size / 2}px`,
+        width: `${size}px`,
+        height: `${size}px`,
+        animationDelay: `${rand(0, 120)}ms`,
+        animationDuration: `${rand(1100, 1600)}ms`,
+        ['--rise' as string]: `${-rand(160, 260)}px`,
+        ['--drift' as string]: `${rand(-50, 50)}px`,
+        ['--spin' as string]: `${rand(-40, 40)}deg`
+      }
+    };
+  });
+  const wisps = Array.from({ length: 9 }, (_, i) => {
+    const size = rand(22, 46);
+    return {
+      id: i + puffs.length,
+      className: 'particle particle-smoke',
+      style: {
+        left: `${x + rand(-26, 26) - size / 2}px`,
+        top: `${y + rand(-14, 14) - size / 2}px`,
+        width: `${size}px`,
+        height: `${size}px`,
+        animationDelay: `${rand(0, 200)}ms`,
+        animationDuration: `${rand(650, 1000)}ms`,
+        ['--rise' as string]: `${-rand(90, 180)}px`,
+        ['--drift' as string]: `${rand(-60, 60)}px`,
+        ['--spin' as string]: `${rand(-60, 60)}deg`
+      }
+    };
+  });
+  return [...puffs, ...wisps];
 }
 
 function buildConverge(x: number, y: number): Particle[] {
@@ -155,23 +189,51 @@ function buildExplosion(x: number, y: number): Particle[] {
     className: 'particle particle-explosion-flash',
     style: { left: `${x - 15}px`, top: `${y - 15}px`, animationDuration: '450ms' }
   };
-  const embers = Array.from({ length: 16 }, (_, i) => {
-    const angle = (i / 16) * Math.PI * 2;
-    const radius = rand(120, 260);
+  const shockwave: Particle = {
+    id: 1,
+    className: 'particle particle-shockwave',
+    style: { left: `${x - 4}px`, top: `${y - 4}px`, animationDuration: '550ms' }
+  };
+  const embers = Array.from({ length: 18 }, (_, i) => {
+    const angle = (i / 18) * Math.PI * 2 + rand(-0.15, 0.15);
+    const radius = rand(110, 280);
+    const size = rand(4, 9);
     return {
-      id: i + 1,
+      id: i + 2,
       className: 'particle particle-explosion-ember',
       style: {
         left: `${x}px`,
         top: `${y}px`,
+        width: `${size}px`,
+        height: `${size}px`,
         animationDelay: `${rand(0, 80)}ms`,
-        animationDuration: `${rand(450, 650)}ms`,
+        animationDuration: `${rand(450, 700)}ms`,
         ['--target-x' as string]: `${Math.cos(angle) * radius}px`,
         ['--target-y' as string]: `${Math.sin(angle) * radius}px`
       }
     };
   });
-  return [flash, ...embers];
+  const aftermathSmoke = Array.from({ length: 6 }, (_, i) => {
+    const size = rand(50, 100);
+    const angle = rand(0, Math.PI * 2);
+    const driftRadius = rand(20, 60);
+    return {
+      id: i + 20,
+      className: 'particle particle-smoke',
+      style: {
+        left: `${x + Math.cos(angle) * driftRadius - size / 2}px`,
+        top: `${y + Math.sin(angle) * driftRadius - size / 2}px`,
+        width: `${size}px`,
+        height: `${size}px`,
+        animationDelay: `${rand(120, 260)}ms`,
+        animationDuration: `${rand(700, 1000)}ms`,
+        ['--rise' as string]: `${-rand(60, 130)}px`,
+        ['--drift' as string]: `${rand(-40, 40)}px`,
+        ['--spin' as string]: `${rand(-30, 30)}deg`
+      }
+    };
+  });
+  return [flash, shockwave, ...embers, ...aftermathSmoke];
 }
 
 function buildBubble(x: number, y: number): Particle[] {
@@ -285,10 +347,11 @@ export default function ClickEffectLayer() {
       }
 
       setEffect({ type, particles: buildParticles(type, x, y) });
-      window.setTimeout(() => {
-        setEffect(null);
-        onComplete?.();
-      }, EFFECT_DURATION);
+      // Keep the interaction snappy — open the project on the usual timer —
+      // but let any longer-tailed particles (smoke, embers) keep drifting and
+      // clear on their own schedule, on top of the now-open project.
+      window.setTimeout(() => onComplete?.(), EFFECT_DURATION);
+      window.setTimeout(() => setEffect(null), EFFECT_DURATION_OVERRIDES[type] ?? EFFECT_DURATION);
     }
 
     // Defensive fix: if this page is restored from the back-forward cache

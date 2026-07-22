@@ -80,6 +80,24 @@ collections:
           hint: "A playful particle effect that plays when this card is clicked, before opening the project",
         }
       - {
+          label: "Ambient Background Effect",
+          name: "ambientEffect",
+          widget: "select",
+          options: ["none", "smoke", "embers", "dust", "snow", "fireflies"],
+          default: "none",
+          required: false,
+          hint: "A subtle looping atmosphere effect that plays continuously while this project's full-screen view is open",
+        }
+      - {
+          label: "Ambient Custom Video (optional)",
+          name: "ambientVideoUrl",
+          widget: "file",
+          required: false,
+          media_folder: "/public/ambient",
+          public_folder: "/ambient",
+          hint: "Upload your own looping video overlay instead of a preset — overrides Ambient Background Effect above",
+        }
+      - {
           label: "Tech Stack",
           name: "techStack",
           widget: "list",
@@ -143,10 +161,21 @@ collections:
         fields:
           - { label: "Full Name", name: "name", widget: "string" }
           - { label: "Headline / Title", name: "title", widget: "string" }
+          - {
+              label: "Intro Animation Title",
+              name: "introTitle",
+              widget: "string",
+              required: false,
+              hint: "Shown briefly on the opening animation when a visitor first lands on the site. Leave blank to reuse Headline / Title above.",
+            }
           - { label: "Tagline", name: "tagline", widget: "text" }
           - { label: "Contact Email", name: "email", widget: "string" }
           - { label: "GitHub URL", name: "githubUrl", widget: "string" }
           - { label: "ArtStation URL", name: "artstationUrl", widget: "string" }
+          - { label: "YouTube URL", name: "youtubeUrl", widget: "string", required: false }
+          - { label: "X (Twitter) URL", name: "xUrl", widget: "string", required: false }
+          - { label: "Instagram URL", name: "instagramUrl", widget: "string", required: false }
+          - { label: "LinkedIn URL", name: "linkedinUrl", widget: "string", required: false }
           - {
               label: "CV / Resume PDF",
               name: "cvUrl",

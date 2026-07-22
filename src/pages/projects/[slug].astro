@@ -22,6 +22,7 @@ const extraImages = project.data.gallery.filter((src) => src !== project.data.co
   <article class="mx-auto max-w-3xl px-6 pb-16 pt-32 sm:pt-36">
     <a href="/#projects" class="text-sm font-semibold text-paper-dim transition-colors hover:text-accent-2">&larr; Back to projects</a>
 
+    <div id="case-study-content" data-slug={project.data.slug}>
     <h1 class="mt-4 font-display text-3xl font-extrabold text-paper sm:text-4xl">{project.data.title}</h1>
     <p class="mt-3 text-lg text-paper-dim">{project.data.description}</p>
 
@@ -78,6 +79,7 @@ const extraImages = project.data.gallery.filter((src) => src !== project.data.co
 
     <div class="prose prose-invert prose-headings:font-display prose-a:text-accent-2 mt-10 max-w-none">
       <Content />
+    </div>
     </div>
   </article>
 </Layout>

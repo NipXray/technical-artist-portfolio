@@ -29,6 +29,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
   const panelRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<number, HTMLLIElement>>(new Map());
+  const dragState = useRef<{ startY: number; startScroll: number } | null>(null);
 
   useEffect(() => {
     const trigger = document.getElementById('history-trigger');
@@ -103,6 +104,36 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
     };
   }, [open, entries]);
 
+  // Drag-to-scroll: click and drag (or middle-click drag) anywhere in the
+  // timeline to scroll it, same as a native "grab" scroll area.
+  useEffect(() => {
+    const root = scrollRef.current;
+    if (!root || !open) return undefined;
+
+    function handleMouseDown(e: MouseEvent) {
+      if (e.button !== 0 && e.button !== 1) return;
+      dragState.current = { startY: e.clientY, startScroll: root!.scrollTop };
+      e.preventDefault();
+    }
+    function handleMouseMove(e: MouseEvent) {
+      if (!dragState.current) return;
+      const delta = e.clientY - dragState.current.startY;
+      root!.scrollTop = dragState.current.startScroll - delta;
+    }
+    function handleMouseUp() {
+      dragState.current = null;
+    }
+
+    root.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      root.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [open]);
+
   return (
     <>
       <div
@@ -136,8 +167,8 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
           </button>
         </div>
 
-        <div ref={scrollRef} className="relative flex-1 overflow-y-auto px-6 py-6">
-          <div className="pointer-events-none sticky top-0 z-10 -mx-6 -mt-6 mb-4 bg-ink-900 px-6 pb-4 pt-6">
+        <div ref={scrollRef} className="themed-scrollbar grab-scroll relative flex-1 overflow-y-auto px-6 pb-6">
+          <div className="pointer-events-none sticky top-0 z-10 -mx-6 mb-2 bg-gradient-to-b from-ink-900 from-70% to-transparent px-6 pb-8 pt-6">
             <span className="font-display text-5xl font-extrabold text-accent/25">{currentYear}</span>
           </div>
 
@@ -149,7 +180,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                 ref={(el) => {
                   if (el) itemRefs.current.set(i, el);
                 }}
-                className="mb-8 last:mb-0"
+                className="mb-8 select-none last:mb-0"
               >
                 <span
                   className={`absolute -left-[7px] mt-1.5 h-3 w-3 rounded-full border-2 border-ink-900 ${

@@ -4,6 +4,7 @@ slug: "floating-lantern-isles"
 cover: "/uploads/floating-lantern-isles.svg"
 gallery: ["/uploads/floating-lantern-isles.svg", "/uploads/floating-lantern-isles-2.svg"]
 clickEffect: "bubble"
+ambientEffect: "fireflies"
 techStack: ["Blender", "Unreal Engine", "World Building"]
 description: "A whimsical cluster of floating islands strung with lanterns, built as a modular kit for a cozy exploration game."
 order: 5

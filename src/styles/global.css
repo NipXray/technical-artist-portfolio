@@ -93,18 +93,18 @@ pre.astro-code {
 
 /* smoke */
 .particle-smoke {
-  width: 26px;
-  height: 26px;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(246, 241, 238, 0.7) 0%, transparent 70%);
-  filter: blur(2px);
+  background: radial-gradient(circle, rgba(246, 241, 238, 0.55) 0%, rgba(246, 241, 238, 0.18) 45%, transparent 72%);
+  filter: blur(4px);
   animation-name: smoke-rise;
-  animation-timing-function: ease-out;
+  animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1);
   animation-fill-mode: forwards;
 }
 @keyframes smoke-rise {
-  0% { transform: translate(0, 0) scale(0.6); opacity: 0.55; }
-  100% { transform: translate(var(--drift, 0px), var(--rise, -140px)) scale(1.8); opacity: 0; }
+  0% { transform: translate(0, 0) scale(0.5) rotate(0deg); opacity: 0; }
+  15% { opacity: 0.65; }
+  55% { transform: translate(calc(var(--drift, 0px) * 0.6), calc(var(--rise, -140px) * 0.6)) scale(1.3) rotate(calc(var(--spin, 0deg) * 0.6)); opacity: 0.4; }
+  100% { transform: translate(var(--drift, 0px), var(--rise, -140px)) scale(2) rotate(var(--spin, 0deg)); opacity: 0; }
 }
 
 /* converge */
@@ -211,19 +211,31 @@ pre.astro-code {
   0% { transform: scale(0.2); opacity: 1; }
   100% { transform: scale(5); opacity: 0; }
 }
-.particle-explosion-ember {
-  width: 6px;
-  height: 6px;
+.particle-shockwave {
+  width: 8px;
+  height: 8px;
   border-radius: 9999px;
-  background: var(--color-accent);
+  border: 2px solid var(--color-accent-2);
+  animation-name: shockwave-expand;
+  animation-timing-function: cubic-bezier(0.1, 0.6, 0.3, 1);
+  animation-fill-mode: forwards;
+}
+@keyframes shockwave-expand {
+  0% { transform: scale(1); opacity: 0.9; border-width: 3px; }
+  100% { transform: scale(45); opacity: 0; border-width: 0.5px; }
+}
+.particle-explosion-ember {
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff8e6 0%, var(--color-accent) 60%, transparent 90%);
   box-shadow: 0 0 8px var(--color-accent-2);
   animation-name: ember-fly;
-  animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  animation-timing-function: cubic-bezier(0.15, 0.7, 0.3, 1);
   animation-fill-mode: forwards;
 }
 @keyframes ember-fly {
   0% { transform: translate(0, 0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--target-x, 0px), calc(var(--target-y, 0px) + 40px)) scale(0.3); opacity: 0; }
+  70% { opacity: 1; }
+  100% { transform: translate(var(--target-x, 0px), calc(var(--target-y, 0px) + 50px)) scale(0.25); opacity: 0; }
 }
 
 /* bubble */
@@ -290,4 +302,130 @@ pre.astro-code {
   .particle:not(.particle-pulse) {
     display: none;
   }
+}
+
+/* ---------------------------------------------------------------- */
+/* Ambient background loops (AmbientEffectLayer.tsx)                 */
+/* ---------------------------------------------------------------- */
+.ambient-particle {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.ambient-smoke {
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(246, 241, 238, 0.22) 0%, rgba(246, 241, 238, 0.05) 55%, transparent 75%);
+  filter: blur(6px);
+  animation-name: ambient-smoke-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes ambient-smoke-drift {
+  0% { transform: translate(0, 10%) scale(0.85); opacity: 0; }
+  15% { opacity: 0.8; }
+  50% { transform: translate(var(--drift-x, 4%), -55%) scale(1.15); opacity: 0.55; }
+  85% { opacity: 0.15; }
+  100% { transform: translate(calc(var(--drift-x, 4%) * 1.6), -120%) scale(1.3); opacity: 0; }
+}
+
+.ambient-embers {
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff2d8 0%, var(--color-accent-2) 55%, transparent 80%);
+  box-shadow: 0 0 6px var(--color-accent-2);
+  animation-name: ambient-ember-rise;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+@keyframes ambient-ember-rise {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  10% { opacity: 1; }
+  70% { opacity: 0.7; }
+  100% { transform: translate(var(--drift-x, 3%), -100vh) scale(0.2); opacity: 0; }
+}
+
+.ambient-dust {
+  border-radius: 9999px;
+  background: rgba(246, 241, 238, 0.35);
+  animation-name: ambient-dust-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes ambient-dust-drift {
+  0% { transform: translate(0, 0); opacity: 0; }
+  20% { opacity: 0.5; }
+  80% { opacity: 0.3; }
+  100% { transform: translate(var(--drift-x, 6%), var(--drift-y, -12%)); opacity: 0; }
+}
+
+.ambient-snow {
+  border-radius: 9999px;
+  background: #ffffff;
+  animation-name: ambient-snow-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes ambient-snow-fall {
+  0% { transform: translate(0, -10%) scale(1); opacity: 0; }
+  10% { opacity: 0.9; }
+  90% { opacity: 0.7; }
+  100% { transform: translate(var(--drift-x, 5%), 110vh) scale(0.8); opacity: 0; }
+}
+
+.ambient-fireflies {
+  border-radius: 9999px;
+  background: var(--color-accent-2);
+  box-shadow: 0 0 8px 2px var(--color-accent-2);
+  animation-name: ambient-firefly-glow;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes ambient-firefly-glow {
+  0%, 100% { transform: translate(0, 0); opacity: 0.1; }
+  25% { transform: translate(var(--drift-x, 3%), -4%); opacity: 0.9; }
+  50% { transform: translate(calc(var(--drift-x, 3%) * -1), -8%); opacity: 0.2; }
+  75% { transform: translate(var(--drift-x, 3%), -2%); opacity: 0.85; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-particle {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- */
+/* Themed scrollbar + drag-to-scroll (HistorySidebar.tsx)             */
+/* ---------------------------------------------------------------- */
+.themed-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent) transparent;
+}
+.themed-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.themed-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.themed-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-accent);
+  border-radius: 9999px;
+}
+
+.grab-scroll {
+  cursor: grab;
+}
+.grab-scroll:active {
+  cursor: grabbing;
+}
+
+/* ---------------------------------------------------------------- */
+/* Intro sequence (IntroSequence.tsx)                                 */
+/* ---------------------------------------------------------------- */
+.intro-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  background: var(--color-paper);
+  transform-origin: center;
 }

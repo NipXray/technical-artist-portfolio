@@ -3,6 +3,7 @@ title: "Creature VFX: Storm Wisp"
 slug: "storm-wisp"
 cover: "/uploads/storm-wisp.svg"
 clickEffect: "wind"
+ambientEffect: "dust"
 techStack: ["Houdini", "Niagara", "VFX"]
 description: "A wind elemental creature built entirely from curl-noise simulation, with a Niagara runtime version for in-game use."
 order: 6

@@ -4,6 +4,9 @@ import '../styles/global.css';
 import resume from '../data/resume.json';
 import HistorySidebar from '../components/HistorySidebar';
 import ClickEffectLayer from '../components/ClickEffectLayer';
+import FloatingSocialDock from '../components/FloatingSocialDock';
+
+const isUrl = (value?: string) => !!value && /^https?:\/\//.test(value);
 
 interface Props {
   title: string;
@@ -72,8 +75,12 @@ const historyEntries = (await getCollection('history'))
       <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-8 text-xs text-paper-dim sm:flex-row">
         <p>&copy; {new Date().getFullYear()} {resume.name}. All rights reserved.</p>
         <div class="flex gap-5 font-semibold uppercase tracking-wide">
-          <a href={resume.githubUrl} class="hover:text-accent-2" target="_blank" rel="noreferrer">GitHub</a>
-          <a href={resume.artstationUrl} class="hover:text-accent-2" target="_blank" rel="noreferrer">ArtStation</a>
+          {isUrl(resume.githubUrl) && (
+            <a href={resume.githubUrl} class="hover:text-accent-2" target="_blank" rel="noreferrer">GitHub</a>
+          )}
+          {isUrl(resume.artstationUrl) && (
+            <a href={resume.artstationUrl} class="hover:text-accent-2" target="_blank" rel="noreferrer">ArtStation</a>
+          )}
           <a href={`mailto:${resume.email}`} class="hover:text-accent-2">{resume.email}</a>
         </div>
       </div>
@@ -81,5 +88,14 @@ const historyEntries = (await getCollection('history'))
 
     <HistorySidebar client:load entries={historyEntries} />
     <ClickEffectLayer client:load />
+    <FloatingSocialDock
+      client:load
+      githubUrl={isUrl(resume.githubUrl) ? resume.githubUrl : undefined}
+      artstationUrl={isUrl(resume.artstationUrl) ? resume.artstationUrl : undefined}
+      youtubeUrl={isUrl(resume.youtubeUrl) ? resume.youtubeUrl : undefined}
+      xUrl={isUrl(resume.xUrl) ? resume.xUrl : undefined}
+      instagramUrl={isUrl(resume.instagramUrl) ? resume.instagramUrl : undefined}
+      linkedinUrl={isUrl(resume.linkedinUrl) ? resume.linkedinUrl : undefined}
+    />
   </body>
 </html>

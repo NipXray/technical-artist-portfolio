@@ -30,6 +30,7 @@
   "tagline": "I craft characters, worlds, and the pipelines that bring them to life — with a little bit of magic in every rig. ✨",
   "reelVideoUrl": "/videos/reel-placeholder.mp4",
   "title": "3D Artist — Characters / Worlds / Tools",
+  "introTitle": "",
   "heroSlides": [
     {
       "type": "image",
@@ -64,5 +65,9 @@
   ],
   "email": "alifiteris@gmail.com",
   "cvUrl": "/cv/resume.pdf",
-  "artstationUrl": "https://www.artstation.com/alifikri"
+  "artstationUrl": "https://www.artstation.com/alifikri",
+  "youtubeUrl": "",
+  "xUrl": "",
+  "instagramUrl": "",
+  "linkedinUrl": ""
 }

@@ -3,6 +3,7 @@ title: Houdini Destruction Toolkit
 slug: houdini-destruction-toolkit
 cover: /uploads/houdini-destruction-toolkit.svg
 clickEffect: explosion
+ambientEffect: embers
 techStack:
   - Houdini
   - VEX

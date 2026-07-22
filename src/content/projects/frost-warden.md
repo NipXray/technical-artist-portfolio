@@ -4,6 +4,7 @@ slug: "frost-warden"
 cover: "/uploads/frost-warden.svg"
 gallery: ["/uploads/frost-warden.svg", "/uploads/frost-warden-2.svg"]
 clickEffect: "glass"
+ambientEffect: "smoke"
 techStack: ["ZBrush", "Substance Painter", "Marmoset Toolbag"]
 description: "A high-fantasy guardian sculpted from crystal and frost, built for real-time rendering with a full PBR texture set."
 order: 4

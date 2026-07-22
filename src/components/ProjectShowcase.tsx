@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getEmbedUrl } from '../lib/embed';
 import type { ClickEffectType, EffectTriggerDetail } from './ClickEffectLayer';
+import AmbientEffectLayer, { type AmbientEffectType } from './AmbientEffectLayer';
+import CaseStudySidebar from './CaseStudySidebar';
 
 export interface ShowcaseProject {
   slug: string;
@@ -11,52 +13,38 @@ export interface ShowcaseProject {
   description: string;
   techStack: string[];
   clickEffect: ClickEffectType;
+  ambientEffect: AmbientEffectType;
+  ambientVideoUrl?: string;
 }
 
-function ModalBackground({ project, active }: { project: ShowcaseProject; active: boolean }) {
+function ModalBackground({
+  project,
+  active,
+  index
+}: {
+  project: ShowcaseProject;
+  active: boolean;
+  index: number;
+}) {
   const images = useMemo(
     () => [project.cover, ...project.gallery].filter((src, i, arr) => src && arr.indexOf(src) === i),
     [project]
   );
-  const [index, setIndex] = useState(0);
-  useEffect(() => setIndex(0), [project]);
-
-  useEffect(() => {
-    if (images.length < 2) return undefined;
-    const t = window.setTimeout(() => setIndex((i) => (i + 1) % images.length), 5000);
-    return () => window.clearTimeout(t);
-  }, [index, images]);
+  const safeIndex = index % images.length;
 
   return (
-    <>
-      <div className="absolute inset-0 overflow-hidden bg-ink-900">
-        {images.map((src, i) => (
-          <img
-            key={src + i}
-            src={src}
-            alt={project.title}
-            className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1200ms] ease-out ${
-              i === index ? 'opacity-100' : 'opacity-0'
-            } ${active ? 'scale-100' : 'scale-105'}`}
-          />
-        ))}
-      </div>
-
-      {images.length > 1 && (
-        <div className="absolute bottom-6 left-6 z-10 flex gap-2 sm:bottom-10 sm:left-10">
-          {images.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setIndex(i)}
-              aria-label={`Slide ${i + 1}`}
-              className={`h-2 rounded-full transition-all ${
-                i === index ? 'w-6 bg-accent' : 'w-2 bg-paper/40 hover:bg-paper/70'
-              }`}
-            />
-          ))}
-        </div>
-      )}
-    </>
+    <div className="absolute inset-0 overflow-hidden bg-ink-900">
+      {images.map((src, i) => (
+        <img
+          key={src + i}
+          src={src}
+          alt={project.title}
+          className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1200ms] ease-out ${
+            i === safeIndex ? 'opacity-100' : 'opacity-0'
+          } ${active ? 'scale-100' : 'scale-105'}`}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -81,16 +69,33 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
   const [hovered, setHovered] = useState<number | null>(null);
   const [activeProject, setActiveProject] = useState<ShowcaseProject | null>(null);
   const [displayedProject, setDisplayedProject] = useState<ShowcaseProject | null>(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [caseStudySlug, setCaseStudySlug] = useState<string | null>(null);
+  const [revealed, setRevealed] = useState(false);
   const closeTimeout = useRef<number | null>(null);
+
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setRevealed(true));
+    return () => cancelAnimationFrame(t);
+  }, []);
+
+  const displayedImages = useMemo(() => {
+    if (!displayedProject) return [];
+    return [displayedProject.cover, ...displayedProject.gallery].filter(
+      (src, i, arr) => src && arr.indexOf(src) === i
+    );
+  }, [displayedProject]);
 
   function openProject(project: ShowcaseProject) {
     if (closeTimeout.current) window.clearTimeout(closeTimeout.current);
+    setSlideIndex(0);
     setDisplayedProject(project);
     requestAnimationFrame(() => setActiveProject(project));
   }
 
   function closeProject() {
     setActiveProject(null);
+    setCaseStudySlug(null);
     closeTimeout.current = window.setTimeout(() => setDisplayedProject(null), 400);
   }
 
@@ -104,11 +109,30 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
     window.dispatchEvent(new CustomEvent('effect-trigger', { detail }));
   }
 
+  // Auto-advance the background slideshow.
+  useEffect(() => {
+    if (!displayedProject || displayedImages.length < 2 || caseStudySlug) return undefined;
+    const t = window.setTimeout(() => setSlideIndex((i) => (i + 1) % displayedImages.length), 5000);
+    return () => window.clearTimeout(t);
+  }, [slideIndex, displayedProject, displayedImages, caseStudySlug]);
+
+  // Escape closes the case study first, then the project; arrows drive the slideshow.
   useEffect(() => {
     if (!displayedProject) return undefined;
 
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') closeProject();
+      if (e.key === 'Escape') {
+        if (caseStudySlug) setCaseStudySlug(null);
+        else closeProject();
+        return;
+      }
+      if (caseStudySlug) return; // let the reader scroll without hijacking arrow keys
+      if (displayedImages.length < 2) return;
+      if (e.key === 'ArrowRight') {
+        setSlideIndex((i) => (i + 1) % displayedImages.length);
+      } else if (e.key === 'ArrowLeft') {
+        setSlideIndex((i) => (i - 1 + displayedImages.length) % displayedImages.length);
+      }
     }
     document.addEventListener('keydown', handleKeyDown);
     const previousOverflow = document.body.style.overflow;
@@ -117,14 +141,18 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [displayedProject]);
+  }, [displayedProject, caseStudySlug, displayedImages]);
 
   const videoEmbedUrl = displayedProject ? getEmbedUrl(displayedProject.video) : null;
 
   return (
     <>
       {/* Seamless hover-accordion gallery */}
-      <div className="flex h-[85vh] max-h-[820px] min-h-[520px] flex-col md:h-[78vh] md:flex-row">
+      <div
+        className={`flex h-[85vh] max-h-[820px] min-h-[520px] flex-col transition-all duration-700 ease-out md:h-[78vh] md:flex-row ${
+          revealed ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
         {projects.map((project, i) => {
           const isHovered = hovered === i;
           return (
@@ -133,8 +161,13 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
               onClick={(e) => handlePanelClick(project, e)}
-              style={{ flexGrow: hovered === null ? 1 : isHovered ? 3.4 : 0.55 }}
-              className="group relative min-h-[110px] flex-1 appearance-none overflow-hidden border-0 bg-transparent p-0 text-left transition-[flex-grow] duration-500 ease-out"
+              style={{
+                flexGrow: hovered === null ? 1 : isHovered ? 3.4 : 0.55,
+                transitionDelay: revealed ? `${i * 70}ms` : '0ms'
+              }}
+              className={`group relative min-h-[110px] flex-1 appearance-none overflow-hidden border-0 bg-transparent p-0 text-left transition-[flex-grow,clip-path] duration-500 ease-out ${
+                revealed ? '[clip-path:inset(0_0_0_0)]' : '[clip-path:inset(50%_0_50%_0)]'
+              }`}
             >
               <img
                 src={project.cover}
@@ -197,7 +230,30 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
             activeProject ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
         >
-          <ModalBackground project={displayedProject} active={!!activeProject} />
+          <ModalBackground project={displayedProject} active={!!activeProject} index={slideIndex} />
+          <AmbientEffectLayer
+            type={displayedProject.ambientEffect}
+            videoUrl={displayedProject.ambientVideoUrl}
+            active={!!activeProject}
+          />
+
+          {displayedImages.length > 1 && (
+            <div className="absolute bottom-6 left-6 z-10 flex gap-2 sm:bottom-10 sm:left-10">
+              {displayedImages.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSlideIndex(i);
+                  }}
+                  aria-label={`Slide ${i + 1}`}
+                  className={`h-2 rounded-full transition-all ${
+                    i === slideIndex ? 'w-6 bg-accent' : 'w-2 bg-paper/40 hover:bg-paper/70'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
 
           {/* legibility gradients: dark toward the info panel edge */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-ink-950/30 to-ink-950/90 md:via-ink-950/10" />
@@ -246,15 +302,20 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
               </div>
             )}
 
-            <a
-              href={`/projects/${displayedProject.slug}`}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setCaseStudySlug(displayedProject.slug);
+              }}
               className="inline-flex w-fit items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all hover:-translate-y-0.5 hover:bg-accent-2"
             >
               View Full Case Study →
-            </a>
+            </button>
           </div>
         </div>
       )}
+
+      <CaseStudySidebar slug={caseStudySlug} onClose={() => setCaseStudySlug(null)} />
     </>
   );
 }
