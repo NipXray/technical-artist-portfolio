@@ -1,10 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 
 export interface HeroSlide {
-  type: 'image' | 'video';
+  type?: 'image' | 'video';
   src: string;
   duration: number;
   caption?: string;
+}
+
+// The CMS used to require a manual "image"/"video" toggle alongside the file
+// upload, and it was easy to swap in a video without remembering to flip it
+// — the slide would then render as a broken <img>. Detecting from the file
+// extension is always correct since it comes from the actual uploaded file.
+const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v)$/i;
+function isVideoSlide(slide: HeroSlide) {
+  return VIDEO_EXTENSION.test(slide.src) || slide.type === 'video';
 }
 
 export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
@@ -42,7 +51,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
           style={{ opacity: i === active ? 1 : 0 }}
           aria-hidden={i !== active}
         >
-          {slide.type === 'video' ? (
+          {isVideoSlide(slide) ? (
             <video
               className="h-full w-full object-cover"
               src={slide.src}

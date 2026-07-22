@@ -98,9 +98,9 @@ const PRESETS: Record<Exclude<AmbientEffectType, 'none'>, Preset> = {
     count: 9,
     direction: 'alternate',
     widthPct: [40, 70],
-    heightPct: [7, 15],
+    heightPct: [7, 14],
     leftPct: [-15, 75],
-    bottomPct: [-6, 22],
+    bottomPct: [-8, 4],
     duration: [26, 42],
     delay: [0, 10]
   }

@@ -319,6 +319,11 @@ pre.astro-code {
   position: absolute;
   pointer-events: none;
   will-change: transform, opacity;
+  /* Without this, each particle sits fully visible and un-transformed
+     during its random animation-delay (the 0% keyframe doesn't apply until
+     the delay elapses), then pops abruptly into motion — exactly the
+     "broken"-looking snap the fade-in/out was supposed to hide. */
+  animation-fill-mode: both;
 }
 
 .ambient-smoke {

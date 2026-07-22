@@ -33,28 +33,12 @@ export default function IntroSequence({ title }: { title: string }) {
   }, []);
 
   // Hand off from the pre-hydration CSS veil (see Layout.astro) the moment
-  // the intro is done, however it got there (played out, skipped, or interrupted).
+  // the intro is done, however it got there (played out, or gated by
+  // session/reduced-motion below).
   useEffect(() => {
     if (stage === 'done') {
       document.documentElement.classList.remove('intro-veil');
     }
-  }, [stage]);
-
-  useEffect(() => {
-    if (stage === 'done' || stage === 'skip') return undefined;
-    function skip() {
-      // Without this, the mount effect's still-pending timers would keep
-      // firing after a skip and bring the intro back a moment later.
-      timersRef.current.forEach((t) => window.clearTimeout(t));
-      timersRef.current = [];
-      setStage('done');
-    }
-    window.addEventListener('keydown', skip);
-    window.addEventListener('click', skip);
-    return () => {
-      window.removeEventListener('keydown', skip);
-      window.removeEventListener('click', skip);
-    };
   }, [stage]);
 
   if (stage === 'done' || stage === 'skip') return null;
@@ -64,6 +48,9 @@ export default function IntroSequence({ title }: { title: string }) {
   const expanded = stage === 'expand';
 
   return (
+    // Deliberately not interruptible by click or keypress — first-time
+    // visitors watch the full sequence; only the once-per-session gate and
+    // prefers-reduced-motion skip it entirely (see the mount effect above).
     <div className="fixed inset-0 z-[300]" aria-hidden="true">
       {/* Left curtain panel */}
       <div
@@ -82,14 +69,19 @@ export default function IntroSequence({ title }: { title: string }) {
         }}
       />
       {/* Middle band, shaped to match the two lines (same rotation) — drops
-          away along its own tilted axis once the lines finish drawing. */}
+          away along its own tilted axis once the lines finish drawing. A
+          bright band near its (screen-facing) top edge sweeps down through
+          the viewport as it travels, so the motion reads clearly even
+          against a dark hero background. */}
       <div
-        className="absolute bg-ink-950 transition-transform duration-[650ms] ease-in"
+        className="absolute transition-transform duration-[750ms] ease-in"
         style={{
           top: '50%',
           left: '50%',
           width: `calc(${LINE_OFFSET} * 2)`,
           height: '160vh',
+          background:
+            'linear-gradient(to bottom, var(--color-ink-950) 0%, color-mix(in srgb, var(--color-paper) 65%, var(--color-accent-2)) 4%, var(--color-ink-950) 9%, var(--color-ink-950) 100%)',
           transform: `translate(-50%, -50%) rotate(${LINE_ROTATION}deg) translateY(${middleOpen ? '115%' : '0%'})`
         }}
       />
@@ -102,15 +94,16 @@ export default function IntroSequence({ title }: { title: string }) {
         {title}
       </p>
 
-      {/* Left line draws bottom-to-top, right line draws top-to-bottom */}
+      {/* Left line draws bottom-to-top, right line draws top-to-bottom, then
+          each travels off screen with its own panel during 'expand' so the
+          motion stays visible instead of just vanishing in place. */}
       <div
         className="intro-line"
         style={{
           height: '150vh',
           transformOrigin: 'center bottom',
-          transform: `translate(calc(-1 * ${LINE_OFFSET}), -50%) rotate(${LINE_ROTATION}deg) scaleY(${drawn ? 1 : 0})`,
-          opacity: expanded ? 0 : 1,
-          transition: 'transform 500ms ease-out, opacity 300ms ease-out'
+          transform: `translateX(${expanded ? '-100vw' : '0px'}) translate(calc(-1 * ${LINE_OFFSET}), -50%) rotate(${LINE_ROTATION}deg) scaleY(${drawn ? 1 : 0})`,
+          transition: 'transform 600ms ease-in-out'
         }}
       />
       <div
@@ -118,9 +111,8 @@ export default function IntroSequence({ title }: { title: string }) {
         style={{
           height: '150vh',
           transformOrigin: 'center top',
-          transform: `translate(${LINE_OFFSET}, -50%) rotate(${LINE_ROTATION}deg) scaleY(${drawn ? 1 : 0})`,
-          opacity: expanded ? 0 : 1,
-          transition: 'transform 500ms ease-out 120ms, opacity 300ms ease-out'
+          transform: `translateX(${expanded ? '100vw' : '0px'}) translate(${LINE_OFFSET}, -50%) rotate(${LINE_ROTATION}deg) scaleY(${drawn ? 1 : 0})`,
+          transition: 'transform 600ms ease-in-out 100ms'
         }}
       />
     </div>

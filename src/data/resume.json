@@ -54,13 +54,13 @@
       "caption": "World Building"
     },
     {
-      "type": "image",
+      "type": "video",
       "src": "/hero/rally_solid.mp4",
       "duration": 6,
       "caption": "FX & Simulation"
     },
     {
-      "type": "image",
+      "type": "video",
       "src": "/hero/rally_material.mp4",
       "duration": 6,
       "caption": "Shading & Light"

@@ -197,14 +197,7 @@ collections:
             hint: "Background slides for the homepage hero — fades between them on a timer"
             fields:
               - {
-                  label: "Type",
-                  name: "type",
-                  widget: "select",
-                  options: ["image", "video"],
-                  default: "image",
-                }
-              - {
-                  label: "Media",
+                  label: "Media (image or video — detected automatically from the file)",
                   name: "src",
                   widget: "file",
                   media_folder: "/public/hero",
