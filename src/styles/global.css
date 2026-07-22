@@ -215,14 +215,22 @@ pre.astro-code {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  border: 2px solid var(--color-accent-2);
+  /* A soft gradient ring instead of a CSS border — a real border's hard
+     inner/outer edge turns into a harsh aliased seam once scaled up ~45x. */
+  background: radial-gradient(
+    circle,
+    transparent 52%,
+    color-mix(in srgb, var(--color-accent-2) 85%, transparent) 64%,
+    color-mix(in srgb, var(--color-accent-2) 30%, transparent) 76%,
+    transparent 88%
+  );
   animation-name: shockwave-expand;
   animation-timing-function: cubic-bezier(0.1, 0.6, 0.3, 1);
   animation-fill-mode: forwards;
 }
 @keyframes shockwave-expand {
-  0% { transform: scale(1); opacity: 0.9; border-width: 3px; }
-  100% { transform: scale(45); opacity: 0; border-width: 0.5px; }
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(45); opacity: 0; }
 }
 .particle-explosion-ember {
   border-radius: 9999px;
@@ -388,11 +396,10 @@ pre.astro-code {
 }
 
 .ambient-fog-band {
-  left: -20%;
-  width: 140%;
   border-radius: 40%;
-  background: radial-gradient(ellipse 60% 100% at 50% 50%, rgba(232, 227, 238, 0.9), rgba(232, 227, 238, 0) 72%);
-  filter: url(#ambient-fog-texture) blur(2px);
+  background: radial-gradient(ellipse 60% 100% at 50% 50%, rgba(232, 227, 238, 0.85), rgba(232, 227, 238, 0) 68%);
+  mask-image: radial-gradient(ellipse 50% 55% at 50% 55%, black 20%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse 50% 55% at 50% 55%, black 20%, transparent 85%);
   mix-blend-mode: screen;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
@@ -460,5 +467,4 @@ html.intro-veil::before {
   left: 50%;
   width: 2px;
   background: var(--color-paper);
-  transform-origin: center;
 }

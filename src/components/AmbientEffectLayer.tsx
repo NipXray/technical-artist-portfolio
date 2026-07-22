@@ -36,7 +36,9 @@ interface BandPreset {
   count: number;
   /** 'alternate' splits bands evenly between left->right and right->left. */
   direction: 'ltr' | 'rtl' | 'alternate';
+  widthPct: [number, number];
   heightPct: [number, number];
+  leftPct: [number, number];
   bottomPct: [number, number];
   duration: [number, number];
   delay: [number, number];
@@ -93,11 +95,13 @@ const PRESETS: Record<Exclude<AmbientEffectType, 'none'>, Preset> = {
   },
   fog: {
     kind: 'bands',
-    count: 6,
+    count: 9,
     direction: 'alternate',
-    heightPct: [18, 36],
-    bottomPct: [-8, 14],
-    duration: [24, 40],
+    widthPct: [40, 70],
+    heightPct: [7, 15],
+    leftPct: [-15, 75],
+    bottomPct: [-6, 22],
+    duration: [26, 42],
     delay: [0, 10]
   }
 };
@@ -130,10 +134,13 @@ function buildBands(preset: BandPreset): AmbientParticle[] {
       id: i,
       className: `ambient-particle ambient-fog-band ${goingRight ? 'fog-ltr' : 'fog-rtl'}`,
       style: {
+        left: `${rand(...preset.leftPct)}%`,
+        width: `${rand(...preset.widthPct)}%`,
         height: `${rand(...preset.heightPct)}%`,
         bottom: `${rand(...preset.bottomPct)}%`,
         animationDuration: `${rand(...preset.duration)}s`,
-        animationDelay: `${rand(...preset.delay)}s`
+        animationDelay: `${rand(...preset.delay)}s`,
+        filter: `url(#ambient-fog-texture-${i}) blur(2px)`
       }
     };
   });
@@ -176,17 +183,32 @@ export default function AmbientEffectLayer({
       {type === 'fog' && (
         <svg width="0" height="0" style={{ position: 'absolute' }}>
           <defs>
-            <filter id="ambient-fog-texture" x="-30%" y="-30%" width="160%" height="160%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.012 0.045" numOctaves={3} seed={7} result="noise" />
-              <feColorMatrix
-                in="noise"
-                type="matrix"
-                values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.1 0"
-                result="alphaNoise"
-              />
-              <feGaussianBlur in="alphaNoise" stdDeviation="1.6" result="softNoise" />
-              <feComposite in="softNoise" in2="SourceGraphic" operator="in" />
-            </filter>
+            {particles.map((p) => (
+              <filter
+                key={p.id}
+                id={`ambient-fog-texture-${p.id}`}
+                x="-60%"
+                y="-60%"
+                width="220%"
+                height="220%"
+              >
+                <feTurbulence
+                  type="fractalNoise"
+                  baseFrequency={`${rand(0.01, 0.02).toFixed(3)} ${rand(0.03, 0.07).toFixed(3)}`}
+                  numOctaves={3}
+                  seed={p.id * 37 + 11}
+                  result="noise"
+                />
+                <feColorMatrix
+                  in="noise"
+                  type="matrix"
+                  values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.1 0"
+                  result="alphaNoise"
+                />
+                <feGaussianBlur in="alphaNoise" stdDeviation="1.6" result="softNoise" />
+                <feComposite in="softNoise" in2="SourceGraphic" operator="in" />
+              </filter>
+            ))}
           </defs>
         </svg>
       )}
