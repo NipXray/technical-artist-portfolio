@@ -1,15 +1,17 @@
 ---
-title: "Character Sculpt: Frost Warden"
-slug: "frost-warden"
-cover: "/uploads/frost-warden.svg"
-gallery: ["/uploads/frost-warden.svg", "/uploads/frost-warden-2.svg"]
-clickEffect: "glass"
+title: Character Creation
+slug: V
+cover: /uploads/pose.png
+gallery:
+  - /uploads/pose.png
+  - /uploads/frost-warden-2.svg
+clickEffect: skull
 ambientEffect: "smoke"
-techStack: ["ZBrush", "Substance Painter", "Marmoset Toolbag"]
-description: "A high-fantasy guardian sculpted from crystal and frost, built for real-time rendering with a full PBR texture set."
+techStack:
+  - Blender
+description: A high-fantasy fan
 order: 4
 ---
-
 ## The Brief
 
 A guardian creature made of living ice — the silhouette needed to read instantly at a distance while
