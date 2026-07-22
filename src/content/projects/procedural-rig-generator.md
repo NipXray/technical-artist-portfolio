@@ -1,11 +1,15 @@
 ---
-title: "Procedural Rig Generator"
-slug: "procedural-rig-generator"
-cover: "/uploads/procedural-rig-generator.svg"
-model: "/models/sample-mesh.glb"
-clickEffect: "converge"
-techStack: ["Python", "Maya API", "PySide6"]
-description: "A PySide6 tool that auto-generates biped and quadruped control rigs from a tagged joint hierarchy in minutes instead of days."
+title: Procedural Rig Generator
+slug: procedural-rig-generator
+cover: /uploads/procedural-rig-generator.svg
+model: /models/sample-mesh.glb
+clickEffect: converge
+techStack:
+  - Python
+  - Maya API
+  - PySide6
+description: A PySide6 tool that auto-generates biped and quadruped control rigs
+  from a tagged joint hierarchy in minutes instead of days.
 order: 1
 ---
 

@@ -6,7 +6,7 @@ backend:
 # alongside `npm run dev`. Netlify Identity + Git Gateway handle auth in production.
 local_backend: true
 
-media_folder: "public/uploads"
+media_folder: "/public/uploads"
 public_folder: "/uploads"
 
 publish_mode: simple
@@ -31,12 +31,25 @@ collections:
           widget: "string",
           hint: "Used in the project URL, e.g. rigging-toolkit -> /projects/rigging-toolkit",
         }
-      - { label: "Cover Image", name: "cover", widget: "image" }
+      - {
+          label: "Cover Image",
+          name: "cover",
+          widget: "image",
+          media_folder: "/public/uploads",
+          public_folder: "/uploads",
+        }
       - {
           label: "Gallery",
           name: "gallery",
           widget: "list",
-          field: { label: "Image", name: "image", widget: "image" },
+          field:
+            {
+              label: "Image",
+              name: "image",
+              widget: "image",
+              media_folder: "/public/uploads",
+              public_folder: "/uploads",
+            },
           required: false,
           hint: "Extra images shown in the project's slideshow popup, in addition to the cover image",
         }
@@ -52,7 +65,7 @@ collections:
           name: "model",
           widget: "file",
           required: false,
-          media_folder: "public/models",
+          media_folder: "/public/models",
           public_folder: "/models",
           hint: "Optional — an interactive 3D preview (rig, topology, prop) rendered with <model-viewer>",
         }
@@ -138,14 +151,14 @@ collections:
               label: "CV / Resume PDF",
               name: "cvUrl",
               widget: "file",
-              media_folder: "public/cv",
+              media_folder: "/public/cv",
               public_folder: "/cv",
             }
           - {
               label: "Reel Background Video",
               name: "reelVideoUrl",
               widget: "file",
-              media_folder: "public/videos",
+              media_folder: "/public/videos",
               public_folder: "/videos",
             }
           - label: "Hero Slideshow"
@@ -165,7 +178,7 @@ collections:
                   label: "Media",
                   name: "src",
                   widget: "file",
-                  media_folder: "public/hero",
+                  media_folder: "/public/hero",
                   public_folder: "/hero",
                 }
               - {
