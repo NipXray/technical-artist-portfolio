@@ -54,14 +54,12 @@
       "caption": "World Building"
     },
     {
-      "type": "video",
-      "src": "/hero/rally_solid.mp4",
-      "duration": 6,
-      "caption": "FX & Simulation"
-    },
-    {
-      "type": "video",
-      "src": "/hero/rally_material.mp4",
+      "slideKind": "compare",
+      "mode": "fade",
+      "sources": [
+        { "src": "/hero/rally_solid.mp4", "label": "Solid pass" },
+        { "src": "/hero/rally_material.mp4", "label": "Material pass" }
+      ],
       "duration": 6,
       "caption": "Shading & Light"
     }

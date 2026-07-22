@@ -193,23 +193,61 @@ collections:
           - label: "Hero Slideshow"
             name: "heroSlides"
             widget: "list"
-            summary: "{{caption}}"
+            summary: "{{fields.caption}}"
             hint: "Background slides for the homepage hero — fades between them on a timer"
-            fields:
-              - {
-                  label: "Media (image or video — detected automatically from the file)",
-                  name: "src",
-                  widget: "file",
-                  media_folder: "/public/hero",
-                  public_folder: "/hero",
-                }
-              - {
-                  label: "Duration (seconds)",
-                  name: "duration",
-                  widget: "number",
-                  default: 6,
-                }
-              - { label: "Caption", name: "caption", widget: "string", required: false }
+            typeKey: "slideKind"
+            types:
+              - label: "Single Slide"
+                name: "single"
+                widget: "object"
+                fields:
+                  - {
+                      label: "Media (image or video — detected automatically from the file)",
+                      name: "src",
+                      widget: "file",
+                      media_folder: "/public/hero",
+                      public_folder: "/hero",
+                    }
+                  - {
+                      label: "Duration (seconds)",
+                      name: "duration",
+                      widget: "number",
+                      default: 6,
+                    }
+                  - { label: "Caption", name: "caption", widget: "string", required: false }
+              - label: "Comparison Group (2+ videos of the SAME shot)"
+                name: "compare"
+                widget: "object"
+                hint: "⚠ Only combine videos that are the same animation/camera move — e.g. a solid-shading pass and a fully-textured pass of one render. Combining unrelated clips will look broken, since these modes assume every video lines up frame-for-frame."
+                fields:
+                  - label: "Combine Mode"
+                    name: "mode"
+                    widget: "select"
+                    default: "fade"
+                    options:
+                      - { label: "Fade between them", value: "fade" }
+                      - { label: "Split left/right", value: "split-horizontal" }
+                      - { label: "Split up/down", value: "split-vertical" }
+                  - label: "Videos to Combine (in order)"
+                    name: "sources"
+                    widget: "list"
+                    summary: "{{fields.label}}"
+                    fields:
+                      - {
+                          label: "Video",
+                          name: "src",
+                          widget: "file",
+                          media_folder: "/public/hero",
+                          public_folder: "/hero",
+                        }
+                      - { label: "Label (optional)", name: "label", widget: "string", required: false }
+                  - {
+                      label: "Duration per video (seconds, fade mode only)",
+                      name: "duration",
+                      widget: "number",
+                      default: 4,
+                    }
+                  - { label: "Caption", name: "caption", widget: "string", required: false }
           - label: "Skills"
             name: "skills"
             widget: "list"
