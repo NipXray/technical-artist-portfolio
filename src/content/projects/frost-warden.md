@@ -6,7 +6,7 @@ gallery:
   - /uploads/pose.png
   - /uploads/frost-warden-2.svg
 clickEffect: skull
-ambientEffect: "smoke"
+ambientEffect: "fog"
 techStack:
   - Blender
 description: A high-fantasy fan

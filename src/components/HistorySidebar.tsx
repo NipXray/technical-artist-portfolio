@@ -29,7 +29,9 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
   const panelRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<number, HTMLLIElement>>(new Map());
-  const dragState = useRef<{ startY: number; startScroll: number } | null>(null);
+  const autoscroll = useRef<{ originY: number; speed: number } | null>(null);
+  const autoscrollFrame = useRef<number | null>(null);
+  const [autoscrollIndicator, setAutoscrollIndicator] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const trigger = document.getElementById('history-trigger');
@@ -104,33 +106,68 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
     };
   }, [open, entries]);
 
-  // Drag-to-scroll: click and drag (or middle-click drag) anywhere in the
-  // timeline to scroll it, same as a native "grab" scroll area.
+  // Middle-click autoscroll: click the middle mouse button once to arm it,
+  // then move the mouse up/down (no need to hold anything) to scroll
+  // continuously — the further from the click point, the faster it scrolls.
+  // Click again (any button) or press Escape to stop.
   useEffect(() => {
     const root = scrollRef.current;
     if (!root || !open) return undefined;
 
-    function handleMouseDown(e: MouseEvent) {
-      if (e.button !== 0 && e.button !== 1) return;
-      dragState.current = { startY: e.clientY, startScroll: root!.scrollTop };
-      e.preventDefault();
-    }
-    function handleMouseMove(e: MouseEvent) {
-      if (!dragState.current) return;
-      const delta = e.clientY - dragState.current.startY;
-      root!.scrollTop = dragState.current.startScroll - delta;
-    }
-    function handleMouseUp() {
-      dragState.current = null;
+    function stop() {
+      autoscroll.current = null;
+      setAutoscrollIndicator(null);
+      if (autoscrollFrame.current !== null) {
+        cancelAnimationFrame(autoscrollFrame.current);
+        autoscrollFrame.current = null;
+      }
     }
 
-    root.addEventListener('mousedown', handleMouseDown);
+    function tick() {
+      if (!autoscroll.current || !root) return;
+      root.scrollTop += autoscroll.current.speed;
+      autoscrollFrame.current = requestAnimationFrame(tick);
+    }
+
+    function handleMiddleClick(e: MouseEvent) {
+      if (e.button !== 1) return;
+      e.preventDefault();
+      if (autoscroll.current) {
+        stop();
+        return;
+      }
+      const rect = panelRef.current?.getBoundingClientRect();
+      autoscroll.current = { originY: e.clientY, speed: 0 };
+      setAutoscrollIndicator({ x: rect ? rect.left + rect.width / 2 : e.clientX, y: e.clientY });
+      autoscrollFrame.current = requestAnimationFrame(tick);
+    }
+
+    function handleOtherClick(e: MouseEvent) {
+      if (e.button !== 1 && autoscroll.current) stop();
+    }
+
+    function handleMouseMove(e: MouseEvent) {
+      if (!autoscroll.current) return;
+      const delta = e.clientY - autoscroll.current.originY;
+      const deadZone = 10;
+      const magnitude = Math.max(0, Math.abs(delta) - deadZone);
+      autoscroll.current.speed = Math.sign(delta) * Math.min(magnitude * 0.18, 26);
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape' && autoscroll.current) stop();
+    }
+
+    root.addEventListener('mousedown', handleMiddleClick);
+    window.addEventListener('mousedown', handleOtherClick);
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      root.removeEventListener('mousedown', handleMouseDown);
+      root.removeEventListener('mousedown', handleMiddleClick);
+      window.removeEventListener('mousedown', handleOtherClick);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('keydown', handleKeyDown);
+      stop();
     };
   }, [open]);
 
@@ -167,7 +204,12 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
           </button>
         </div>
 
-        <div ref={scrollRef} className="themed-scrollbar grab-scroll relative flex-1 overflow-y-auto px-6 pb-6">
+        <div
+          ref={scrollRef}
+          className={`themed-scrollbar relative flex-1 overflow-y-auto px-6 pb-6 ${
+            autoscrollIndicator ? 'cursor-ns-resize' : ''
+          }`}
+        >
           <div className="pointer-events-none sticky top-0 z-10 -mx-6 mb-2 bg-gradient-to-b from-ink-900 from-70% to-transparent px-6 pb-8 pt-6">
             <span className="font-display text-5xl font-extrabold text-accent/25">{currentYear}</span>
           </div>
@@ -195,6 +237,16 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
           </ol>
         </div>
       </div>
+
+      {autoscrollIndicator && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed z-[100] flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-accent/60 bg-ink-950/80 text-accent shadow-lg"
+          style={{ left: autoscrollIndicator.x, top: autoscrollIndicator.y }}
+        >
+          <span className="text-sm leading-none">↕</span>
+        </div>
+      )}
     </>
   );
 }

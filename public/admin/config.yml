@@ -83,7 +83,7 @@ collections:
           label: "Ambient Background Effect",
           name: "ambientEffect",
           widget: "select",
-          options: ["none", "smoke", "embers", "dust", "snow", "fireflies"],
+          options: ["none", "smoke", "embers", "dust", "snow", "fireflies", "fog"],
           default: "none",
           required: false,
           hint: "A subtle looping atmosphere effect that plays continuously while this project's full-screen view is open",

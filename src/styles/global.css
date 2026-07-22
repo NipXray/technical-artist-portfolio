@@ -387,6 +387,34 @@ pre.astro-code {
   75% { transform: translate(var(--drift-x, 3%), -2%); opacity: 0.85; }
 }
 
+.ambient-fog-band {
+  left: -20%;
+  width: 140%;
+  border-radius: 40%;
+  background: radial-gradient(ellipse 60% 100% at 50% 50%, rgba(232, 227, 238, 0.9), rgba(232, 227, 238, 0) 72%);
+  filter: url(#ambient-fog-texture) blur(2px);
+  mix-blend-mode: screen;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+.ambient-fog-band.fog-ltr {
+  animation-name: ambient-fog-drift-ltr;
+}
+.ambient-fog-band.fog-rtl {
+  animation-name: ambient-fog-drift-rtl;
+}
+@keyframes ambient-fog-drift-ltr {
+  0% { transform: translateX(-6%) scaleX(1); opacity: 0.5; }
+  50% { opacity: 0.95; }
+  100% { transform: translateX(6%) scaleX(1.05); opacity: 0.5; }
+}
+@keyframes ambient-fog-drift-rtl {
+  0% { transform: translateX(6%) scaleX(1.05); opacity: 0.5; }
+  50% { opacity: 0.95; }
+  100% { transform: translateX(-6%) scaleX(1); opacity: 0.5; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ambient-particle {
     display: none;
@@ -411,16 +439,21 @@ pre.astro-code {
   border-radius: 9999px;
 }
 
-.grab-scroll {
-  cursor: grab;
-}
-.grab-scroll:active {
-  cursor: grabbing;
-}
-
 /* ---------------------------------------------------------------- */
 /* Intro sequence (IntroSequence.tsx)                                 */
 /* ---------------------------------------------------------------- */
+
+/* Blocking pre-hydration veil: set by an inline script in Layout.astro
+   before first paint, so nothing flashes before the React intro mounts
+   and takes over. Removed by IntroSequence once it reaches 'done'. */
+html.intro-veil::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+  background: var(--color-ink-950);
+}
+
 .intro-line {
   position: absolute;
   top: 50%;

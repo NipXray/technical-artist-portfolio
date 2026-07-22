@@ -36,7 +36,7 @@ export default function FloatingSocialDock(props: SocialLinks) {
   if (links.length === 0) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-[70] flex flex-col gap-2">
+    <div className="fixed bottom-6 left-6 z-[70] flex flex-col gap-2">
       {links.map(({ key, url }) => (
         <a
           key={key}

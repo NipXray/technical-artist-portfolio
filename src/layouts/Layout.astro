@@ -44,6 +44,14 @@ const historyEntries = (await getCollection('history'))
     />
     <meta name="generator" content={Astro.generator} />
     <title>{title} · {resume.name}</title>
+    <script is:inline>
+      (function () {
+        if (window.location.pathname !== '/') return;
+        if (sessionStorage.getItem('intro-seen') === '1') return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        document.documentElement.classList.add('intro-veil');
+      })();
+    </script>
   </head>
   <body class="min-h-screen bg-ink-950 text-paper antialiased">
     <header class="fixed inset-x-0 top-0 z-50 bg-gradient-to-b from-ink-950/90 to-transparent">

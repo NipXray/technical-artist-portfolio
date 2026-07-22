@@ -15,7 +15,7 @@ const CLICK_EFFECTS = [
   'sparkle'
 ] as const;
 
-const AMBIENT_EFFECTS = ['none', 'smoke', 'embers', 'dust', 'snow', 'fireflies'] as const;
+const AMBIENT_EFFECTS = ['none', 'smoke', 'embers', 'dust', 'snow', 'fireflies', 'fog'] as const;
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
