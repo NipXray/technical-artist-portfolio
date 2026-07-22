@@ -36,18 +36,21 @@
   "title": "M Ali Fikri A",
   "heroSlides": [
     {
+      "slideKind": "single",
       "type": "image",
       "src": "/hero/pose.png",
       "duration": 6,
       "caption": "Character Art"
     },
     {
+      "slideKind": "single",
       "type": "image",
       "duration": 6,
       "src": "/hero/raiding.png",
       "caption": "Character Art"
     },
     {
+      "slideKind": "single",
       "type": "image",
       "src": "/hero/slide-world.svg",
       "duration": 6,
