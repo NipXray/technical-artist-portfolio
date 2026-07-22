@@ -1,30 +1,62 @@
 {
-  "name": "Your Name",
-  "title": "3D Artist — Characters / Worlds / Tools",
-  "tagline": "I craft characters, worlds, and the pipelines that bring them to life — with a little bit of magic in every rig.",
-  "email": "you@example.com",
-  "githubUrl": "https://github.com/yourhandle",
-  "artstationUrl": "https://www.artstation.com/yourhandle",
-  "cvUrl": "/cv/resume.pdf",
-  "reelVideoUrl": "/videos/reel-placeholder.mp4",
-  "heroSlides": [
-    { "type": "image", "src": "/hero/slide-character.svg", "duration": 6, "caption": "Character Art" },
-    { "type": "image", "src": "/hero/slide-world.svg", "duration": 6, "caption": "World Building" },
-    { "type": "image", "src": "/hero/slide-fx.svg", "duration": 6, "caption": "FX & Simulation" },
-    { "type": "image", "src": "/hero/slide-shading.svg", "duration": 6, "caption": "Shading & Light" }
-  ],
   "skills": [
     {
       "category": "Languages",
-      "items": ["Python", "C#", "VEX"]
+      "items": [
+        "Python"
+      ]
     },
     {
       "category": "Software",
-      "items": ["Blender", "Unity", "Houdini"]
+      "items": [
+        "Blender",
+        "Unreal Engine",
+        "Unity",
+        "Houdini",
+        "Zbrush"
+      ]
     },
     {
       "category": "Specialties",
-      "items": ["3D Rigging", "Procedural Generation", "Custom Tool Development", "Pipeline Development"]
+      "items": [
+        "3D Rigging",
+        "Node",
+        "Custom Tool Development"
+      ]
     }
-  ]
+  ],
+  "name": "M Ali Fikri A",
+  "githubUrl": "No Github ❌",
+  "tagline": "I craft characters, worlds, and the pipelines that bring them to life — with a little bit of magic in every rig. ✨",
+  "reelVideoUrl": "/videos/reel-placeholder.mp4",
+  "title": "3D Artist — Characters / Worlds / Tools",
+  "heroSlides": [
+    {
+      "type": "image",
+      "src": "/hero/slide-character.svg",
+      "duration": 6,
+      "caption": "Character Art"
+    },
+    {
+      "type": "image",
+      "src": "/hero/slide-world.svg",
+      "duration": 6,
+      "caption": "World Building"
+    },
+    {
+      "type": "image",
+      "src": "/hero/slide-fx.svg",
+      "duration": 6,
+      "caption": "FX & Simulation"
+    },
+    {
+      "type": "image",
+      "src": "/hero/slide-shading.svg",
+      "duration": 6,
+      "caption": "Shading & Light"
+    }
+  ],
+  "email": "alifiteris@gmail.com",
+  "cvUrl": "/cv/resume.pdf",
+  "artstationUrl": "https://www.artstation.com/alifikri"
 }
