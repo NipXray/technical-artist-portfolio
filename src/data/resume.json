@@ -39,6 +39,12 @@
     },
     {
       "type": "image",
+      "duration": 6,
+      "src": "/hero/we-and-lord-take-a-pic-before-raid-lightguardkeep_colored_with_rig_01.png",
+      "caption": "We and Lord Selfie before Raid"
+    },
+    {
+      "type": "image",
       "src": "/hero/slide-world.svg",
       "duration": 6,
       "caption": "World Building"
