@@ -9,7 +9,7 @@ import resume from '../data/resume.json';
 ---
 
 <Layout title="Home">
-  <IntroSequence client:load title={resume.introTitle || resume.title} />
+  <IntroSequence client:load title={resume.introTitle || resume.title} style={resume.introStyle || 'elegant'} />
   <Hero />
   <ProjectGallery />
   <Skills />

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 type Stage = 'title-in' | 'title-out' | 'lines' | 'open-middle' | 'expand' | 'done';
+export type IntroStyle = 'elegant' | 'fast';
 
 const SESSION_KEY = 'intro-seen';
 // Distance from center to each line — scales with viewport width so the
@@ -9,9 +10,52 @@ const SESSION_KEY = 'intro-seen';
 const LINE_OFFSET = 'clamp(110px, 15vw, 400px)';
 const LINE_ROTATION = 18;
 
-export default function IntroSequence({ title }: { title: string }) {
+interface Preset {
+  titleOutAt: number;
+  linesAt: number;
+  openMiddleAt: number;
+  expandAt: number;
+  doneAt: number;
+  titleFade: string;
+  lineDraw: string;
+  lineStagger: number;
+  middleDrop: string;
+  bandExpand: string;
+}
+
+// "elegant" — slower, graceful, generous pauses between beats.
+// "fast" — quick, snappy, sharp deceleration curves; barely any hold.
+const PRESETS: Record<IntroStyle, Preset> = {
+  elegant: {
+    titleOutAt: 1200,
+    linesAt: 1800,
+    openMiddleAt: 2700,
+    expandAt: 4300,
+    doneAt: 5300,
+    titleFade: '600ms cubic-bezier(0.4, 0, 0.2, 1)',
+    lineDraw: '800ms cubic-bezier(0.65, 0, 0.35, 1)',
+    lineStagger: 120,
+    middleDrop: '1200ms cubic-bezier(0.65, 0, 0.35, 1)',
+    bandExpand: '900ms cubic-bezier(0.65, 0, 0.35, 1)'
+  },
+  fast: {
+    titleOutAt: 550,
+    linesAt: 800,
+    openMiddleAt: 1200,
+    expandAt: 1650,
+    doneAt: 2050,
+    titleFade: '220ms cubic-bezier(0.4, 0, 1, 1)',
+    lineDraw: '320ms cubic-bezier(0.2, 0, 0, 1)',
+    lineStagger: 40,
+    middleDrop: '420ms cubic-bezier(0.2, 0, 0, 1)',
+    bandExpand: '320ms cubic-bezier(0.2, 0, 0, 1)'
+  }
+};
+
+export default function IntroSequence({ title, style = 'elegant' }: { title: string; style?: IntroStyle }) {
   const [stage, setStage] = useState<Stage | 'skip'>('skip');
   const timersRef = useRef<number[]>([]);
+  const preset = PRESETS[style] ?? PRESETS.elegant;
 
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -41,18 +85,14 @@ export default function IntroSequence({ title }: { title: string }) {
     });
 
     timersRef.current = [
-      window.setTimeout(() => setStage('title-out'), 1100),
-      window.setTimeout(() => setStage('lines'), 1650),
-      window.setTimeout(() => setStage('open-middle'), 2450),
-      // The middle panel's own drop (1000ms) finishes at 3450, then holds
-      // fully open for 600ms before 'expand' starts — a deliberate pause so
-      // it reads as its own distinct beat instead of blurring straight into
-      // the left/right slide that follows.
-      window.setTimeout(() => setStage('expand'), 4050),
-      window.setTimeout(() => setStage('done'), 4900)
+      window.setTimeout(() => setStage('title-out'), preset.titleOutAt),
+      window.setTimeout(() => setStage('lines'), preset.linesAt),
+      window.setTimeout(() => setStage('open-middle'), preset.openMiddleAt),
+      window.setTimeout(() => setStage('expand'), preset.expandAt),
+      window.setTimeout(() => setStage('done'), preset.doneAt)
     ];
     return () => timersRef.current.forEach((t) => window.clearTimeout(t));
-  }, []);
+  }, [preset]);
 
   if (stage === 'done' || stage === 'skip') return null;
 
@@ -88,52 +128,61 @@ export default function IntroSequence({ title }: { title: string }) {
             translateX on the line itself would resolve against the
             line's own 2px width, not the band's, and barely move it. */}
         <div
-          className="absolute inset-y-0 left-0 bg-ink-950 transition-transform duration-700 ease-in-out"
+          className="absolute inset-y-0 left-0 bg-ink-950"
           style={{
             right: `calc(50% + ${LINE_OFFSET})`,
-            transform: expanded ? 'translateX(-100%)' : 'translateX(0)'
+            transform: expanded ? 'translateX(-100%)' : 'translateX(0)',
+            transition: `transform ${preset.bandExpand}`
           }}
         >
           <div
-            className="absolute top-0 right-0 h-full w-0.5 bg-paper transition-transform duration-700 ease-in-out"
+            className="absolute top-0 right-0 h-full w-0.5 bg-paper"
             style={{
               transformOrigin: 'center bottom',
-              transform: `scaleY(${drawn ? 1 : 0})`
+              transform: `scaleY(${drawn ? 1 : 0})`,
+              opacity: drawn ? 1 : 0,
+              transition: `transform ${preset.lineDraw}, opacity ${preset.lineDraw}`
             }}
           />
         </div>
         {/* Middle band — drops away once the lines finish drawing,
             revealing the real page underneath as proof it's moving. */}
         <div
-          className="absolute inset-y-0 bg-ink-950 transition-transform duration-[1000ms] ease-in"
+          className="absolute inset-y-0 bg-ink-950"
           style={{
             left: `calc(50% - ${LINE_OFFSET})`,
             width: `calc(${LINE_OFFSET} * 2)`,
-            transform: `translateY(${middleOpen ? '115%' : '0%'})`
+            transform: `translateY(${middleOpen ? '115%' : '0%'})`,
+            transition: `transform ${preset.middleDrop}`
           }}
         />
         {/* Right band — same reasoning, line nested so it travels with it */}
         <div
-          className="absolute inset-y-0 right-0 bg-ink-950 transition-transform duration-700 ease-in-out"
+          className="absolute inset-y-0 right-0 bg-ink-950"
           style={{
             left: `calc(50% + ${LINE_OFFSET})`,
-            transform: expanded ? 'translateX(100%)' : 'translateX(0)'
+            transform: expanded ? 'translateX(100%)' : 'translateX(0)',
+            transition: `transform ${preset.bandExpand}`
           }}
         >
           <div
-            className="absolute top-0 left-0 h-full w-0.5 bg-paper transition-transform duration-700 ease-in-out"
+            className="absolute top-0 left-0 h-full w-0.5 bg-paper"
             style={{
               transformOrigin: 'center top',
-              transform: `scaleY(${drawn ? 1 : 0})`
+              transform: `scaleY(${drawn ? 1 : 0})`,
+              opacity: drawn ? 1 : 0,
+              transition: `transform ${preset.lineDraw} ${preset.lineStagger}ms, opacity ${preset.lineDraw} ${preset.lineStagger}ms`
             }}
           />
         </div>
       </div>
 
       <p
-        className={`absolute left-6 top-1/2 -translate-y-1/2 font-display text-4xl font-extrabold text-paper transition-opacity duration-500 sm:left-14 sm:text-6xl ${
-          stage === 'title-in' ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="absolute left-6 top-1/2 -translate-y-1/2 font-display text-4xl font-extrabold text-paper sm:left-14 sm:text-6xl"
+        style={{
+          opacity: stage === 'title-in' ? 1 : 0,
+          transition: `opacity ${preset.titleFade}`
+        }}
       >
         {title}
       </p>

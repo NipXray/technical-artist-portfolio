@@ -168,6 +168,17 @@ collections:
               required: false,
               hint: "Shown briefly on the opening animation when a visitor first lands on the site. Leave blank to reuse Headline / Title above.",
             }
+          - {
+              label: "Intro Animation Style",
+              name: "introStyle",
+              widget: "select",
+              options: [
+                { label: "Elegant (slower, graceful)", value: "elegant" },
+                { label: "Fast / Modern (quick, sharp, mechanical)", value: "fast" },
+              ],
+              default: "elegant",
+              required: false,
+            }
           - { label: "Tagline", name: "tagline", widget: "text" }
           - { label: "Contact Email", name: "email", widget: "string" }
           - { label: "GitHub URL", name: "githubUrl", widget: "string" }
