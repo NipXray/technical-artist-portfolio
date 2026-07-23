@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-type Stage = 'title-in' | 'title-out' | 'lines' | 'open-middle' | 'expand' | 'done';
 export type IntroStyle = 'elegant' | 'fast';
 
 const SESSION_KEY = 'intro-seen';
@@ -11,15 +10,15 @@ const LINE_OFFSET = 'clamp(110px, 15vw, 400px)';
 const LINE_ROTATION = 18;
 // The lines are 2px wide but need real height to comfortably cross the
 // screen once rotated — 150vh is enough for that without going anywhere
-// near the size that seemed to trigger rasterization glitches (see below).
+// near the size that triggered a rasterization glitch (see below).
 const LINE_LENGTH = '150vh';
 
 interface Preset {
   titleOutAt: number;
   linesAt: number;
-  openMiddleAt: number;
+  middleAt: number;
   expandAt: number;
-  doneAt: number;
+  finishAt: number;
   titleFade: string;
   lineDraw: string;
   lineStagger: number;
@@ -27,39 +26,48 @@ interface Preset {
   bandExpand: string;
 }
 
-// "elegant" — slower, graceful, a long confident deceleration on every
-// move rather than a symmetric ease, with a brief settle rather than a
-// lingering pause between beats.
-// "fast" — quick, snappy, sharp deceleration curves; barely any hold.
+// Each phase is an independent flag fired by its own timer, deliberately
+// scheduled to overlap the tail of the previous one (lines start before
+// the title has fully faded out, the middle starts dropping before the
+// lines are 100% drawn, expand starts before the middle has fully
+// settled) — a strict "wait for A to completely finish, then start B"
+// sequence is what reads as rigid/robotic; overlapping handoffs read as
+// one continuous, flowing motion instead.
 const PRESETS: Record<IntroStyle, Preset> = {
   elegant: {
-    titleOutAt: 1200,
-    linesAt: 1800,
-    openMiddleAt: 2700,
-    expandAt: 4080,
-    doneAt: 4900,
-    titleFade: '650ms cubic-bezier(0.16, 1, 0.3, 1)',
-    lineDraw: '850ms cubic-bezier(0.16, 1, 0.3, 1)',
+    titleOutAt: 1400,
+    linesAt: 1900,
+    middleAt: 2600,
+    expandAt: 3550,
+    finishAt: 4600,
+    titleFade: '700ms cubic-bezier(0.16, 1, 0.3, 1)',
+    lineDraw: '900ms cubic-bezier(0.16, 1, 0.3, 1)',
     lineStagger: 120,
-    middleDrop: '1200ms cubic-bezier(0.16, 1, 0.3, 1)',
-    bandExpand: '820ms cubic-bezier(0.16, 1, 0.3, 1)'
+    middleDrop: '1100ms cubic-bezier(0.16, 1, 0.3, 1)',
+    bandExpand: '750ms cubic-bezier(0.16, 1, 0.3, 1)'
   },
   fast: {
     titleOutAt: 550,
-    linesAt: 800,
-    openMiddleAt: 1200,
-    expandAt: 1650,
-    doneAt: 2050,
-    titleFade: '220ms cubic-bezier(0.4, 0, 1, 1)',
-    lineDraw: '320ms cubic-bezier(0.2, 0, 0, 1)',
+    linesAt: 700,
+    middleAt: 950,
+    expandAt: 1330,
+    finishAt: 1900,
+    titleFade: '250ms cubic-bezier(0.4, 0, 1, 1)',
+    lineDraw: '380ms cubic-bezier(0.2, 0, 0, 1)',
     lineStagger: 40,
-    middleDrop: '420ms cubic-bezier(0.2, 0, 0, 1)',
-    bandExpand: '320ms cubic-bezier(0.2, 0, 0, 1)'
+    middleDrop: '450ms cubic-bezier(0.2, 0, 0, 1)',
+    bandExpand: '380ms cubic-bezier(0.2, 0, 0, 1)'
   }
 };
 
 export default function IntroSequence({ title, style = 'elegant' }: { title: string; style?: IntroStyle }) {
-  const [stage, setStage] = useState<Stage | 'skip'>('skip');
+  const [active, setActive] = useState(false); // the real sequence is running
+  const [visible, setVisible] = useState(false); // title fade-IN trigger (see mount effect)
+  const [titleOut, setTitleOut] = useState(false);
+  const [linesDrawn, setLinesDrawn] = useState(false);
+  const [middleOpen, setMiddleOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [finished, setFinished] = useState(false);
   const timersRef = useRef<number[]>([]);
   const preset = PRESETS[style] ?? PRESETS.elegant;
 
@@ -71,41 +79,41 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
       // Nothing of ours is about to render, so there's nothing to wait
       // for — reveal the real page immediately.
       document.documentElement.classList.remove('intro-veil');
-      setStage('done');
+      setFinished(true);
       return undefined;
     }
 
     sessionStorage.setItem(SESSION_KEY, '1');
-    setStage('title-in');
+    setActive(true);
 
     // Hand off from the pre-hydration CSS veil (see Layout.astro) only
-    // once our own full-screen stage has actually painted — removing it
-    // in the same tick as setStage left a brief gap where the veil was
-    // already gone but React's re-render hadn't painted yet, flashing a
-    // sliver of the real page through before the stage caught up. Double
-    // rAF reliably waits until after that next paint.
+    // once our own full-screen stage has actually painted, then flip the
+    // title to visible on the FOLLOWING frame — a freshly-mounted element
+    // can't transition from a state it never had, so setting opacity:1 on
+    // the very first render just pops it in with no fade at all. Waiting
+    // one more frame to flip it gives the browser an actual "0 -> 1"
+    // change to animate.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         document.documentElement.classList.remove('intro-veil');
+        setVisible(true);
       });
     });
 
     timersRef.current = [
-      window.setTimeout(() => setStage('title-out'), preset.titleOutAt),
-      window.setTimeout(() => setStage('lines'), preset.linesAt),
-      window.setTimeout(() => setStage('open-middle'), preset.openMiddleAt),
-      window.setTimeout(() => setStage('expand'), preset.expandAt),
-      window.setTimeout(() => setStage('done'), preset.doneAt)
+      window.setTimeout(() => setTitleOut(true), preset.titleOutAt),
+      window.setTimeout(() => setLinesDrawn(true), preset.linesAt),
+      window.setTimeout(() => setMiddleOpen(true), preset.middleAt),
+      window.setTimeout(() => setExpanded(true), preset.expandAt),
+      window.setTimeout(() => setFinished(true), preset.finishAt)
     ];
     return () => timersRef.current.forEach((t) => window.clearTimeout(t));
   }, [preset]);
 
-  if (stage === 'done' || stage === 'skip') return null;
+  if (finished || !active) return null;
 
-  const drawn = stage === 'lines' || stage === 'open-middle' || stage === 'expand';
-  const middleOpen = stage === 'open-middle' || stage === 'expand';
-  const expanded = stage === 'expand';
   const glow = style === 'elegant' ? '0 0 14px 1px rgba(246, 241, 238, 0.45)' : 'none';
+  const titleShown = visible && !titleOut;
 
   return (
     // Deliberately not interruptible by click or keypress — first-time
@@ -143,9 +151,9 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
           }}
         >
           {/* Fixed, modest height instead of inheriting the parent's 400vh
-              — a 2px-wide line at that extreme a height, still nested in an
-              already-rotated ancestor, is what caused the line to render
-              as disconnected fragments instead of one continuous stroke. */}
+              — at that extreme a height, still nested in an already-
+              rotated ancestor, a 2px-wide line rasterized as disconnected
+              fragments instead of one continuous stroke. */}
           <div
             className="absolute right-0 w-0.5 bg-paper"
             style={{
@@ -153,13 +161,13 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
               height: LINE_LENGTH,
               boxShadow: glow,
               transformOrigin: 'center bottom',
-              transform: `translateY(-50%) scaleY(${drawn ? 1 : 0})`,
-              opacity: drawn ? 1 : 0,
+              transform: `translateY(-50%) scaleY(${linesDrawn ? 1 : 0})`,
+              opacity: linesDrawn ? 1 : 0,
               transition: `transform ${preset.lineDraw}, opacity ${preset.lineDraw}`
             }}
           />
         </div>
-        {/* Middle band — drops away once the lines finish drawing,
+        {/* Middle band — drops away once the lines are mostly drawn,
             revealing the real page underneath as proof it's moving. */}
         <div
           className="absolute inset-y-0 bg-ink-950"
@@ -186,8 +194,8 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
               height: LINE_LENGTH,
               boxShadow: glow,
               transformOrigin: 'center top',
-              transform: `translateY(-50%) scaleY(${drawn ? 1 : 0})`,
-              opacity: drawn ? 1 : 0,
+              transform: `translateY(-50%) scaleY(${linesDrawn ? 1 : 0})`,
+              opacity: linesDrawn ? 1 : 0,
               transition: `transform ${preset.lineDraw} ${preset.lineStagger}ms, opacity ${preset.lineDraw} ${preset.lineStagger}ms`
             }}
           />
@@ -197,8 +205,8 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
       <p
         className="absolute left-6 top-1/2 font-display text-4xl font-extrabold text-paper sm:left-14 sm:text-6xl"
         style={{
-          opacity: stage === 'title-in' ? 1 : 0,
-          transform: `translateY(calc(-50% + ${stage === 'title-in' ? '0px' : '14px'}))`,
+          opacity: titleShown ? 1 : 0,
+          transform: `translateY(calc(-50% + ${titleShown ? '0px' : '14px'}))`,
           transition: `opacity ${preset.titleFade}, transform ${preset.titleFade}`
         }}
       >
