@@ -32,16 +32,19 @@ interface Preset {
 // continuous feel at that quicker pace.
 const PRESETS: Record<IntroStyle, Preset> = {
   elegant: {
-    titleOutAt: 1200,
-    linesAt: 1800,
-    middleAt: 2700,
-    expandAt: 4080,
-    finishAt: 4900,
-    titleFade: '650ms cubic-bezier(0.16, 1, 0.3, 1)',
-    lineDraw: '850ms cubic-bezier(0.16, 1, 0.3, 1)',
-    lineStagger: 120,
-    middleDrop: '1200ms cubic-bezier(0.16, 1, 0.3, 1)',
-    bandExpand: '820ms cubic-bezier(0.16, 1, 0.3, 1)'
+    titleOutAt: 2000,
+    linesAt: 3000,
+    middleAt: 4600,
+    expandAt: 7200,
+    finishAt: 8800,
+    // A gentler, more symmetric ease than a fast-start/long-tail curve —
+    // the earlier curve still had an abrupt initial snap even at longer
+    // durations, which read as quick rather than smooth.
+    titleFade: '1000ms cubic-bezier(0.45, 0, 0.15, 1)',
+    lineDraw: '1600ms cubic-bezier(0.45, 0, 0.15, 1)',
+    lineStagger: 150,
+    middleDrop: '2000ms cubic-bezier(0.45, 0, 0.15, 1)',
+    bandExpand: '1400ms cubic-bezier(0.45, 0, 0.15, 1)'
   },
   fast: {
     titleOutAt: 550,
