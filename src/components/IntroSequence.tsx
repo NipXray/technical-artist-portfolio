@@ -17,23 +17,28 @@ export default function IntroSequence({ title }: { title: string }) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const alreadySeen = sessionStorage.getItem(SESSION_KEY) === '1';
 
-    // Hand off from the pre-hydration CSS veil (see Layout.astro) the
-    // moment this component takes over — either it renders nothing (skip
-    // case) or its own full-screen panels (real sequence), so the veil's
-    // job is already done here. Leaving it until stage==='done' meant it
-    // sat as a second, un-animated black layer directly behind the panels
-    // for the entire reveal — they'd genuinely slide away, but all that
-    // was ever revealed underneath was the still-present veil, not the
-    // real page, making the whole sequence look like nothing moved.
-    document.documentElement.classList.remove('intro-veil');
-
     if (reduceMotion || alreadySeen) {
+      // Nothing of ours is about to render, so there's nothing to wait
+      // for — reveal the real page immediately.
+      document.documentElement.classList.remove('intro-veil');
       setStage('done');
       return undefined;
     }
 
     sessionStorage.setItem(SESSION_KEY, '1');
     setStage('title-in');
+
+    // Hand off from the pre-hydration CSS veil (see Layout.astro) only
+    // once our own full-screen stage has actually painted — removing it
+    // in the same tick as setStage left a brief gap where the veil was
+    // already gone but React's re-render hadn't painted yet, flashing a
+    // sliver of the real page through before the stage caught up. Double
+    // rAF reliably waits until after that next paint.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove('intro-veil');
+      });
+    });
 
     timersRef.current = [
       window.setTimeout(() => setStage('title-out'), 1100),
@@ -78,14 +83,25 @@ export default function IntroSequence({ title }: { title: string }) {
           transform: `translate(-50%, -50%) rotate(${LINE_ROTATION}deg)`
         }}
       >
-        {/* Left band */}
+        {/* Left band — its line is a child so it's carried along by the
+            band's own translateX automatically; a percentage-based
+            translateX on the line itself would resolve against the
+            line's own 2px width, not the band's, and barely move it. */}
         <div
           className="absolute inset-y-0 left-0 bg-ink-950 transition-transform duration-700 ease-in-out"
           style={{
             right: `calc(50% + ${LINE_OFFSET})`,
             transform: expanded ? 'translateX(-100%)' : 'translateX(0)'
           }}
-        />
+        >
+          <div
+            className="absolute top-0 right-0 h-full w-0.5 bg-paper transition-transform duration-700 ease-in-out"
+            style={{
+              transformOrigin: 'center bottom',
+              transform: `scaleY(${drawn ? 1 : 0})`
+            }}
+          />
+        </div>
         {/* Middle band — drops away once the lines finish drawing,
             revealing the real page underneath as proof it's moving. */}
         <div
@@ -96,32 +112,22 @@ export default function IntroSequence({ title }: { title: string }) {
             transform: `translateY(${middleOpen ? '115%' : '0%'})`
           }}
         />
-        {/* Right band */}
+        {/* Right band — same reasoning, line nested so it travels with it */}
         <div
           className="absolute inset-y-0 right-0 bg-ink-950 transition-transform duration-700 ease-in-out"
           style={{
             left: `calc(50% + ${LINE_OFFSET})`,
             transform: expanded ? 'translateX(100%)' : 'translateX(0)'
           }}
-        />
-        {/* Left line, at the left/middle boundary, draws bottom-to-top */}
-        <div
-          className="absolute top-0 h-full w-0.5 bg-paper transition-transform duration-700 ease-in-out"
-          style={{
-            left: `calc(50% - ${LINE_OFFSET})`,
-            transformOrigin: 'center bottom',
-            transform: `${expanded ? 'translateX(-100%)' : 'translateX(0)'} scaleY(${drawn ? 1 : 0})`
-          }}
-        />
-        {/* Right line, at the middle/right boundary, draws top-to-bottom */}
-        <div
-          className="absolute top-0 h-full w-0.5 bg-paper transition-transform duration-700 ease-in-out"
-          style={{
-            left: `calc(50% + ${LINE_OFFSET})`,
-            transformOrigin: 'center top',
-            transform: `${expanded ? 'translateX(100%)' : 'translateX(0)'} scaleY(${drawn ? 1 : 0})`
-          }}
-        />
+        >
+          <div
+            className="absolute top-0 left-0 h-full w-0.5 bg-paper transition-transform duration-700 ease-in-out"
+            style={{
+              transformOrigin: 'center top',
+              transform: `scaleY(${drawn ? 1 : 0})`
+            }}
+          />
+        </div>
       </div>
 
       <p
