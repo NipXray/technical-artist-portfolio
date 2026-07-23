@@ -60,11 +60,17 @@
       "slideKind": "compare",
       "mode": "fade",
       "sources": [
-        { "src": "/hero/rally_solid.mp4", "label": "Solid pass" },
-        { "src": "/hero/rally_material.mp4", "label": "Material pass" }
+        {
+          "src": "/hero/rally_solid.mp4",
+          "label": "Solid pass"
+        },
+        {
+          "src": "/hero/rally_material.mp4",
+          "label": "Material pass"
+        }
       ],
       "duration": 6,
-      "caption": "Shading & Light"
+      "caption": "Animation"
     }
   ],
   "email": "alifiteris@gmail.com",

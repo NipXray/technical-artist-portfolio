@@ -3,7 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 type Stage = 'title-in' | 'title-out' | 'lines' | 'open-middle' | 'expand' | 'done';
 
 const SESSION_KEY = 'intro-seen';
-const LINE_OFFSET = 'clamp(90px, 12vw, 220px)';
+// Distance from center to each line — scales with viewport width so the
+// gap reads as similarly proportioned on a small laptop and a large desktop
+// monitor, instead of hitting a low fixed cap on bigger screens.
+const LINE_OFFSET = 'clamp(110px, 15vw, 400px)';
 const LINE_ROTATION = 18;
 
 export default function IntroSequence({ title }: { title: string }) {
@@ -80,8 +83,12 @@ export default function IntroSequence({ title }: { title: string }) {
           left: '50%',
           width: `calc(${LINE_OFFSET} * 2)`,
           height: '160vh',
+          // A plain hardcoded color here, not color-mix() — that function
+          // is unsupported on some real-world browsers/versions, and an
+          // invalid value silently drops the whole gradient, leaving this
+          // panel with no visible background at all during its animation.
           background:
-            'linear-gradient(to bottom, var(--color-ink-950) 0%, color-mix(in srgb, var(--color-paper) 65%, var(--color-accent-2)) 4%, var(--color-ink-950) 9%, var(--color-ink-950) 100%)',
+            'linear-gradient(to bottom, var(--color-ink-950) 0%, rgb(249, 219, 174) 6%, var(--color-ink-950) 14%, var(--color-ink-950) 100%)',
           transform: `translate(-50%, -50%) rotate(${LINE_ROTATION}deg) translateY(${middleOpen ? '115%' : '0%'})`
         }}
       />

@@ -216,12 +216,14 @@ pre.astro-code {
   height: 8px;
   border-radius: 9999px;
   /* A soft gradient ring instead of a CSS border — a real border's hard
-     inner/outer edge turns into a harsh aliased seam once scaled up ~45x. */
+     inner/outer edge turns into a harsh aliased seam once scaled up ~45x.
+     Plain rgba here, not color-mix() — unsupported on some real-world
+     browsers, and an invalid stop silently drops the whole gradient. */
   background: radial-gradient(
     circle,
     transparent 52%,
-    color-mix(in srgb, var(--color-accent-2) 85%, transparent) 64%,
-    color-mix(in srgb, var(--color-accent-2) 30%, transparent) 76%,
+    rgba(255, 178, 56, 0.85) 64%,
+    rgba(255, 178, 56, 0.3) 76%,
     transparent 88%
   );
   animation-name: shockwave-expand;
