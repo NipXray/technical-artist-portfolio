@@ -29,8 +29,12 @@ export default function IntroSequence({ title }: { title: string }) {
       window.setTimeout(() => setStage('title-out'), 1100),
       window.setTimeout(() => setStage('lines'), 1650),
       window.setTimeout(() => setStage('open-middle'), 2450),
-      window.setTimeout(() => setStage('expand'), 3200),
-      window.setTimeout(() => setStage('done'), 4100)
+      // The middle panel's own drop (1000ms) finishes at 3450, then holds
+      // fully open for 600ms before 'expand' starts — a deliberate pause so
+      // it reads as its own distinct beat instead of blurring straight into
+      // the left/right slide that follows.
+      window.setTimeout(() => setStage('expand'), 4050),
+      window.setTimeout(() => setStage('done'), 4900)
     ];
     return () => timersRef.current.forEach((t) => window.clearTimeout(t));
   }, []);
@@ -76,7 +80,7 @@ export default function IntroSequence({ title }: { title: string }) {
           the lines finish drawing, revealing the real page underneath (not
           a colored accent) as proof it's moving. */}
       <div
-        className="absolute bg-ink-950 transition-transform duration-[750ms] ease-in"
+        className="absolute bg-ink-950 transition-transform duration-[1000ms] ease-in"
         style={{
           top: '50%',
           left: '50%',
