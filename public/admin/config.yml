@@ -205,7 +205,7 @@ collections:
             name: "heroSlides"
             widget: "list"
             summary: "{{fields.caption}}"
-            hint: "Background slides for the homepage hero — fades between them on a timer"
+            hint: "Background slides for the homepage hero — fades between them on a timer. ⚠ If you add a new slide, finish filling it in (or delete it with the X) before clicking Publish — publishing with an empty/unfinished slide causes a CMS error."
             typeKey: "slideKind"
             types:
               - label: "Single Slide"
@@ -230,6 +230,11 @@ collections:
                 name: "compare"
                 widget: "object"
                 hint: "⚠ Only combine videos that are the same animation/camera move — e.g. a solid-shading pass and a fully-textured pass of one render. Combining unrelated clips will look broken, since these modes assume every video lines up frame-for-frame."
+                default:
+                  mode: "fade"
+                  sources:
+                    - { src: "", label: "" }
+                    - { src: "", label: "" }
                 fields:
                   - label: "Combine Mode"
                     name: "mode"
@@ -243,6 +248,10 @@ collections:
                     name: "sources"
                     widget: "list"
                     summary: "{{fields.label}}"
+                    min: 2
+                    default:
+                      - { src: "", label: "" }
+                      - { src: "", label: "" }
                     fields:
                       - {
                           label: "Video",
