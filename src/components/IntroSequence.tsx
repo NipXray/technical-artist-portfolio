@@ -26,25 +26,22 @@ interface Preset {
   bandExpand: string;
 }
 
-// Each phase is an independent flag fired by its own timer, deliberately
-// scheduled to overlap the tail of the previous one (lines start before
-// the title has fully faded out, the middle starts dropping before the
-// lines are 100% drawn, expand starts before the middle has fully
-// settled) — a strict "wait for A to completely finish, then start B"
-// sequence is what reads as rigid/robotic; overlapping handoffs read as
-// one continuous, flowing motion instead.
+// "elegant" plays each phase sequentially — the next one only starts once
+// the previous has essentially finished. "fast" deliberately overlaps the
+// tail of each phase with the start of the next, for a snappier, more
+// continuous feel at that quicker pace.
 const PRESETS: Record<IntroStyle, Preset> = {
   elegant: {
-    titleOutAt: 1400,
-    linesAt: 1900,
-    middleAt: 2600,
-    expandAt: 3550,
-    finishAt: 4600,
-    titleFade: '700ms cubic-bezier(0.16, 1, 0.3, 1)',
-    lineDraw: '900ms cubic-bezier(0.16, 1, 0.3, 1)',
+    titleOutAt: 1200,
+    linesAt: 1800,
+    middleAt: 2700,
+    expandAt: 4080,
+    finishAt: 4900,
+    titleFade: '650ms cubic-bezier(0.16, 1, 0.3, 1)',
+    lineDraw: '850ms cubic-bezier(0.16, 1, 0.3, 1)',
     lineStagger: 120,
-    middleDrop: '1100ms cubic-bezier(0.16, 1, 0.3, 1)',
-    bandExpand: '750ms cubic-bezier(0.16, 1, 0.3, 1)'
+    middleDrop: '1200ms cubic-bezier(0.16, 1, 0.3, 1)',
+    bandExpand: '820ms cubic-bezier(0.16, 1, 0.3, 1)'
   },
   fast: {
     titleOutAt: 550,
