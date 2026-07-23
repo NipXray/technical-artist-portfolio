@@ -26,17 +26,20 @@ interface Preset {
   bandExpand: string;
 }
 
-// "elegant" plays each phase sequentially — the next one only starts once
-// the previous has essentially finished. "fast" deliberately overlaps the
-// tail of each phase with the start of the next, for a snappier, more
-// continuous feel at that quicker pace.
+// Both presets deliberately overlap the tail of each phase with the start
+// of the next (lines start before the title has fully faded, the middle
+// starts before the lines are fully drawn, expand starts before the
+// middle has fully settled) — waiting for a full stop before starting the
+// next thing is what reads as a pause, even when nothing is technically
+// wrong with the pacing; a slight overlap keeps something continuously
+// moving so it reads as one seamless motion instead.
 const PRESETS: Record<IntroStyle, Preset> = {
   elegant: {
     titleOutAt: 2000,
-    linesAt: 3000,
-    middleAt: 4600,
-    expandAt: 6600,
-    finishAt: 8200,
+    linesAt: 2650,
+    middleAt: 3850,
+    expandAt: 4950,
+    finishAt: 6700,
     // A gentler, more symmetric ease than a fast-start/long-tail curve —
     // the earlier curve still had an abrupt initial snap even at longer
     // durations, which read as quick rather than smooth.
