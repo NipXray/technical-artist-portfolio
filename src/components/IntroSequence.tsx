@@ -35,15 +35,15 @@ const PRESETS: Record<IntroStyle, Preset> = {
     titleOutAt: 2000,
     linesAt: 3000,
     middleAt: 4600,
-    expandAt: 7200,
-    finishAt: 8800,
+    expandAt: 8000,
+    finishAt: 9600,
     // A gentler, more symmetric ease than a fast-start/long-tail curve —
     // the earlier curve still had an abrupt initial snap even at longer
     // durations, which read as quick rather than smooth.
     titleFade: '1000ms cubic-bezier(0.45, 0, 0.15, 1)',
     lineDraw: '1600ms cubic-bezier(0.45, 0, 0.15, 1)',
     lineStagger: 150,
-    middleDrop: '2000ms cubic-bezier(0.45, 0, 0.15, 1)',
+    middleDrop: '2800ms cubic-bezier(0.45, 0, 0.15, 1)',
     bandExpand: '1400ms cubic-bezier(0.45, 0, 0.15, 1)'
   },
   fast: {
