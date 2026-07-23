@@ -60,36 +60,69 @@ export default function IntroSequence({ title }: { title: string }) {
     // visitors watch the full sequence; only the once-per-session gate and
     // prefers-reduced-motion skip it entirely (see the mount effect above).
     <div className="fixed inset-0 z-[300]" aria-hidden="true">
-      {/* Left curtain panel */}
+      {/* Shared rotated stage, oversized so it always fully covers the
+          viewport once tilted. Every piece of the "cut" — both solid bands
+          and the two drawn lines — lives inside here, positioned with
+          plain left/right offsets in this stage's own local space. Since
+          they all share the exact same parent rotation, their edges always
+          align perfectly (including mid-transition), instead of each piece
+          rotating independently and drifting out of alignment with a
+          straight-edged panel underneath it. */}
       <div
-        className="absolute inset-y-0 left-0 bg-ink-950 transition-transform duration-700 ease-in-out"
-        style={{
-          width: `calc(50% - ${LINE_OFFSET})`,
-          transform: expanded ? 'translateX(-100%)' : 'translateX(0)'
-        }}
-      />
-      {/* Right curtain panel */}
-      <div
-        className="absolute inset-y-0 right-0 bg-ink-950 transition-transform duration-700 ease-in-out"
-        style={{
-          width: `calc(50% - ${LINE_OFFSET})`,
-          transform: expanded ? 'translateX(100%)' : 'translateX(0)'
-        }}
-      />
-      {/* Middle band, shaped to match the two lines (same rotation) — a
-          plain solid panel that drops away along its own tilted axis once
-          the lines finish drawing, revealing the real page underneath (not
-          a colored accent) as proof it's moving. */}
-      <div
-        className="absolute bg-ink-950 transition-transform duration-[1000ms] ease-in"
+        className="absolute"
         style={{
           top: '50%',
           left: '50%',
-          width: `calc(${LINE_OFFSET} * 2)`,
-          height: '160vh',
-          transform: `translate(-50%, -50%) rotate(${LINE_ROTATION}deg) translateY(${middleOpen ? '115%' : '0%'})`
+          width: '400vw',
+          height: '400vh',
+          transform: `translate(-50%, -50%) rotate(${LINE_ROTATION}deg)`
         }}
-      />
+      >
+        {/* Left band */}
+        <div
+          className="absolute inset-y-0 left-0 bg-ink-950 transition-transform duration-700 ease-in-out"
+          style={{
+            right: `calc(50% + ${LINE_OFFSET})`,
+            transform: expanded ? 'translateX(-100%)' : 'translateX(0)'
+          }}
+        />
+        {/* Middle band — drops away once the lines finish drawing,
+            revealing the real page underneath as proof it's moving. */}
+        <div
+          className="absolute inset-y-0 bg-ink-950 transition-transform duration-[1000ms] ease-in"
+          style={{
+            left: `calc(50% - ${LINE_OFFSET})`,
+            width: `calc(${LINE_OFFSET} * 2)`,
+            transform: `translateY(${middleOpen ? '115%' : '0%'})`
+          }}
+        />
+        {/* Right band */}
+        <div
+          className="absolute inset-y-0 right-0 bg-ink-950 transition-transform duration-700 ease-in-out"
+          style={{
+            left: `calc(50% + ${LINE_OFFSET})`,
+            transform: expanded ? 'translateX(100%)' : 'translateX(0)'
+          }}
+        />
+        {/* Left line, at the left/middle boundary, draws bottom-to-top */}
+        <div
+          className="absolute top-0 h-full w-0.5 bg-paper transition-transform duration-700 ease-in-out"
+          style={{
+            left: `calc(50% - ${LINE_OFFSET})`,
+            transformOrigin: 'center bottom',
+            transform: `${expanded ? 'translateX(-100%)' : 'translateX(0)'} scaleY(${drawn ? 1 : 0})`
+          }}
+        />
+        {/* Right line, at the middle/right boundary, draws top-to-bottom */}
+        <div
+          className="absolute top-0 h-full w-0.5 bg-paper transition-transform duration-700 ease-in-out"
+          style={{
+            left: `calc(50% + ${LINE_OFFSET})`,
+            transformOrigin: 'center top',
+            transform: `${expanded ? 'translateX(100%)' : 'translateX(0)'} scaleY(${drawn ? 1 : 0})`
+          }}
+        />
+      </div>
 
       <p
         className={`absolute left-6 top-1/2 -translate-y-1/2 font-display text-4xl font-extrabold text-paper transition-opacity duration-500 sm:left-14 sm:text-6xl ${
@@ -98,28 +131,6 @@ export default function IntroSequence({ title }: { title: string }) {
       >
         {title}
       </p>
-
-      {/* Left line draws bottom-to-top, right line draws top-to-bottom, then
-          each travels off screen with its own panel during 'expand' so the
-          motion stays visible instead of just vanishing in place. */}
-      <div
-        className="intro-line"
-        style={{
-          height: '150vh',
-          transformOrigin: 'center bottom',
-          transform: `translateX(${expanded ? '-100vw' : '0px'}) translate(calc(-1 * ${LINE_OFFSET}), -50%) rotate(${LINE_ROTATION}deg) scaleY(${drawn ? 1 : 0})`,
-          transition: 'transform 600ms ease-in-out'
-        }}
-      />
-      <div
-        className="intro-line"
-        style={{
-          height: '150vh',
-          transformOrigin: 'center top',
-          transform: `translateX(${expanded ? '100vw' : '0px'}) translate(${LINE_OFFSET}, -50%) rotate(${LINE_ROTATION}deg) scaleY(${drawn ? 1 : 0})`,
-          transition: 'transform 600ms ease-in-out 100ms'
-        }}
-      />
     </div>
   );
 }

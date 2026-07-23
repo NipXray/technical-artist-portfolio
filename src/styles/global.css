@@ -458,20 +458,15 @@ pre.astro-code {
 /* ---------------------------------------------------------------- */
 
 /* Blocking pre-hydration veil: set by an inline script in Layout.astro
-   before first paint, so nothing flashes before the React intro mounts
-   and takes over. Removed by IntroSequence once it reaches 'done'. */
+   before first paint, so nothing flashes before the React intro mounts.
+   Removed by IntroSequence as soon as it mounts and takes over rendering
+   (whether it's about to skip or play the real sequence) — anything later
+   would leave it sitting as a second, un-animated layer behind the intro's
+   own panels for the whole reveal. */
 html.intro-veil::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 299;
   background: var(--color-ink-950);
-}
-
-.intro-line {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2px;
-  background: var(--color-paper);
 }
