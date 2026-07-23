@@ -168,13 +168,22 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
           />
         </div>
         {/* Middle band — drops away once the lines are mostly drawn,
-            revealing the real page underneath as proof it's moving. */}
+            revealing the real page underneath as proof it's moving. Fixed,
+            modest height (not inset-y-0 / the parent's full 400vh) — at
+            400vh tall, a 115% drop travels ~460vh while the viewport is
+            only ~100vh, so almost the entire transition happened off
+            screen before/after the brief visible crossing, no matter how
+            long the duration was. 180vh keeps enough buffer to fully
+            cover the viewport (even rotated) while keeping the visible
+            reveal a much larger share of the transition. */}
         <div
-          className="absolute inset-y-0 bg-ink-950"
+          className="absolute bg-ink-950"
           style={{
+            top: '50%',
             left: `calc(50% - ${LINE_OFFSET})`,
             width: `calc(${LINE_OFFSET} * 2)`,
-            transform: `translateY(${middleOpen ? '115%' : '0%'})`,
+            height: '180vh',
+            transform: `translateY(calc(-50% + ${middleOpen ? '90%' : '0%'}))`,
             transition: `transform ${preset.middleDrop}`
           }}
         />
