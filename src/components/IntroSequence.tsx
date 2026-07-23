@@ -71,24 +71,17 @@ export default function IntroSequence({ title }: { title: string }) {
           transform: expanded ? 'translateX(100%)' : 'translateX(0)'
         }}
       />
-      {/* Middle band, shaped to match the two lines (same rotation) — drops
-          away along its own tilted axis once the lines finish drawing. A
-          bright band near its (screen-facing) top edge sweeps down through
-          the viewport as it travels, so the motion reads clearly even
-          against a dark hero background. */}
+      {/* Middle band, shaped to match the two lines (same rotation) — a
+          plain solid panel that drops away along its own tilted axis once
+          the lines finish drawing, revealing the real page underneath (not
+          a colored accent) as proof it's moving. */}
       <div
-        className="absolute transition-transform duration-[750ms] ease-in"
+        className="absolute bg-ink-950 transition-transform duration-[750ms] ease-in"
         style={{
           top: '50%',
           left: '50%',
           width: `calc(${LINE_OFFSET} * 2)`,
           height: '160vh',
-          // A plain hardcoded color here, not color-mix() — that function
-          // is unsupported on some real-world browsers/versions, and an
-          // invalid value silently drops the whole gradient, leaving this
-          // panel with no visible background at all during its animation.
-          background:
-            'linear-gradient(to bottom, var(--color-ink-950) 0%, rgb(249, 219, 174) 6%, var(--color-ink-950) 14%, var(--color-ink-950) 100%)',
           transform: `translate(-50%, -50%) rotate(${LINE_ROTATION}deg) translateY(${middleOpen ? '115%' : '0%'})`
         }}
       />
