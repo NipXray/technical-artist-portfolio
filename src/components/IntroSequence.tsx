@@ -17,6 +17,16 @@ export default function IntroSequence({ title }: { title: string }) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const alreadySeen = sessionStorage.getItem(SESSION_KEY) === '1';
 
+    // Hand off from the pre-hydration CSS veil (see Layout.astro) the
+    // moment this component takes over — either it renders nothing (skip
+    // case) or its own full-screen panels (real sequence), so the veil's
+    // job is already done here. Leaving it until stage==='done' meant it
+    // sat as a second, un-animated black layer directly behind the panels
+    // for the entire reveal — they'd genuinely slide away, but all that
+    // was ever revealed underneath was the still-present veil, not the
+    // real page, making the whole sequence look like nothing moved.
+    document.documentElement.classList.remove('intro-veil');
+
     if (reduceMotion || alreadySeen) {
       setStage('done');
       return undefined;
@@ -38,15 +48,6 @@ export default function IntroSequence({ title }: { title: string }) {
     ];
     return () => timersRef.current.forEach((t) => window.clearTimeout(t));
   }, []);
-
-  // Hand off from the pre-hydration CSS veil (see Layout.astro) the moment
-  // the intro is done, however it got there (played out, or gated by
-  // session/reduced-motion below).
-  useEffect(() => {
-    if (stage === 'done') {
-      document.documentElement.classList.remove('intro-veil');
-    }
-  }, [stage]);
 
   if (stage === 'done' || stage === 'skip') return null;
 
