@@ -9,6 +9,10 @@ const SESSION_KEY = 'intro-seen';
 // monitor, instead of hitting a low fixed cap on bigger screens.
 const LINE_OFFSET = 'clamp(110px, 15vw, 400px)';
 const LINE_ROTATION = 18;
+// The lines are 2px wide but need real height to comfortably cross the
+// screen once rotated — 150vh is enough for that without going anywhere
+// near the size that seemed to trigger rasterization glitches (see below).
+const LINE_LENGTH = '150vh';
 
 interface Preset {
   titleOutAt: number;
@@ -23,20 +27,22 @@ interface Preset {
   bandExpand: string;
 }
 
-// "elegant" — slower, graceful, generous pauses between beats.
+// "elegant" — slower, graceful, a long confident deceleration on every
+// move rather than a symmetric ease, with a brief settle rather than a
+// lingering pause between beats.
 // "fast" — quick, snappy, sharp deceleration curves; barely any hold.
 const PRESETS: Record<IntroStyle, Preset> = {
   elegant: {
     titleOutAt: 1200,
     linesAt: 1800,
     openMiddleAt: 2700,
-    expandAt: 4300,
-    doneAt: 5300,
-    titleFade: '600ms cubic-bezier(0.4, 0, 0.2, 1)',
-    lineDraw: '800ms cubic-bezier(0.65, 0, 0.35, 1)',
+    expandAt: 4080,
+    doneAt: 4900,
+    titleFade: '650ms cubic-bezier(0.16, 1, 0.3, 1)',
+    lineDraw: '850ms cubic-bezier(0.16, 1, 0.3, 1)',
     lineStagger: 120,
-    middleDrop: '1200ms cubic-bezier(0.65, 0, 0.35, 1)',
-    bandExpand: '900ms cubic-bezier(0.65, 0, 0.35, 1)'
+    middleDrop: '1200ms cubic-bezier(0.16, 1, 0.3, 1)',
+    bandExpand: '820ms cubic-bezier(0.16, 1, 0.3, 1)'
   },
   fast: {
     titleOutAt: 550,
@@ -99,6 +105,7 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
   const drawn = stage === 'lines' || stage === 'open-middle' || stage === 'expand';
   const middleOpen = stage === 'open-middle' || stage === 'expand';
   const expanded = stage === 'expand';
+  const glow = style === 'elegant' ? '0 0 14px 1px rgba(246, 241, 238, 0.45)' : 'none';
 
   return (
     // Deliberately not interruptible by click or keypress — first-time
@@ -135,11 +142,18 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
             transition: `transform ${preset.bandExpand}`
           }}
         >
+          {/* Fixed, modest height instead of inheriting the parent's 400vh
+              — a 2px-wide line at that extreme a height, still nested in an
+              already-rotated ancestor, is what caused the line to render
+              as disconnected fragments instead of one continuous stroke. */}
           <div
-            className="absolute top-0 right-0 h-full w-0.5 bg-paper"
+            className="absolute right-0 w-0.5 bg-paper"
             style={{
+              top: '50%',
+              height: LINE_LENGTH,
+              boxShadow: glow,
               transformOrigin: 'center bottom',
-              transform: `scaleY(${drawn ? 1 : 0})`,
+              transform: `translateY(-50%) scaleY(${drawn ? 1 : 0})`,
               opacity: drawn ? 1 : 0,
               transition: `transform ${preset.lineDraw}, opacity ${preset.lineDraw}`
             }}
@@ -166,10 +180,13 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
           }}
         >
           <div
-            className="absolute top-0 left-0 h-full w-0.5 bg-paper"
+            className="absolute left-0 w-0.5 bg-paper"
             style={{
+              top: '50%',
+              height: LINE_LENGTH,
+              boxShadow: glow,
               transformOrigin: 'center top',
-              transform: `scaleY(${drawn ? 1 : 0})`,
+              transform: `translateY(-50%) scaleY(${drawn ? 1 : 0})`,
               opacity: drawn ? 1 : 0,
               transition: `transform ${preset.lineDraw} ${preset.lineStagger}ms, opacity ${preset.lineDraw} ${preset.lineStagger}ms`
             }}
@@ -178,10 +195,11 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
       </div>
 
       <p
-        className="absolute left-6 top-1/2 -translate-y-1/2 font-display text-4xl font-extrabold text-paper sm:left-14 sm:text-6xl"
+        className="absolute left-6 top-1/2 font-display text-4xl font-extrabold text-paper sm:left-14 sm:text-6xl"
         style={{
           opacity: stage === 'title-in' ? 1 : 0,
-          transition: `opacity ${preset.titleFade}`
+          transform: `translateY(calc(-50% + ${stage === 'title-in' ? '0px' : '14px'}))`,
+          transition: `opacity ${preset.titleFade}, transform ${preset.titleFade}`
         }}
       >
         {title}
