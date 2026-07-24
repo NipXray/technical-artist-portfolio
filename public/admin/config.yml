@@ -54,6 +54,19 @@ collections:
           hint: "Extra images or short video clips shown in the project's slideshow popup, in addition to the cover image — video vs. image is detected automatically from the file",
         }
       - {
+          label: "Gallery Video Playback",
+          name: "galleryVideoPlayback",
+          widget: "select",
+          options:
+            [
+              { label: "Fixed duration (same as images, loops if shorter)", value: "fixed" },
+              { label: "Play full video length, then advance", value: "full" },
+            ],
+          default: "fixed",
+          required: false,
+          hint: "Controls how long a video clip in the Gallery stays on screen in the project's full-screen slideshow",
+        }
+      - {
           label: "Video Link",
           name: "video",
           widget: "string",
@@ -87,6 +100,19 @@ collections:
           default: "none",
           required: false,
           hint: "A subtle looping atmosphere effect that plays continuously while this project's full-screen view is open",
+        }
+      - {
+          label: "Ambient Effect Appears On",
+          name: "ambientEffectScope",
+          widget: "select",
+          options:
+            [
+              { label: "All images/videos in the gallery", value: "all" },
+              { label: "Only the first slide (cover image)", value: "first" },
+            ],
+          default: "all",
+          required: false,
+          hint: "Controls whether the ambient atmosphere effect plays throughout the whole slideshow or only over the first slide",
         }
       - {
           label: "Ambient Custom Video (optional)",

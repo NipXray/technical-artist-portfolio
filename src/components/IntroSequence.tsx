@@ -72,6 +72,7 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
   const [expanded, setExpanded] = useState(false);
   const [finished, setFinished] = useState(false);
   const timersRef = useRef<number[]>([]);
+  const pointerRef = useRef({ x: -1, y: -1 });
   const preset = PRESETS[style] ?? PRESETS.elegant;
 
   useEffect(() => {
@@ -112,6 +113,35 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
     ];
     return () => timersRef.current.forEach((t) => window.clearTimeout(t));
   }, [preset]);
+
+  // Track the pointer the whole time this overlay blocks it, so we know
+  // where it's resting once the overlay goes away.
+  useEffect(() => {
+    function trackPointer(e: PointerEvent) {
+      pointerRef.current = { x: e.clientX, y: e.clientY };
+    }
+    window.addEventListener('pointermove', trackPointer);
+    return () => window.removeEventListener('pointermove', trackPointer);
+  }, []);
+
+  // This overlay unmounting exposes the real page underneath a cursor that
+  // never actually moved — browsers only recompute hover state on genuine
+  // pointer movement, not on a DOM change revealing a new element under a
+  // stationary one, so hover-driven UI (like the project gallery's
+  // hover-to-expand panels) would otherwise stay inert until the visitor
+  // happened to nudge the mouse. Re-synthesizing a move at the pointer's
+  // last known position forces that recomputation immediately.
+  useEffect(() => {
+    if (!finished) return;
+    const { x, y } = pointerRef.current;
+    if (x < 0 || y < 0) return;
+    requestAnimationFrame(() => {
+      const target = document.elementFromPoint(x, y);
+      const eventInit: MouseEventInit = { bubbles: true, clientX: x, clientY: y };
+      target?.dispatchEvent(new MouseEvent('mouseover', eventInit));
+      target?.dispatchEvent(new MouseEvent('mousemove', eventInit));
+    });
+  }, [finished]);
 
   if (finished || !active) return null;
 

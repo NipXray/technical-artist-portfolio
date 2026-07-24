@@ -28,7 +28,9 @@ const projects = defineCollection({
     model: z.string().optional(),
     clickEffect: z.enum(CLICK_EFFECTS).default('none'),
     ambientEffect: z.enum(AMBIENT_EFFECTS).default('none'),
+    ambientEffectScope: z.enum(['all', 'first']).default('all'),
     ambientVideoUrl: z.string().optional(),
+    galleryVideoPlayback: z.enum(['fixed', 'full']).default('fixed'),
     techStack: z.array(z.string()).default([]),
     description: z.string(),
     order: z.number().default(0)

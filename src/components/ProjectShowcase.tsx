@@ -14,7 +14,9 @@ export interface ShowcaseProject {
   techStack: string[];
   clickEffect: ClickEffectType;
   ambientEffect: AmbientEffectType;
+  ambientEffectScope: 'all' | 'first';
   ambientVideoUrl?: string;
+  galleryVideoPlayback: 'fixed' | 'full';
 }
 
 const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v|mkv)$/i;
@@ -24,7 +26,22 @@ function isVideoSrc(src: string) {
 
 // Resets to frame 0 and plays only while `active`, matching the Hero
 // Slideshow's behavior so gallery clips restart cleanly each time they cycle in.
-function ModalSlideMedia({ src, active, alt }: { src: string; active: boolean; alt: string }) {
+// `loop` keeps a short clip filling out a fixed-duration slide instead of
+// freezing on its last frame; when playing to full length instead, it stays
+// unlooped so `onEnded` fires exactly once to advance the slideshow.
+function ModalSlideMedia({
+  src,
+  active,
+  alt,
+  loop,
+  onEnded
+}: {
+  src: string;
+  active: boolean;
+  alt: string;
+  loop: boolean;
+  onEnded?: () => void;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -39,7 +56,17 @@ function ModalSlideMedia({ src, active, alt }: { src: string; active: boolean; a
   }, [active]);
 
   if (isVideoSrc(src)) {
-    return <video ref={videoRef} src={src} muted loop playsInline className="h-full w-full object-cover" />;
+    return (
+      <video
+        ref={videoRef}
+        src={src}
+        muted
+        loop={loop}
+        playsInline
+        onEnded={active ? onEnded : undefined}
+        className="h-full w-full object-cover"
+      />
+    );
   }
   return <img src={src} alt={alt} className="h-full w-full object-cover" />;
 }
@@ -47,17 +74,20 @@ function ModalSlideMedia({ src, active, alt }: { src: string; active: boolean; a
 function ModalBackground({
   project,
   active,
-  index
+  index,
+  onVideoEnded
 }: {
   project: ShowcaseProject;
   active: boolean;
   index: number;
+  onVideoEnded: () => void;
 }) {
   const images = useMemo(
     () => [project.cover, ...project.gallery].filter((src, i, arr) => src && arr.indexOf(src) === i),
     [project]
   );
   const safeIndex = index % images.length;
+  const playFull = project.galleryVideoPlayback === 'full';
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-ink-900">
@@ -68,7 +98,13 @@ function ModalBackground({
             i === safeIndex ? 'opacity-100' : 'opacity-0'
           } ${active ? 'scale-100' : 'scale-105'}`}
         >
-          <ModalSlideMedia src={src} active={active && i === safeIndex} alt={project.title} />
+          <ModalSlideMedia
+            src={src}
+            active={active && i === safeIndex}
+            alt={project.title}
+            loop={!playFull}
+            onEnded={playFull ? onVideoEnded : undefined}
+          />
         </div>
       ))}
     </div>
@@ -136,10 +172,18 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
     window.dispatchEvent(new CustomEvent('effect-trigger', { detail }));
   }
 
-  // Auto-advance the background slideshow.
+  function advanceSlide() {
+    setSlideIndex((i) => (i + 1) % displayedImages.length);
+  }
+
+  // Auto-advance the background slideshow on a fixed timer — unless this
+  // project plays gallery videos to their full length, in which case the
+  // current video's own `onEnded` (wired below) drives the advance instead.
   useEffect(() => {
     if (!displayedProject || displayedImages.length < 2 || caseStudySlug) return undefined;
-    const t = window.setTimeout(() => setSlideIndex((i) => (i + 1) % displayedImages.length), 5000);
+    const currentSrc = displayedImages[slideIndex % displayedImages.length];
+    if (displayedProject.galleryVideoPlayback === 'full' && isVideoSrc(currentSrc)) return undefined;
+    const t = window.setTimeout(advanceSlide, 5000);
     return () => window.clearTimeout(t);
   }, [slideIndex, displayedProject, displayedImages, caseStudySlug]);
 
@@ -257,11 +301,16 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
             activeProject ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
         >
-          <ModalBackground project={displayedProject} active={!!activeProject} index={slideIndex} />
+          <ModalBackground
+            project={displayedProject}
+            active={!!activeProject}
+            index={slideIndex}
+            onVideoEnded={advanceSlide}
+          />
           <AmbientEffectLayer
             type={displayedProject.ambientEffect}
             videoUrl={displayedProject.ambientVideoUrl}
-            active={!!activeProject}
+            active={!!activeProject && (displayedProject.ambientEffectScope === 'all' || slideIndex === 0)}
           />
 
           {displayedImages.length > 1 && (

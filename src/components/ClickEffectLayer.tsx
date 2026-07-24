@@ -33,7 +33,8 @@ const EFFECT_DURATION = 750;
 // aftermath) that outlast the default window — give them room to finish.
 const EFFECT_DURATION_OVERRIDES: Partial<Record<ClickEffectType, number>> = {
   smoke: 1900,
-  explosion: 1350
+  explosion: 1350,
+  skull: 1300
 };
 
 function rand(min: number, max: number) {
@@ -144,23 +145,29 @@ function buildSkull(x: number, y: number): Particle[] {
       animationDuration: '700ms'
     }
   };
-  const bits = Array.from({ length: 10 }, (_, i) => {
-    const angle = (i / 10) * Math.PI * 2;
-    const radius = rand(80, 180);
+  // Departing souls fan out upward from the point of impact, rather than
+  // gathering inward toward it — reads as spirits escaping/scattering, not
+  // energy being drawn into a center.
+  const souls = Array.from({ length: 12 }, (_, i) => {
+    const angle = -Math.PI / 2 + rand(-1.15, 1.15);
+    const radius = rand(120, 260);
+    const size = rand(8, 15);
     return {
       id: i + 1,
-      className: 'particle particle-skull-bit',
+      className: 'particle particle-soul',
       style: {
         left: `${x}px`,
         top: `${y}px`,
-        animationDelay: `${rand(100, 250)}ms`,
-        animationDuration: `${rand(400, 600)}ms`,
+        width: `${size}px`,
+        height: `${size}px`,
+        animationDelay: `${rand(0, 180)}ms`,
+        animationDuration: `${rand(700, 1050)}ms`,
         ['--target-x' as string]: `${Math.cos(angle) * radius}px`,
         ['--target-y' as string]: `${Math.sin(angle) * radius}px`
       }
     };
   });
-  return [main, ...bits];
+  return [main, ...souls];
 }
 
 function buildGlass(x: number, y: number): Particle[] {
