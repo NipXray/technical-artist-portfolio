@@ -201,7 +201,7 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
                   {project.techStack.map((tech) => (
                     <span
                       key={tech}
-                      className="rounded-full bg-ink-950/70 px-3 py-1 text-xs font-semibold text-accent-2"
+                      className="rounded-none bg-ink-950/70 px-3 py-1 text-xs font-semibold text-accent-2"
                     >
                       {tech}
                     </span>
@@ -247,7 +247,7 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
                     setSlideIndex(i);
                   }}
                   aria-label={`Slide ${i + 1}`}
-                  className={`h-2 rounded-full transition-all ${
+                  className={`h-2 rounded-none transition-all ${
                     i === slideIndex ? 'w-6 bg-accent' : 'w-2 bg-paper/40 hover:bg-paper/70'
                   }`}
                 />
@@ -277,7 +277,7 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
               {displayedProject.techStack.map((tech) => (
                 <span
                   key={tech}
-                  className="rounded-full border border-paper/30 px-3 py-1 text-xs font-semibold text-paper"
+                  className="rounded-none border border-paper/30 px-3 py-1 text-xs font-semibold text-paper"
                 >
                   {tech}
                 </span>
@@ -307,7 +307,7 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
                 e.stopPropagation();
                 setCaseStudySlug(displayedProject.slug);
               }}
-              className="inline-flex w-fit items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all hover:-translate-y-0.5 hover:bg-accent-2"
+              className="inline-flex w-fit items-center gap-2 rounded-none bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all hover:-translate-y-0.5 hover:bg-accent-2"
             >
               View Full Case Study →
             </button>

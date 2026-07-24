@@ -198,7 +198,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
           <button
             onClick={() => setOpen(false)}
             aria-label="Close history"
-            className="rounded-full bg-ink-800 px-3 py-1.5 text-sm text-paper-dim transition-colors hover:text-accent-2"
+            className="rounded-none bg-ink-800 px-3 py-1.5 text-sm text-paper-dim transition-colors hover:text-accent-2"
           >
             ✕
           </button>
@@ -225,7 +225,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                 className="mb-8 select-none last:mb-0"
               >
                 <span
-                  className={`absolute -left-[7px] mt-1.5 h-3 w-3 rounded-full border-2 border-ink-900 ${
+                  className={`absolute -left-[7px] mt-1.5 h-3 w-3 rounded-none border-2 border-ink-900 ${
                     TAG_COLORS[entry.tag ?? ''] ?? 'bg-accent'
                   }`}
                 />
@@ -241,7 +241,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
       {autoscrollIndicator && (
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed z-[100] flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-accent/60 bg-ink-950/80 text-accent shadow-lg"
+          className="pointer-events-none fixed z-[100] flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-none border border-accent/60 bg-ink-950/80 text-accent shadow-lg"
           style={{ left: autoscrollIndicator.x, top: autoscrollIndicator.y }}
         >
           <span className="text-sm leading-none">↕</span>

@@ -44,7 +44,7 @@ export default function FloatingSocialDock(props: SocialLinks) {
           target="_blank"
           rel="noreferrer"
           aria-label={key.replace('Url', '')}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-800/80 text-paper shadow-lg backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent hover:text-ink-950"
+          className="flex h-10 w-10 items-center justify-center rounded-none bg-ink-800/80 text-paper shadow-lg backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent hover:text-ink-950"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current">
             {ICONS[key]}
