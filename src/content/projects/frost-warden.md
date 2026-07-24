@@ -7,6 +7,7 @@ gallery:
   - /uploads/vor-camera.mp40001-0300.mkv
 clickEffect: skull
 ambientEffect: fog
+ambientEffectScope: first
 techStack:
   - Blender
 description: A high-fantasy fan

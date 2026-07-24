@@ -87,10 +87,23 @@ collections:
           name: "clickEffect",
           widget: "select",
           options:
-            ["none", "leaf", "smoke", "converge", "slash", "skull", "glass", "explosion", "bubble", "wind", "sparkle"],
+            [
+              "none",
+              "leaf",
+              "smoke",
+              "converge",
+              "slash",
+              "skull",
+              "glass",
+              "explosion",
+              "bubble",
+              "wind",
+              "sparkle",
+              "domain-slash",
+            ],
           default: "none",
           required: false,
-          hint: "A playful particle effect that plays when this card is clicked, before opening the project",
+          hint: "A playful particle effect that plays when this card is clicked, before opening the project. Domain Slash instead cuts the clicked card itself in half before it opens.",
         }
       - {
           label: "Ambient Background Effect",

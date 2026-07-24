@@ -135,6 +135,7 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
   const [slideIndex, setSlideIndex] = useState(0);
   const [caseStudySlug, setCaseStudySlug] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
+  const [cuttingSlug, setCuttingSlug] = useState<string | null>(null);
   const closeTimeout = useRef<number | null>(null);
 
   useEffect(() => {
@@ -163,11 +164,19 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
   }
 
   function handlePanelClick(project: ShowcaseProject, e: React.MouseEvent) {
+    const isDomainSlash = project.clickEffect === 'domain-slash';
+    if (isDomainSlash) setCuttingSlug(project.slug);
+    const rect = e.currentTarget.getBoundingClientRect();
     const detail: EffectTriggerDetail = {
       type: project.clickEffect,
       x: e.clientX,
       y: e.clientY,
-      onComplete: () => openProject(project)
+      rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+      imageSrc: project.cover,
+      onComplete: () => {
+        openProject(project);
+        if (isDomainSlash) setCuttingSlug(null);
+      }
     };
     window.dispatchEvent(new CustomEvent('effect-trigger', { detail }));
   }
@@ -238,7 +247,7 @@ export default function ProjectShowcase({ projects }: { projects: ShowcaseProjec
               }}
               className={`group relative min-h-[110px] flex-1 appearance-none overflow-hidden border-0 bg-transparent p-0 text-left transition-[flex-grow,clip-path] duration-500 ease-out ${
                 revealed ? '[clip-path:inset(0_0_0_0)]' : '[clip-path:inset(50%_0_50%_0)]'
-              }`}
+              } ${cuttingSlug === project.slug ? 'invisible' : ''}`}
             >
               <img
                 src={project.cover}

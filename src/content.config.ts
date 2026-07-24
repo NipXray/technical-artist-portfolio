@@ -12,7 +12,8 @@ const CLICK_EFFECTS = [
   'explosion',
   'bubble',
   'wind',
-  'sparkle'
+  'sparkle',
+  'domain-slash'
 ] as const;
 
 const AMBIENT_EFFECTS = ['none', 'smoke', 'embers', 'dust', 'snow', 'fireflies', 'fog'] as const;

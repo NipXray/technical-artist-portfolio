@@ -94,7 +94,7 @@ pre.astro-code {
   top: -24px;
   width: 10px;
   height: 14px;
-  background: var(--color-accent-2);
+  background: #ffb238;
   border-radius: 0 60% 0 60%;
   animation-name: leaf-fall;
   animation-timing-function: ease-in;
@@ -126,8 +126,8 @@ pre.astro-code {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background: var(--color-accent);
-  box-shadow: 0 0 8px var(--color-accent);
+  background: #ff6b4a;
+  box-shadow: 0 0 8px #ff6b4a;
   animation-name: converge-in;
   animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
   animation-fill-mode: forwards;
@@ -138,21 +138,33 @@ pre.astro-code {
   100% { transform: translate(var(--target-x, 0px), var(--target-y, 0px)) scale(0.2); opacity: 0; }
 }
 
-/* slash */
+/* slash — one decisive cut straight across the screen in a single
+   direction, not two bars growing outward from a point. */
 .particle-slash {
-  height: 4px;
-  width: 360px;
-  background: linear-gradient(90deg, transparent, var(--color-paper) 20%, var(--color-accent-2) 50%, var(--color-paper) 80%, transparent);
-  box-shadow: 0 0 16px var(--color-accent-2);
-  transform-origin: left center;
+  left: 0;
+  height: 6px;
+  width: 55vw;
+  background: linear-gradient(90deg, transparent, #f6f1ee 20%, #ffb238 50%, #f6f1ee 80%, transparent);
+  box-shadow: 0 0 18px #ffb238;
   animation-name: slash-sweep;
-  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-timing-function: cubic-bezier(0.15, 0.7, 0.15, 1);
+  animation-fill-mode: forwards;
+}
+.particle-slash-edge {
+  left: 0;
+  height: 2px;
+  width: 55vw;
+  background: linear-gradient(90deg, transparent, #ffffff 30%, #ffffff 70%, transparent);
+  box-shadow: 0 0 10px #ffffff;
+  animation-name: slash-sweep;
+  animation-timing-function: cubic-bezier(0.1, 0.7, 0.1, 1);
   animation-fill-mode: forwards;
 }
 @keyframes slash-sweep {
-  0% { transform: scaleX(0) rotate(var(--angle, -25deg)); opacity: 1; }
-  55% { transform: scaleX(1) rotate(var(--angle, -25deg)); opacity: 1; }
-  100% { transform: scaleX(1) rotate(var(--angle, -25deg)); opacity: 0; }
+  0% { transform: translateX(var(--start-x, -70vw)) rotate(var(--angle, -6deg)); opacity: 0; }
+  10% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateX(var(--end-x, 100vw)) rotate(var(--angle, -6deg)); opacity: 0; }
 }
 
 /* skull */
@@ -171,24 +183,26 @@ pre.astro-code {
   100% { transform: scale(1.5); opacity: 0; filter: blur(6px) drop-shadow(0 0 10px rgba(168, 85, 247, 0.7)); }
 }
 .particle-soul {
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(216, 180, 254, 0.9) 0%, rgba(168, 85, 247, 0.5) 55%, transparent 75%);
-  box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.65));
   animation-name: soul-rise;
-  animation-timing-function: cubic-bezier(0.15, 0.6, 0.3, 1);
+  animation-timing-function: ease-in-out;
   animation-fill-mode: forwards;
 }
 @keyframes soul-rise {
-  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
-  20% { opacity: 1; }
-  100% { transform: translate(var(--target-x, 0px), var(--target-y, -220px)) scale(0.2); opacity: 0; }
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  15% { opacity: 0.9; }
+  /* Sways one way on the way up, not a straight line or wide scatter —
+     reads as a ghost floating rather than a particle flying. */
+  50% { transform: translate(var(--sway, 20px), calc(var(--rise, -200px) * 0.55)) scale(1); opacity: 0.85; }
+  100% { transform: translate(calc(var(--sway, 20px) * -0.4), var(--rise, -200px)) scale(0.8); opacity: 0; }
 }
 
 /* glass fracture */
 .particle-glass {
   height: 2px;
   width: 140px;
-  background: linear-gradient(90deg, var(--color-paper), transparent);
+  background: linear-gradient(90deg, #f6f1ee, transparent);
   transform-origin: left center;
   animation-name: glass-crack;
   animation-timing-function: ease-out;
@@ -218,7 +232,7 @@ pre.astro-code {
   width: 30px;
   height: 30px;
   border-radius: 9999px;
-  background: radial-gradient(circle, #ffffff, var(--color-accent-2) 40%, var(--color-accent) 70%, transparent 75%);
+  background: radial-gradient(circle, #fff8e6, #ffb238 40%, #ff6b4a 70%, transparent 75%);
   animation-name: explosion-flash;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
@@ -238,8 +252,8 @@ pre.astro-code {
   background: radial-gradient(
     circle,
     transparent 52%,
-    rgba(255, 255, 255, 0.85) 64%,
-    rgba(255, 255, 255, 0.3) 76%,
+    rgba(255, 178, 56, 0.85) 64%,
+    rgba(255, 178, 56, 0.3) 76%,
     transparent 88%
   );
   animation-name: shockwave-expand;
@@ -252,8 +266,8 @@ pre.astro-code {
 }
 .particle-explosion-ember {
   border-radius: 9999px;
-  background: radial-gradient(circle, #ffffff 0%, var(--color-accent) 60%, transparent 90%);
-  box-shadow: 0 0 8px var(--color-accent-2);
+  background: radial-gradient(circle, #fff8e6 0%, #ff6b4a 60%, transparent 90%);
+  box-shadow: 0 0 8px #ffb238;
   animation-name: ember-fly;
   animation-timing-function: cubic-bezier(0.15, 0.7, 0.3, 1);
   animation-fill-mode: forwards;
@@ -282,7 +296,7 @@ pre.astro-code {
 /* wind gust */
 .particle-wind {
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-paper), transparent);
+  background: linear-gradient(90deg, transparent, #f6f1ee, transparent);
   animation-name: wind-gust;
   animation-timing-function: ease-in;
   animation-fill-mode: forwards;
@@ -297,7 +311,7 @@ pre.astro-code {
 .particle-sparkle {
   font-size: 20px;
   line-height: 1;
-  color: var(--color-accent-2);
+  color: #ffb238;
   animation-name: sparkle-twinkle;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
@@ -314,7 +328,7 @@ pre.astro-code {
   width: 36px;
   height: 36px;
   border-radius: 9999px;
-  border: 2px solid var(--color-accent);
+  border: 2px solid #ff6b4a;
   animation-name: pulse-ping;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
@@ -324,8 +338,40 @@ pre.astro-code {
   100% { transform: scale(1.4); opacity: 0; }
 }
 
+/* domain slash — clones of the clicked card's own image, split down the
+   middle and pulled apart to reveal the project underneath. */
+.domain-cut-half {
+  position: fixed;
+  object-fit: cover;
+  animation-duration: 480ms;
+  animation-delay: 260ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation-fill-mode: forwards;
+}
+.domain-cut-left {
+  clip-path: inset(0 50% 0 0);
+  animation-name: domain-split-left;
+}
+.domain-cut-right {
+  clip-path: inset(0 0 0 50%);
+  animation-name: domain-split-right;
+}
+@keyframes domain-split-left {
+  0% { transform: translateX(0); filter: brightness(1); }
+  35% { filter: brightness(1.7); }
+  100% { transform: translateX(var(--split, -30px)); filter: brightness(0.8); }
+}
+@keyframes domain-split-right {
+  0% { transform: translateX(0); filter: brightness(1); }
+  35% { filter: brightness(1.7); }
+  100% { transform: translateX(var(--split, 30px)); filter: brightness(0.8); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .particle:not(.particle-pulse) {
+    display: none;
+  }
+  .domain-cut-half {
     display: none;
   }
 }
@@ -362,8 +408,8 @@ pre.astro-code {
 
 .ambient-embers {
   border-radius: 9999px;
-  background: radial-gradient(circle, #fff2d8 0%, var(--color-accent-2) 55%, transparent 80%);
-  box-shadow: 0 0 6px var(--color-accent-2);
+  background: radial-gradient(circle, #fff2d8 0%, #ffb238 55%, transparent 80%);
+  box-shadow: 0 0 6px #ffb238;
   animation-name: ambient-ember-rise;
   animation-timing-function: ease-in;
   animation-iteration-count: infinite;
@@ -405,8 +451,8 @@ pre.astro-code {
 
 .ambient-fireflies {
   border-radius: 9999px;
-  background: var(--color-accent-2);
-  box-shadow: 0 0 8px 2px var(--color-accent-2);
+  background: #ffb238;
+  box-shadow: 0 0 8px 2px #ffb238;
   animation-name: ambient-firefly-glow;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;

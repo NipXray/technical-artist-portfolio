@@ -11,7 +11,8 @@ export type ClickEffectType =
   | 'explosion'
   | 'bubble'
   | 'wind'
-  | 'sparkle';
+  | 'sparkle'
+  | 'domain-slash';
 
 export interface EffectTriggerDetail {
   type: ClickEffectType;
@@ -19,6 +20,13 @@ export interface EffectTriggerDetail {
   y: number;
   /** Called once the effect has finished playing. Omit for fire-and-forget. */
   onComplete?: () => void;
+  /**
+   * Only used by 'domain-slash': the clicked card's own on-screen rect and
+   * image, so it can be cloned and split in place instead of just drawing
+   * particles on top of it. Falls back to a plain slash if omitted.
+   */
+  rect?: { left: number; top: number; width: number; height: number };
+  imageSrc?: string;
 }
 
 interface Particle {
@@ -28,13 +36,21 @@ interface Particle {
   content?: string;
 }
 
+interface DomainCut {
+  imageSrc: string;
+  rect: { left: number; top: number; width: number; height: number };
+  lineStyle: React.CSSProperties;
+  leftStyle: React.CSSProperties;
+  rightStyle: React.CSSProperties;
+}
+
 const EFFECT_DURATION = 750;
 // Smoke/explosion now carry longer-tailed particles (billowing puffs, drifting
 // aftermath) that outlast the default window — give them room to finish.
 const EFFECT_DURATION_OVERRIDES: Partial<Record<ClickEffectType, number>> = {
   smoke: 1900,
   explosion: 1350,
-  skull: 1300
+  skull: 3200
 };
 
 function rand(min: number, max: number) {
@@ -120,18 +136,40 @@ function buildConverge(x: number, y: number): Particle[] {
 }
 
 function buildSlash(x: number, y: number): Particle[] {
-  const angles = [-25, 20];
-  return angles.map((angle, i) => ({
-    id: i,
-    className: 'particle particle-slash',
-    style: {
-      left: `${x - 100}px`,
-      top: `${y}px`,
-      animationDelay: `${i * 90}ms`,
-      animationDuration: '380ms',
-      ['--angle' as string]: `${angle}deg`
+  // A single decisive cut straight across the viewport — picks one
+  // direction (left-to-right or right-to-left) per click rather than
+  // two crossing diagonals, which read as a messy X instead of a slash.
+  const leftToRight = Math.random() < 0.5;
+  const angle = leftToRight ? -6 : 6;
+  const startX = leftToRight ? -70 : 100;
+  const endX = leftToRight ? 100 : -70;
+  return [
+    {
+      id: 0,
+      className: 'particle particle-slash',
+      style: {
+        top: `${y - 2}px`,
+        animationDuration: '420ms',
+        ['--angle' as string]: `${angle}deg`,
+        ['--start-x' as string]: `${startX}vw`,
+        ['--end-x' as string]: `${endX}vw`
+      }
+    },
+    // A thinner, brighter leading edge just ahead of the main blade —
+    // reads as a keen edge cutting first, with the glow trailing it.
+    {
+      id: 1,
+      className: 'particle particle-slash-edge',
+      style: {
+        top: `${y - 2}px`,
+        animationDelay: '30ms',
+        animationDuration: '380ms',
+        ['--angle' as string]: `${angle}deg`,
+        ['--start-x' as string]: `${startX}vw`,
+        ['--end-x' as string]: `${endX}vw`
+      }
     }
-  }));
+  ];
 }
 
 function buildSkull(x: number, y: number): Particle[] {
@@ -145,25 +183,23 @@ function buildSkull(x: number, y: number): Particle[] {
       animationDuration: '700ms'
     }
   };
-  // Departing souls fan out upward from the point of impact, rather than
-  // gathering inward toward it — reads as spirits escaping/scattering, not
-  // energy being drawn into a center.
-  const souls = Array.from({ length: 12 }, (_, i) => {
-    const angle = -Math.PI / 2 + rand(-1.15, 1.15);
-    const radius = rand(120, 260);
-    const size = rand(8, 15);
+  // Departing souls drift slowly upward like ghosts — a gentle sway
+  // instead of a wide outward spread, a long duration, and a staggered
+  // start so they peel off one at a time rather than bursting out together.
+  const souls = Array.from({ length: 5 }, (_, i) => {
+    const size = rand(20, 28);
     return {
       id: i + 1,
       className: 'particle particle-soul',
+      content: '👻',
       style: {
-        left: `${x}px`,
-        top: `${y}px`,
-        width: `${size}px`,
-        height: `${size}px`,
-        animationDelay: `${rand(0, 180)}ms`,
-        animationDuration: `${rand(700, 1050)}ms`,
-        ['--target-x' as string]: `${Math.cos(angle) * radius}px`,
-        ['--target-y' as string]: `${Math.sin(angle) * radius}px`
+        left: `${x - size / 2 + rand(-16, 16)}px`,
+        top: `${y - size / 2}px`,
+        fontSize: `${size}px`,
+        animationDelay: `${i * 220 + rand(0, 120)}ms`,
+        animationDuration: `${rand(1600, 2100)}ms`,
+        ['--sway' as string]: `${rand(-40, 40)}px`,
+        ['--rise' as string]: `${-rand(160, 240)}px`
       }
     };
   });
@@ -291,6 +327,47 @@ function buildSparkle(x: number, y: number): Particle[] {
   }));
 }
 
+// "Domain Slash" clones the clicked card's own image and splits it in two,
+// instead of drawing particles on top of it — a slash line crosses the
+// card, then the two halves pull apart to reveal the project underneath.
+function buildDomainCut(
+  rect: { left: number; top: number; width: number; height: number },
+  imageSrc: string,
+  clickY: number
+): DomainCut {
+  const leftToRight = Math.random() < 0.5;
+  const barWidth = Math.max(40, rect.width * 0.55);
+  const clearance = rect.width / 2 + barWidth / 2 + 24;
+  const startX = leftToRight ? -clearance : clearance;
+  const angle = leftToRight ? -5 : 5;
+
+  const lineStyle: React.CSSProperties = {
+    left: `${rect.left + rect.width / 2 - barWidth / 2}px`,
+    top: `${clickY - 3}px`,
+    width: `${barWidth}px`,
+    animationDuration: '300ms',
+    ['--start-x' as string]: `${startX}px`,
+    ['--end-x' as string]: `${-startX}px`,
+    ['--angle' as string]: `${angle}deg`
+  };
+
+  const splitDistance = Math.max(24, rect.width * 0.08);
+  const halfBase: React.CSSProperties = {
+    left: `${rect.left}px`,
+    top: `${rect.top}px`,
+    width: `${rect.width}px`,
+    height: `${rect.height}px`
+  };
+
+  return {
+    imageSrc,
+    rect,
+    lineStyle,
+    leftStyle: { ...halfBase, ['--split' as string]: `-${splitDistance}px` },
+    rightStyle: { ...halfBase, ['--split' as string]: `${splitDistance}px` }
+  };
+}
+
 function buildPulse(x: number, y: number): Particle[] {
   // A single brief, low-motion ring — used instead of the full particle
   // burst when the OS/browser signals prefers-reduced-motion, so a click
@@ -333,10 +410,11 @@ function buildParticles(type: ClickEffectType, x: number, y: number): Particle[]
 
 export default function ClickEffectLayer() {
   const [effect, setEffect] = useState<{ type: ClickEffectType; particles: Particle[] } | null>(null);
+  const [domainCut, setDomainCut] = useState<DomainCut | null>(null);
 
   useEffect(() => {
     function handleTrigger(e: Event) {
-      const { type, x, y, onComplete } = (e as CustomEvent<EffectTriggerDetail>).detail;
+      const { type, x, y, onComplete, rect, imageSrc } = (e as CustomEvent<EffectTriggerDetail>).detail;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       if (type === 'none') {
@@ -353,6 +431,13 @@ export default function ClickEffectLayer() {
         return;
       }
 
+      if (type === 'domain-slash' && rect && imageSrc) {
+        setDomainCut(buildDomainCut(rect, imageSrc, y));
+        window.setTimeout(() => onComplete?.(), 750);
+        window.setTimeout(() => setDomainCut(null), 900);
+        return;
+      }
+
       setEffect({ type, particles: buildParticles(type, x, y) });
       // Keep the interaction snappy — open the project on the usual timer —
       // but let any longer-tailed particles (smoke, embers) keep drifting and
@@ -366,7 +451,10 @@ export default function ClickEffectLayer() {
     // (which would otherwise swallow every click) can't survive a reload-free
     // back navigation.
     function handlePageShow(e: PageTransitionEvent) {
-      if (e.persisted) setEffect(null);
+      if (e.persisted) {
+        setEffect(null);
+        setDomainCut(null);
+      }
     }
 
     window.addEventListener('effect-trigger', handleTrigger);
@@ -377,15 +465,22 @@ export default function ClickEffectLayer() {
     };
   }, []);
 
-  if (!effect) return null;
+  if (!effect && !domainCut) return null;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[200] overflow-hidden" aria-hidden="true">
-      {effect.particles.map((p) => (
+      {effect?.particles.map((p) => (
         <span key={p.id} className={p.className} style={p.style}>
           {p.content}
         </span>
       ))}
+      {domainCut && (
+        <>
+          <div className="particle particle-slash" style={domainCut.lineStyle} />
+          <img src={domainCut.imageSrc} alt="" className="domain-cut-half domain-cut-left" style={domainCut.leftStyle} />
+          <img src={domainCut.imageSrc} alt="" className="domain-cut-half domain-cut-right" style={domainCut.rightStyle} />
+        </>
+      )}
     </div>
   );
 }
