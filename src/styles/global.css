@@ -183,19 +183,17 @@ pre.astro-code {
   100% { transform: scale(1.5); opacity: 0; filter: blur(6px) drop-shadow(0 0 10px rgba(168, 85, 247, 0.7)); }
 }
 .particle-soul {
-  line-height: 1;
-  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.65));
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(216, 180, 254, 0.9) 0%, rgba(168, 85, 247, 0.5) 55%, transparent 75%);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
   animation-name: soul-rise;
-  animation-timing-function: ease-in-out;
+  animation-timing-function: cubic-bezier(0.15, 0.6, 0.3, 1);
   animation-fill-mode: forwards;
 }
 @keyframes soul-rise {
-  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
-  15% { opacity: 0.9; }
-  /* Sways one way on the way up, not a straight line or wide scatter —
-     reads as a ghost floating rather than a particle flying. */
-  50% { transform: translate(var(--sway, 20px), calc(var(--rise, -200px) * 0.55)) scale(1); opacity: 0.85; }
-  100% { transform: translate(calc(var(--sway, 20px) * -0.4), var(--rise, -200px)) scale(0.8); opacity: 0; }
+  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translate(var(--target-x, 0px), var(--target-y, -220px)) scale(0.2); opacity: 0; }
 }
 
 /* glass fracture */
@@ -338,22 +336,29 @@ pre.astro-code {
   100% { transform: scale(1.4); opacity: 0; }
 }
 
-/* domain slash — clones of the clicked card's own image, split down the
-   middle and pulled apart to reveal the project underneath. */
+/* domain slash — clones of the clicked card's own image, split along a
+   diagonal seam (clip-path set inline, since its angle is computed per
+   card) and pulled apart to reveal the project underneath. */
+.domain-slash-line {
+  width: 6px;
+  background: linear-gradient(180deg, transparent, #f6f1ee 20%, #ffb238 50%, #f6f1ee 80%, transparent);
+  box-shadow: 0 0 18px #ffb238;
+  animation-name: slash-sweep;
+  animation-timing-function: cubic-bezier(0.15, 0.7, 0.15, 1);
+  animation-fill-mode: forwards;
+}
 .domain-cut-half {
   position: fixed;
   object-fit: cover;
   animation-duration: 480ms;
-  animation-delay: 260ms;
+  animation-delay: 290ms;
   animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
   animation-fill-mode: forwards;
 }
 .domain-cut-left {
-  clip-path: inset(0 50% 0 0);
   animation-name: domain-split-left;
 }
 .domain-cut-right {
-  clip-path: inset(0 0 0 50%);
   animation-name: domain-split-right;
 }
 @keyframes domain-split-left {

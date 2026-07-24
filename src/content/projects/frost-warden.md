@@ -5,7 +5,7 @@ cover: /uploads/pose.png
 gallery:
   - /uploads/pose.png
   - /uploads/vor-camera.mp40001-0300.mkv
-clickEffect: skull
+clickEffect: domain-slash
 ambientEffect: fog
 ambientEffectScope: first
 techStack:

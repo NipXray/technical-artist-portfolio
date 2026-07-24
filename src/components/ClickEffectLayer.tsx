@@ -50,7 +50,7 @@ const EFFECT_DURATION = 750;
 const EFFECT_DURATION_OVERRIDES: Partial<Record<ClickEffectType, number>> = {
   smoke: 1900,
   explosion: 1350,
-  skull: 3200
+  skull: 1300
 };
 
 function rand(min: number, max: number) {
@@ -183,23 +183,25 @@ function buildSkull(x: number, y: number): Particle[] {
       animationDuration: '700ms'
     }
   };
-  // Departing souls drift slowly upward like ghosts — a gentle sway
-  // instead of a wide outward spread, a long duration, and a staggered
-  // start so they peel off one at a time rather than bursting out together.
-  const souls = Array.from({ length: 5 }, (_, i) => {
-    const size = rand(20, 28);
+  // Departing souls fan out upward from the point of impact, rather than
+  // gathering inward toward it — reads as spirits escaping/scattering, not
+  // energy being drawn into a center.
+  const souls = Array.from({ length: 12 }, (_, i) => {
+    const angle = -Math.PI / 2 + rand(-1.15, 1.15);
+    const radius = rand(120, 260);
+    const size = rand(8, 15);
     return {
       id: i + 1,
       className: 'particle particle-soul',
-      content: '👻',
       style: {
-        left: `${x - size / 2 + rand(-16, 16)}px`,
-        top: `${y - size / 2}px`,
-        fontSize: `${size}px`,
-        animationDelay: `${i * 220 + rand(0, 120)}ms`,
-        animationDuration: `${rand(1600, 2100)}ms`,
-        ['--sway' as string]: `${rand(-40, 40)}px`,
-        ['--rise' as string]: `${-rand(160, 240)}px`
+        left: `${x}px`,
+        top: `${y}px`,
+        width: `${size}px`,
+        height: `${size}px`,
+        animationDelay: `${rand(0, 180)}ms`,
+        animationDuration: `${rand(700, 1050)}ms`,
+        ['--target-x' as string]: `${Math.cos(angle) * radius}px`,
+        ['--target-y' as string]: `${Math.sin(angle) * radius}px`
       }
     };
   });
@@ -327,31 +329,45 @@ function buildSparkle(x: number, y: number): Particle[] {
   }));
 }
 
+// Matches the intro sequence's own diagonal cut angle (18deg from
+// vertical), so this reads as the same visual language rather than a new one.
+const DOMAIN_LEAN_DEG = 18;
+
 // "Domain Slash" clones the clicked card's own image and splits it in two,
 // instead of drawing particles on top of it — a slash line crosses the
 // card, then the two halves pull apart to reveal the project underneath.
+// Always cuts dead-center on a consistent diagonal lean, regardless of
+// where inside the card the click actually landed.
 function buildDomainCut(
   rect: { left: number; top: number; width: number; height: number },
-  imageSrc: string,
-  clickY: number
+  imageSrc: string
 ): DomainCut {
-  const leftToRight = Math.random() < 0.5;
-  const barWidth = Math.max(40, rect.width * 0.55);
-  const clearance = rect.width / 2 + barWidth / 2 + 24;
-  const startX = leftToRight ? -clearance : clearance;
-  const angle = leftToRight ? -5 : 5;
+  const leanRight = Math.random() < 0.5; // true: "\", false: "/"
+  const angle = leanRight ? DOMAIN_LEAN_DEG : -DOMAIN_LEAN_DEG;
+
+  // How far the seam drifts sideways from top to bottom, as a % of the
+  // card's own width — derived from the lean angle and the card's aspect
+  // ratio so the same angle reads consistently on any card size, clamped
+  // so extreme (very short/wide) cards don't produce an absurd shear.
+  const shiftPct = Math.min(42, ((Math.tan((DOMAIN_LEAN_DEG * Math.PI) / 180) * rect.height) / rect.width) * 100);
+  const topX = leanRight ? 50 - shiftPct / 2 : 50 + shiftPct / 2;
+  const bottomX = leanRight ? 50 + shiftPct / 2 : 50 - shiftPct / 2;
+
+  const barHeight = rect.height * 1.35;
+  const clearance = rect.width * 0.75 + 40;
+  const startX = leanRight ? -clearance : clearance;
 
   const lineStyle: React.CSSProperties = {
-    left: `${rect.left + rect.width / 2 - barWidth / 2}px`,
-    top: `${clickY - 3}px`,
-    width: `${barWidth}px`,
-    animationDuration: '300ms',
+    left: `${rect.left + rect.width / 2 - 3}px`,
+    top: `${rect.top + rect.height / 2 - barHeight / 2}px`,
+    height: `${barHeight}px`,
+    animationDuration: '340ms',
     ['--start-x' as string]: `${startX}px`,
     ['--end-x' as string]: `${-startX}px`,
     ['--angle' as string]: `${angle}deg`
   };
 
-  const splitDistance = Math.max(24, rect.width * 0.08);
+  const splitDistance = Math.max(28, rect.width * 0.1);
   const halfBase: React.CSSProperties = {
     left: `${rect.left}px`,
     top: `${rect.top}px`,
@@ -363,8 +379,16 @@ function buildDomainCut(
     imageSrc,
     rect,
     lineStyle,
-    leftStyle: { ...halfBase, ['--split' as string]: `-${splitDistance}px` },
-    rightStyle: { ...halfBase, ['--split' as string]: `${splitDistance}px` }
+    leftStyle: {
+      ...halfBase,
+      clipPath: `polygon(0% 0%, ${topX}% 0%, ${bottomX}% 100%, 0% 100%)`,
+      ['--split' as string]: `-${splitDistance}px`
+    },
+    rightStyle: {
+      ...halfBase,
+      clipPath: `polygon(${topX}% 0%, 100% 0%, 100% 100%, ${bottomX}% 100%)`,
+      ['--split' as string]: `${splitDistance}px`
+    }
   };
 }
 
@@ -432,7 +456,7 @@ export default function ClickEffectLayer() {
       }
 
       if (type === 'domain-slash' && rect && imageSrc) {
-        setDomainCut(buildDomainCut(rect, imageSrc, y));
+        setDomainCut(buildDomainCut(rect, imageSrc));
         window.setTimeout(() => onComplete?.(), 750);
         window.setTimeout(() => setDomainCut(null), 900);
         return;
@@ -476,7 +500,7 @@ export default function ClickEffectLayer() {
       ))}
       {domainCut && (
         <>
-          <div className="particle particle-slash" style={domainCut.lineStyle} />
+          <div className="particle domain-slash-line" style={domainCut.lineStyle} />
           <img src={domainCut.imageSrc} alt="" className="domain-cut-half domain-cut-left" style={domainCut.leftStyle} />
           <img src={domainCut.imageSrc} alt="" className="domain-cut-half domain-cut-right" style={domainCut.rightStyle} />
         </>
