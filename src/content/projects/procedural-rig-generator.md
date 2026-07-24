@@ -1,7 +1,9 @@
 ---
 title: Procedural Rig Generator
 slug: procedural-rig-generator
-cover: /uploads/procedural-rig-generator.svg
+cover: /uploads/we-and-lord-take-a-pic-before-raid-lightguardkeep_colored_with_rig_03.png
+gallery:
+  - /uploads/we-and-lord-take-a-pic-before-raid-lightguardkeep_colored_with_rig_03.png
 model: /models/sample-mesh.glb
 clickEffect: converge
 techStack:

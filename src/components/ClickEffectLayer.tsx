@@ -343,7 +343,10 @@ function buildDomainCut(
   imageSrc: string
 ): DomainCut {
   const leanRight = Math.random() < 0.5; // true: "\", false: "/"
-  const angle = leanRight ? DOMAIN_LEAN_DEG : -DOMAIN_LEAN_DEG;
+  // CSS rotate() is clockwise for positive angles: rotating a vertical bar
+  // by +deg swings its top right and bottom left, which is a "/" shape —
+  // the opposite of what "\" (leanRight) needs, hence the sign flip here.
+  const angle = leanRight ? -DOMAIN_LEAN_DEG : DOMAIN_LEAN_DEG;
 
   // How far the seam drifts sideways from top to bottom, as a % of the
   // card's own width — derived from the lean angle and the card's aspect
