@@ -16,6 +16,7 @@ const { project } = Astro.props;
 const { Content } = await render(project);
 const embedUrl = getEmbedUrl(project.data.video);
 const extraImages = project.data.gallery.filter((src) => src !== project.data.cover);
+const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v)$/i;
 ---
 
 <Layout title={project.data.title} description={project.data.description}>
@@ -57,7 +58,11 @@ const extraImages = project.data.gallery.filter((src) => src !== project.data.co
     {extraImages.length > 0 && (
       <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
         {extraImages.map((src) => (
-          <img src={src} alt={project.data.title} class="aspect-video w-full rounded-xl object-cover" />
+          VIDEO_EXTENSION.test(src) ? (
+            <video src={src} muted loop autoplay playsinline class="aspect-video w-full rounded-xl object-cover" />
+          ) : (
+            <img src={src} alt={project.data.title} class="aspect-video w-full rounded-xl object-cover" />
+          )
         ))}
       </div>
     )}

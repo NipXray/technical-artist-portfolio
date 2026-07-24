@@ -17,6 +17,33 @@ export interface ShowcaseProject {
   ambientVideoUrl?: string;
 }
 
+const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v)$/i;
+function isVideoSrc(src: string) {
+  return VIDEO_EXTENSION.test(src);
+}
+
+// Resets to frame 0 and plays only while `active`, matching the Hero
+// Slideshow's behavior so gallery clips restart cleanly each time they cycle in.
+function ModalSlideMedia({ src, active, alt }: { src: string; active: boolean; alt: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    if (active) {
+      el.currentTime = 0;
+      el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
+  }, [active]);
+
+  if (isVideoSrc(src)) {
+    return <video ref={videoRef} src={src} muted loop playsInline className="h-full w-full object-cover" />;
+  }
+  return <img src={src} alt={alt} className="h-full w-full object-cover" />;
+}
+
 function ModalBackground({
   project,
   active,
@@ -35,14 +62,14 @@ function ModalBackground({
   return (
     <div className="absolute inset-0 overflow-hidden bg-ink-900">
       {images.map((src, i) => (
-        <img
+        <div
           key={src + i}
-          src={src}
-          alt={project.title}
-          className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1200ms] ease-out ${
+          className={`absolute inset-0 transition-[opacity,transform] duration-[1200ms] ease-out ${
             i === safeIndex ? 'opacity-100' : 'opacity-0'
           } ${active ? 'scale-100' : 'scale-105'}`}
-        />
+        >
+          <ModalSlideMedia src={src} active={active && i === safeIndex} alt={project.title} />
+        </div>
       ))}
     </div>
   );

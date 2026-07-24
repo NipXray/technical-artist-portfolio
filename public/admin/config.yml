@@ -44,14 +44,14 @@ collections:
           widget: "list",
           field:
             {
-              label: "Image",
-              name: "image",
-              widget: "image",
+              label: "Image or Video",
+              name: "media",
+              widget: "file",
               media_folder: "/public/uploads",
               public_folder: "/uploads",
             },
           required: false,
-          hint: "Extra images shown in the project's slideshow popup, in addition to the cover image",
+          hint: "Extra images or short video clips shown in the project's slideshow popup, in addition to the cover image — video vs. image is detected automatically from the file",
         }
       - {
           label: "Video Link",
