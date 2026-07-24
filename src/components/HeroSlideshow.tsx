@@ -24,7 +24,7 @@ export interface CompareSlide {
 
 export type HeroSlide = SingleSlide | CompareSlide;
 
-const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v)$/i;
+const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v|mkv)$/i;
 function isVideoSrc(src: string, legacyType?: 'image' | 'video') {
   return VIDEO_EXTENSION.test(src) || legacyType === 'video';
 }

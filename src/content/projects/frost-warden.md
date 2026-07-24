@@ -4,9 +4,9 @@ slug: V
 cover: /uploads/pose.png
 gallery:
   - /uploads/pose.png
-  - /uploads/frost-warden-2.svg
+  - /uploads/vor-camera.mp40001-0300.mkv
 clickEffect: skull
-ambientEffect: "fog"
+ambientEffect: fog
 techStack:
   - Blender
 description: A high-fantasy fan

@@ -17,7 +17,7 @@ export interface ShowcaseProject {
   ambientVideoUrl?: string;
 }
 
-const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v)$/i;
+const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v|mkv)$/i;
 function isVideoSrc(src: string) {
   return VIDEO_EXTENSION.test(src);
 }

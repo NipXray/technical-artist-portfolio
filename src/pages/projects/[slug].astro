@@ -16,7 +16,7 @@ const { project } = Astro.props;
 const { Content } = await render(project);
 const embedUrl = getEmbedUrl(project.data.video);
 const extraImages = project.data.gallery.filter((src) => src !== project.data.cover);
-const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v)$/i;
+const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v|mkv)$/i;
 ---
 
 <Layout title={project.data.title} description={project.data.description}>
