@@ -1,25 +1,28 @@
-// Renders the live /resume page (with its print: styling) to
-// public/cv/resume.pdf — the file served by the "Download PDF" button and
-// the CMS's default CV / Resume PDF field. Re-run this after editing the
-// Resume/Skills content or the History timeline so the PDF stays in sync.
+// Renders the standalone /cv/en and /cv/id pages (src/pages/cv/[lang].astro,
+// a dedicated professional CV document — deliberately separate from the
+// dark-themed on-site /resume page) to public/cv/resume-en.pdf and
+// resume-id.pdf, the files served by the Download buttons. Re-run this after
+// editing Resume/Skills or the History timeline so the PDFs stay in sync.
 //
 // Requires the dev server running first: npm run dev (or astro dev --background)
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 
-const url = process.env.RESUME_URL ?? 'http://localhost:4321/resume';
-const outPath = fileURLToPath(new URL('../public/cv/resume.pdf', import.meta.url));
-
+const baseUrl = process.env.CV_BASE_URL ?? 'http://localhost:4321';
 const browser = await chromium.launch();
-const page = await browser.newPage();
-await page.goto(url, { waitUntil: 'networkidle' });
-await page.emulateMedia({ media: 'print' });
-await page.pdf({
-  path: outPath,
-  format: 'A4',
-  printBackground: true,
-  margin: { top: '18mm', bottom: '18mm', left: '18mm', right: '18mm' }
-});
-await browser.close();
 
-console.log('Wrote', outPath);
+for (const lang of ['en', 'id']) {
+  const outPath = fileURLToPath(new URL(`../public/cv/resume-${lang}.pdf`, import.meta.url));
+  const page = await browser.newPage();
+  await page.goto(`${baseUrl}/cv/${lang}`, { waitUntil: 'networkidle' });
+  await page.pdf({
+    path: outPath,
+    format: 'A4',
+    printBackground: true,
+    margin: { top: '0mm', bottom: '0mm', left: '0mm', right: '0mm' }
+  });
+  await page.close();
+  console.log('Wrote', outPath);
+}
+
+await browser.close();

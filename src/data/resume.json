@@ -28,8 +28,10 @@
   "introStyle": "elegant",
   "name": "M Ali Fikri A",
   "role": "3D Artist",
+  "roleId": "",
   "location": "",
   "cvSummary": "",
+  "cvSummaryId": "",
   "githubUrl": "No Github ❌",
   "youtubeUrl": "",
   "introTitle": "M Ali Fikri A",
@@ -78,7 +80,6 @@
     }
   ],
   "email": "alifiteris@gmail.com",
-  "cvUrl": "/cv/resume.pdf",
   "instagramUrl": "",
   "artstationUrl": "https://www.artstation.com/alifikri"
 }

@@ -245,6 +245,13 @@ collections:
         }
       - { label: "Title", name: "title", widget: "string" }
       - {
+          label: "Title (Bahasa Indonesia)",
+          name: "titleId",
+          widget: "string",
+          required: false,
+          hint: "Optional — shown instead of Title on the Indonesian CV download. Leave blank to reuse Title as-is.",
+        }
+      - {
           label: "Organization",
           name: "organization",
           widget: "string",
@@ -252,10 +259,24 @@ collections:
           hint: "Studio, school, or client name — e.g. \"Stormwatch Games\". Shown on the CV's Experience/Education sections and the on-site timeline.",
         }
       - {
+          label: "Organization (Bahasa Indonesia)",
+          name: "organizationId",
+          widget: "string",
+          required: false,
+          hint: "Optional Indonesian version of Organization. Leave blank to reuse the field above.",
+        }
+      - {
           label: "Description",
           name: "description",
           widget: "text",
           hint: "One line for a plain sentence, or several lines (press Enter between them) to show as bullet points on the CV — e.g. one achievement per line.",
+        }
+      - {
+          label: "Description (Bahasa Indonesia)",
+          name: "descriptionId",
+          widget: "text",
+          required: false,
+          hint: "Optional Indonesian translation, same one-line-or-bullets rule as Description above. Leave blank to show the English Description on the Indonesian CV too.",
         }
       - {
           label: "Tag",
@@ -280,6 +301,13 @@ collections:
               name: "role",
               widget: "string",
               hint: "Short job title — e.g. \"3D Artist\" or \"Technical Artist\". Shown as the small tag above your name in the Hero, and under your name on the CV.",
+            }
+          - {
+              label: "Role (Bahasa Indonesia)",
+              name: "roleId",
+              widget: "string",
+              required: false,
+              hint: "Optional — shown instead of Role on the Indonesian CV download. Leave blank to reuse Role as-is.",
             }
           - {
               label: "Intro Animation Title",
@@ -308,6 +336,13 @@ collections:
               hint: "2-3 sentences for the downloadable CV specifically — more formal than the Tagline above, which is written for the website's Hero. Leave blank to reuse the Tagline.",
             }
           - {
+              label: "Professional Summary (Bahasa Indonesia)",
+              name: "cvSummaryId",
+              widget: "text",
+              required: false,
+              hint: "Optional Indonesian translation of the Professional Summary above, for the Indonesian CV download. Leave blank to show the English summary there too.",
+            }
+          - {
               label: "Location",
               name: "location",
               widget: "string",
@@ -321,13 +356,6 @@ collections:
           - { label: "X (Twitter) URL", name: "xUrl", widget: "string", required: false }
           - { label: "Instagram URL", name: "instagramUrl", widget: "string", required: false }
           - { label: "LinkedIn URL", name: "linkedinUrl", widget: "string", required: false }
-          - {
-              label: "CV / Resume PDF",
-              name: "cvUrl",
-              widget: "file",
-              media_folder: "/public/cv",
-              public_folder: "/cv",
-            }
           - {
               label: "Reel Background Video",
               name: "reelVideoUrl",

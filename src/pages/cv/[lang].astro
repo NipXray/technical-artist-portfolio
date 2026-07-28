@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import CvDocument from '../../components/CvDocument.astro';
+import resume from '../../data/resume.json';
+import { buildCvSections } from '../../lib/cv-data';
+import { translateSkillCategory, type CvLang } from '../../lib/cv-translations';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'en' } }, { params: { lang: 'id' } }];
+}
+
+const lang = Astro.params.lang as CvLang;
+const isUrl = (value?: string) => !!value && /^https?:\/\//.test(value);
+
+const historyEntries = (await getCollection('history')).map((entry) => entry.data);
+const { experience, education } = buildCvSections(historyEntries, lang);
+
+const role = (lang === 'id' && resume.roleId) || resume.role;
+const summary = (lang === 'id' && resume.cvSummaryId) || resume.cvSummary || resume.tagline;
+const skills = resume.skills.map((group) => ({
+  category: translateSkillCategory(group.category, lang),
+  items: group.items
+}));
+---
+
+<CvDocument
+  lang={lang}
+  name={resume.name}
+  role={role}
+  location={resume.location || undefined}
+  email={resume.email}
+  githubUrl={isUrl(resume.githubUrl) ? resume.githubUrl : undefined}
+  artstationUrl={isUrl(resume.artstationUrl) ? resume.artstationUrl : undefined}
+  linkedinUrl={isUrl(resume.linkedinUrl) ? resume.linkedinUrl : undefined}
+  summary={summary}
+  skills={skills}
+  experience={experience}
+  education={education}
+/>
