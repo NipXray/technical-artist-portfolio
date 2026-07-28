@@ -28,8 +28,12 @@ export default function ProfessionalShowcase({ entries }: { entries: Professiona
             // Wide banner aspect ratio instead of the cover image's own
             // proportions — keeps every card the same shape so the
             // column-fill grid reads as one continuous, gapless wall rather
-            // than a loose masonry of varying tile heights.
-            className="group relative mb-0.5 block aspect-[2/1] w-full break-inside-avoid overflow-hidden border-0 bg-transparent p-0 text-left"
+            // than a loose masonry of varying tile heights. Now that the
+            // section is full-bleed instead of contained, this stays a long
+            // horizontal banner rather than growing squarer — each column
+            // is wider, so the card is still noticeably bigger in absolute
+            // size even at the same aspect ratio.
+            className="group relative mb-0.5 block aspect-[4/1] w-full break-inside-avoid overflow-hidden border-0 bg-transparent p-0 text-left"
           >
             <img
               src={entry.cover}
