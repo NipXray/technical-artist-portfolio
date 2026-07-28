@@ -178,7 +178,13 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
         <div
           className="absolute inset-y-0 left-0 bg-ink-950"
           style={{
-            right: `calc(50% + ${LINE_OFFSET})`,
+            // Trimmed 3px short of the nominal boundary (center - OFFSET) so
+            // this band overlaps the middle band instead of exactly abutting
+            // it — abutting edges are each resolved from their own calc()
+            // independently, and once the shared parent is rotated, that lets
+            // the two sides round to slightly different subpixel positions,
+            // opening a hairline gap that shows the real page through it.
+            right: `calc(50% + ${LINE_OFFSET} - 3px)`,
             transform: expanded ? 'translateX(-100%)' : 'translateX(0)',
             transition: `transform ${preset.bandExpand}`
           }}
@@ -224,7 +230,9 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
         <div
           className="absolute inset-y-0 right-0 bg-ink-950"
           style={{
-            left: `calc(50% + ${LINE_OFFSET})`,
+            // Same 3px overlap as the left band's edge, mirrored — see the
+            // comment there for why the two can't just meet exactly.
+            left: `calc(50% + ${LINE_OFFSET} - 3px)`,
             transform: expanded ? 'translateX(100%)' : 'translateX(0)',
             transition: `transform ${preset.bandExpand}`
           }}
