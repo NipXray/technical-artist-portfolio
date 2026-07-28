@@ -48,4 +48,19 @@ const history = defineCollection({
   })
 });
 
-export const collections = { projects, history };
+const professional = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/professional' }),
+  schema: z.object({
+    title: z.string(),
+    slug: z.string(),
+    cover: z.string(),
+    role: z.string(),
+    date: z.string(),
+    company: z.string().optional(),
+    companyUrl: z.string().optional(),
+    description: z.string(),
+    order: z.number().default(0)
+  })
+});
+
+export const collections = { projects, history, professional };

@@ -20,6 +20,7 @@ const {
 
 const navLinks = [
   { href: '/#projects', label: 'Projects' },
+  { href: '/#professional-projects', label: 'Professional' },
   { href: '/#skills', label: 'Skills' },
   { href: '/#contact', label: 'Contact' }
 ];
@@ -65,8 +66,7 @@ const historyEntries = (await getCollection('history'))
           ))}
           <button id="history-trigger" class="transition-colors hover:text-accent-2">History</button>
           <a
-            href={resume.cvUrl}
-            download
+            href="/resume"
             class="whitespace-nowrap rounded-none bg-accent px-4 py-2 text-xs font-bold uppercase tracking-wider text-ink-950 transition-all duration-150 hover:-translate-y-0.5 hover:bg-accent-2"
           >
             Resume

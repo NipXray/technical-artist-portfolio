@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import ProfessionalShowcase from './ProfessionalShowcase';
+
+const entries = (await getCollection('professional'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => ({
+    slug: entry.data.slug,
+    title: entry.data.title,
+    cover: entry.data.cover,
+    role: entry.data.role,
+    date: entry.data.date,
+    company: entry.data.company
+  }));
+---
+
+<section id="professional-projects">
+  <div class="mx-auto max-w-7xl px-6 pb-10 pt-24 sm:px-8">
+    <p class="text-sm font-bold uppercase tracking-[0.3em] text-accent-2">Collaborations</p>
+    <h2 class="mt-2 font-display text-3xl font-extrabold text-paper sm:text-4xl">Professional Projects</h2>
+    <p class="mt-2 text-paper-dim">Work built together with other studios, teams, and clients. Click a piece for the full credit and write-up.</p>
+  </div>
+
+  <div class="mx-auto max-w-7xl px-6 pb-24 sm:px-8">
+    <ProfessionalShowcase client:visible entries={entries} />
+  </div>
+</section>

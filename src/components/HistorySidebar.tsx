@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { formatDate } from '../lib/date';
 
 export interface HistoryEntry {
   date: string;
@@ -14,14 +15,6 @@ const TAG_COLORS: Record<string, string> = {
   release: 'bg-accent',
   current: 'bg-accent-2'
 };
-
-function formatDate(date: string) {
-  const parts = date.split('-');
-  const year = parts[0];
-  if (parts.length === 1) return year;
-  const month = new Date(`${date}-01T00:00:00`).toLocaleString('en-US', { month: 'short' });
-  return `${month} ${year}`;
-}
 
 export default function HistorySidebar({ entries }: { entries: HistoryEntry[] }) {
   const [open, setOpen] = useState(false);

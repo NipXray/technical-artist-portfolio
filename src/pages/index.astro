@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import Skills from '../components/Skills.astro';
 import ProjectGallery from '../components/ProjectGallery.astro';
+import ProfessionalGallery from '../components/ProfessionalGallery.astro';
 import Contact from '../components/Contact.astro';
 import IntroSequence from '../components/IntroSequence';
 import resume from '../data/resume.json';
@@ -12,6 +13,7 @@ import resume from '../data/resume.json';
   <IntroSequence client:load title={resume.introTitle || resume.title} style={resume.introStyle || 'elegant'} />
   <Hero />
   <ProjectGallery />
+  <ProfessionalGallery />
   <Skills />
   <Contact />
 </Layout>

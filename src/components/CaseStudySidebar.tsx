@@ -3,11 +3,16 @@ import { useEffect, useRef, useState } from 'react';
 interface CaseStudySidebarProps {
   slug: string | null;
   onClose: () => void;
+  // Which dynamic route this slug's full write-up lives on — projects and
+  // professional entries each render their own page with a #case-study-content
+  // element, and this panel just fetches that page and inlines it, so a
+  // second content type only needs a different base path, not a new panel.
+  basePath?: string;
 }
 
 const cache = new Map<string, string>();
 
-export default function CaseStudySidebar({ slug, onClose }: CaseStudySidebarProps) {
+export default function CaseStudySidebar({ slug, onClose, basePath = '/projects' }: CaseStudySidebarProps) {
   const [open, setOpen] = useState(false);
   const [displayedSlug, setDisplayedSlug] = useState<string | null>(null);
   const [html, setHtml] = useState<string>('');
@@ -26,20 +31,21 @@ export default function CaseStudySidebar({ slug, onClose }: CaseStudySidebarProp
     setDisplayedSlug(slug);
     requestAnimationFrame(() => setOpen(true));
 
-    if (cache.has(slug)) {
-      setHtml(cache.get(slug)!);
+    const cacheKey = `${basePath}:${slug}`;
+    if (cache.has(cacheKey)) {
+      setHtml(cache.get(cacheKey)!);
       setStatus('idle');
       return;
     }
 
     setStatus('loading');
-    fetch(`/projects/${slug}/`)
+    fetch(`${basePath}/${slug}/`)
       .then((res) => res.text())
       .then((text) => {
         const doc = new DOMParser().parseFromString(text, 'text/html');
         const content = doc.getElementById('case-study-content');
         const extracted = content ? content.innerHTML : '<p>Could not load this case study.</p>';
-        cache.set(slug, extracted);
+        cache.set(cacheKey, extracted);
         setHtml(extracted);
         setStatus('idle');
         if (content?.querySelector('model-viewer')) {
@@ -47,7 +53,7 @@ export default function CaseStudySidebar({ slug, onClose }: CaseStudySidebarProp
         }
       })
       .catch(() => setStatus('error'));
-  }, [slug]);
+  }, [slug, basePath]);
 
   useEffect(() => {
     if (!displayedSlug) return undefined;

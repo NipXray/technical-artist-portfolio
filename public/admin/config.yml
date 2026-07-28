@@ -157,6 +157,73 @@ collections:
         }
       - { label: "Body", name: "body", widget: "markdown" }
 
+  - name: "professional"
+    label: "Professional Projects"
+    label_singular: "Professional Project"
+    folder: "src/content/professional"
+    create: true
+    delete: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{fields.slug}}"
+    summary: "{{order}} — {{title}} ({{role}})"
+    sortable_fields: ["order", "date", "title"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - {
+          label: "Slug",
+          name: "slug",
+          widget: "string",
+          hint: "Used in the URL, e.g. rig-toolkit -> /professional/rig-toolkit",
+        }
+      - {
+          label: "Cover Image",
+          name: "cover",
+          widget: "image",
+          media_folder: "/public/uploads",
+          public_folder: "/uploads",
+        }
+      - {
+          label: "Your Role",
+          name: "role",
+          widget: "string",
+          hint: "e.g. Rigging Artist, Tools Programmer — shown on the card and the write-up",
+        }
+      - {
+          label: "Date",
+          name: "date",
+          widget: "string",
+          hint: "YYYY or YYYY-MM, e.g. 2024-06",
+          pattern: ["^\\d{4}(-\\d{2})?$", "Use YYYY or YYYY-MM"],
+        }
+      - {
+          label: "Company / Collaborator",
+          name: "company",
+          widget: "string",
+          required: false,
+          hint: "Studio, client, or person you worked with — leave blank for solo outside work",
+        }
+      - {
+          label: "Company / Collaborator Link",
+          name: "companyUrl",
+          widget: "string",
+          required: false,
+        }
+      - {
+          label: "Short Description",
+          name: "description",
+          widget: "text",
+          hint: "Shown on the project card",
+        }
+      - {
+          label: "Order",
+          name: "order",
+          widget: "number",
+          default: 0,
+          hint: "Lower numbers appear first",
+        }
+      - { label: "Body", name: "body", widget: "markdown" }
+
   - name: "history"
     label: "History"
     label_singular: "History Entry"
