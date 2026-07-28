@@ -21,18 +21,28 @@ collections:
     extension: "md"
     format: "frontmatter"
     slug: "{{fields.slug}}"
-    summary: "{{order}} — {{title}}"
+    summary: "{{fields.hidden}} — {{order}} — {{title}}"
     sortable_fields: ["order", "title"]
+    view_filters:
+      - label: "Hidden only"
+        field: hidden
+        pattern: "true"
+      - label: "Visible only"
+        field: hidden
+        pattern: "false"
+    view_groups:
+      - label: "Hidden?"
+        field: hidden
     fields:
-      - { label: "Title", name: "title", widget: "string" }
       - {
           label: "Hide from site",
           name: "hidden",
           widget: "boolean",
           default: false,
           required: false,
-          hint: "Removes it from the gallery and its project page without deleting the entry — turn back on to bring it back.",
+          hint: "Removes it from the gallery and its project page without deleting the entry — turn back on to bring it back. Shows in this list and in the Hidden/Visible filter above without opening the entry.",
         }
+      - { label: "Title", name: "title", widget: "string" }
       - {
           label: "Slug",
           name: "slug",
@@ -174,18 +184,28 @@ collections:
     extension: "md"
     format: "frontmatter"
     slug: "{{fields.slug}}"
-    summary: "{{order}} — {{title}} ({{role}})"
+    summary: "{{fields.hidden}} — {{order}} — {{title}} ({{role}})"
     sortable_fields: ["order", "date", "title"]
+    view_filters:
+      - label: "Hidden only"
+        field: hidden
+        pattern: "true"
+      - label: "Visible only"
+        field: hidden
+        pattern: "false"
+    view_groups:
+      - label: "Hidden?"
+        field: hidden
     fields:
-      - { label: "Title", name: "title", widget: "string" }
       - {
           label: "Hide from site",
           name: "hidden",
           widget: "boolean",
           default: false,
           required: false,
-          hint: "Removes it from the grid and its write-up page without deleting the entry — turn back on to bring it back.",
+          hint: "Removes it from the grid and its write-up page without deleting the entry — turn back on to bring it back. Shows in this list and in the Hidden/Visible filter above without opening the entry.",
         }
+      - { label: "Title", name: "title", widget: "string" }
       - {
           label: "Slug",
           name: "slug",
@@ -400,7 +420,7 @@ collections:
           - label: "Hero Slideshow"
             name: "heroSlides"
             widget: "list"
-            summary: "{{fields.caption}}"
+            summary: "{{fields.hidden}} — {{fields.caption}}"
             hint: "Background slides for the homepage hero — fades between them on a timer. ⚠ If you add a new slide, finish filling it in (or delete it with the X) before clicking Publish — publishing with an empty/unfinished slide causes a CMS error."
             typeKey: "slideKind"
             types:

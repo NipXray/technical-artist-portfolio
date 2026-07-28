@@ -1,5 +1,6 @@
 ---
 title: Houdini Destruction Toolkit
+hidden: true
 slug: houdini-destruction-toolkit
 cover: /uploads/houdini-destruction-toolkit.svg
 clickEffect: explosion

@@ -1,5 +1,6 @@
 ---
 title: "Environment: Floating Lantern Isles"
+hidden: true
 slug: floating-lantern-isles
 cover: /uploads/floating-lantern-isles.svg
 gallery:

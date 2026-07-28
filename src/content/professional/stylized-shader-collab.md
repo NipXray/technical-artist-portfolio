@@ -1,11 +1,13 @@
 ---
-title: "Stylized Material Library"
+title: Stylized Material Library
+hidden: true
 slug: stylized-shader-collab
 cover: /uploads/stylized-shader-pipeline.svg
-role: "Shader Artist"
-date: "2021-08"
-company: "Worked with the Umbra Faire team"
-description: "Built the core stylized material library a small indie team used across their game's props and characters."
+role: Shader Artist
+date: 2021-08
+company: Worked with the Umbra Faire team
+description: Built the core stylized material library a small indie team used
+  across their game's props and characters.
 order: 4
 ---
 

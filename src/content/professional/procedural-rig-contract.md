@@ -1,11 +1,14 @@
 ---
-title: "Procedural Creature Rigging"
+title: Procedural Creature Rigging
+hidden: true
 slug: procedural-rig-contract
 cover: /uploads/procedural-rig-generator.svg
-role: "Contract Rigger"
-date: "2022-09"
-company: "Freelance — client under NDA"
-description: "Rigged a roster of non-humanoid creatures for an unannounced title, using a shared procedural base to keep turnaround fast across very different anatomies."
+role: Contract Rigger
+date: 2022-09
+company: Freelance — client under NDA
+description: Rigged a roster of non-humanoid creatures for an unannounced title,
+  using a shared procedural base to keep turnaround fast across very different
+  anatomies.
 order: 3
 ---
 

@@ -27,19 +27,18 @@
   ],
   "introStyle": "elegant",
   "name": "M Ali Fikri A",
-  "role": "3D Artist",
-  "roleId": "Artis 3D",
-  "customCvEn": "",
-  "customCvId": "",
-  "location": "",
-  "cvSummary": "Technical Artist with hands-on experience in 3D rigging, procedural tooling, and pipeline development for games — from a first internship through to a Senior Technical Artist role, now working independently on freelance and contract projects. Specializes in Houdini and custom Blender/Unity tooling.",
-  "cvSummaryId": "Technical Artist dengan pengalaman langsung dalam rigging 3D, tooling prosedural, dan pengembangan pipeline untuk game — mulai dari magang pertama hingga posisi Senior Technical Artist, dan kini bekerja secara mandiri untuk proyek lepas dan kontrak. Berspesialisasi dalam Houdini serta tooling kustom Blender/Unity.",
   "githubUrl": "No Github ❌",
   "youtubeUrl": "",
   "introTitle": "M Ali Fikri A",
+  "customCvEn": "",
+  "cvSummaryId": "Technical Artist dengan pengalaman langsung dalam rigging 3D, tooling prosedural, dan pengembangan pipeline untuk game — mulai dari magang pertama hingga posisi Senior Technical Artist, dan kini bekerja secara mandiri untuk proyek lepas dan kontrak. Berspesialisasi dalam Houdini serta tooling kustom Blender/Unity.",
   "tagline": "I craft characters, worlds, and the pipelines that bring them to life — with a little bit of this and that in every works. ✨",
   "reelVideoUrl": "/videos/reel-placeholder.mp4",
+  "roleId": "Artis 3D",
   "linkedinUrl": "",
+  "cvSummary": "Technical Artist with hands-on experience in 3D rigging, procedural tooling, and pipeline development for games — from a first internship through to a Senior Technical Artist role, now working independently on freelance and contract projects. Specializes in Houdini and custom Blender/Unity tooling.",
+  "location": "",
+  "role": "3D Artist",
   "xUrl": "",
   "title": "M Ali Fikri A",
   "heroSlides": [
@@ -62,7 +61,8 @@
       "type": "image",
       "src": "/hero/slide-world.svg",
       "duration": 6,
-      "caption": "World Building"
+      "caption": "World Building",
+      "hidden": true
     },
     {
       "slideKind": "compare",
@@ -83,5 +83,6 @@
   ],
   "email": "alifiteris@gmail.com",
   "instagramUrl": "",
-  "artstationUrl": "https://www.artstation.com/alifikri"
+  "artstationUrl": "https://www.artstation.com/alifikri",
+  "customCvId": ""
 }

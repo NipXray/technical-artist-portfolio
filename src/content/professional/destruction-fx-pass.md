@@ -1,11 +1,13 @@
 ---
-title: "Destruction FX Pass"
+title: Destruction FX Pass
+hidden: true
 slug: destruction-fx-pass
 cover: /uploads/houdini-destruction-toolkit.svg
-role: "FX Technical Artist"
-date: "2023-04"
-company: "Blacksail Interactive"
-description: "Contributed a modular Houdini destruction setup used across three environment set-pieces for a contract project."
+role: FX Technical Artist
+date: 2023-04
+company: Blacksail Interactive
+description: Contributed a modular Houdini destruction setup used across three
+  environment set-pieces for a contract project.
 order: 2
 ---
 

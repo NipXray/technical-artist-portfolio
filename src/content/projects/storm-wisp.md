@@ -1,5 +1,6 @@
 ---
 title: "Creature VFX: Storm Wisp"
+hidden: true
 slug: storm-wisp
 cover: /uploads/storm-wisp.svg
 gallery:
