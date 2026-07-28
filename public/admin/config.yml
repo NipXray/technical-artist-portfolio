@@ -245,9 +245,17 @@ collections:
         }
       - { label: "Title", name: "title", widget: "string" }
       - {
+          label: "Organization",
+          name: "organization",
+          widget: "string",
+          required: false,
+          hint: "Studio, school, or client name — e.g. \"Stormwatch Games\". Shown on the CV's Experience/Education sections and the on-site timeline.",
+        }
+      - {
           label: "Description",
           name: "description",
           widget: "text",
+          hint: "One line for a plain sentence, or several lines (press Enter between them) to show as bullet points on the CV — e.g. one achievement per line.",
         }
       - {
           label: "Tag",
@@ -255,7 +263,7 @@ collections:
           widget: "select",
           options: ["origin", "education", "job", "release", "current"],
           required: false,
-          hint: "Controls the timeline marker color",
+          hint: "Controls the timeline marker color. Also controls the CV: \"education\" entries go under Education, everything except \"origin\" goes under Professional Experience — \"origin\" entries (personal milestones) show on the on-site timeline only, not the downloadable CV.",
         }
 
   - name: "settings"
@@ -267,6 +275,12 @@ collections:
         fields:
           - { label: "Full Name", name: "name", widget: "string" }
           - { label: "Headline / Title", name: "title", widget: "string" }
+          - {
+              label: "Role",
+              name: "role",
+              widget: "string",
+              hint: "Short job title — e.g. \"3D Artist\" or \"Technical Artist\". Shown as the small tag above your name in the Hero, and under your name on the CV.",
+            }
           - {
               label: "Intro Animation Title",
               name: "introTitle",
@@ -286,6 +300,20 @@ collections:
               required: false,
             }
           - { label: "Tagline", name: "tagline", widget: "text" }
+          - {
+              label: "Professional Summary (CV)",
+              name: "cvSummary",
+              widget: "text",
+              required: false,
+              hint: "2-3 sentences for the downloadable CV specifically — more formal than the Tagline above, which is written for the website's Hero. Leave blank to reuse the Tagline.",
+            }
+          - {
+              label: "Location",
+              name: "location",
+              widget: "string",
+              required: false,
+              hint: "City, Country — shown on the CV's contact line. Leave blank to omit it.",
+            }
           - { label: "Contact Email", name: "email", widget: "string" }
           - { label: "GitHub URL", name: "githubUrl", widget: "string" }
           - { label: "ArtStation URL", name: "artstationUrl", widget: "string" }

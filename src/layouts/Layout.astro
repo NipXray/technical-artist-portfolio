@@ -64,7 +64,10 @@ const historyEntries = (await getCollection('history'))
           {navLinks.map((link) => (
             <a href={link.href} class="hidden transition-colors hover:text-accent-2 sm:inline">{link.label}</a>
           ))}
-          <button id="history-trigger" class="transition-colors hover:text-accent-2">History</button>
+          {/* Browsers reset text-transform to none on form controls by
+              default, so this button doesn't inherit the nav's `uppercase`
+              like the plain <a> links do — it needs its own. */}
+          <button id="history-trigger" class="uppercase transition-colors hover:text-accent-2">History</button>
           <a
             href="/resume"
             class="whitespace-nowrap rounded-none bg-accent px-4 py-2 text-xs font-bold uppercase tracking-wider text-ink-950 transition-all duration-150 hover:-translate-y-0.5 hover:bg-accent-2"
