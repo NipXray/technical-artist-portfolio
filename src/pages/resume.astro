@@ -38,14 +38,14 @@ const education = historyEntries
       </div>
       <div class="flex w-fit shrink-0 flex-col gap-2 sm:items-end">
         <a
-          href="/cv/resume-en.pdf"
+          href={resume.customCvEn || '/cv/resume-en.pdf'}
           download
           class="inline-flex items-center gap-2 rounded-none bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all hover:-translate-y-0.5 hover:bg-accent-2"
         >
           Download PDF (English)
         </a>
         <a
-          href="/cv/resume-id.pdf"
+          href={resume.customCvId || '/cv/resume-id.pdf'}
           download
           class="inline-flex items-center gap-2 rounded-none bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all hover:-translate-y-0.5 hover:bg-accent-2"
         >

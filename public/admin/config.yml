@@ -310,6 +310,24 @@ collections:
               hint: "Optional — shown instead of Role on the Indonesian CV download. Leave blank to reuse Role as-is.",
             }
           - {
+              label: "Custom CV Upload (English)",
+              name: "customCvEn",
+              widget: "file",
+              media_folder: "/public/cv",
+              public_folder: "/cv",
+              required: false,
+              hint: "Optional — upload your own designed PDF (e.g. with a photo, made in Canva/Word/whatever) to use instead of the auto-generated English CV. Leave blank to keep using the generated one.",
+            }
+          - {
+              label: "Custom CV Upload (Bahasa Indonesia)",
+              name: "customCvId",
+              widget: "file",
+              media_folder: "/public/cv",
+              public_folder: "/cv",
+              required: false,
+              hint: "Optional — same as above, for the Indonesian download. Leave blank to keep using the generated one.",
+            }
+          - {
               label: "Intro Animation Title",
               name: "introTitle",
               widget: "string",
