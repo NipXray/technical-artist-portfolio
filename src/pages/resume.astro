@@ -12,51 +12,55 @@ const historyEntries = (await getCollection('history'))
 ---
 
 <Layout title="Resume" description={`${resume.name} — Resume / CV`}>
-  <article class="mx-auto max-w-3xl px-6 pb-20 pt-32 sm:pt-36">
-    <div class="flex flex-col gap-6 border-b border-border pb-8 sm:flex-row sm:items-end sm:justify-between">
+  <!-- Printed/exported as the downloadable CV PDF (see scripts/generate-resume-pdf.mjs),
+       so everything below also carries a print: variant swapping the dark
+       on-site theme for plain black-on-white — a print-friendly document,
+       not a screenshot of the dark site. -->
+  <article class="mx-auto max-w-3xl px-6 pb-20 pt-32 sm:pt-36 print:max-w-none print:px-0 print:pb-0 print:pt-0">
+    <div class="flex flex-col gap-6 border-b border-border pb-8 sm:flex-row sm:items-end sm:justify-between print:border-neutral-300 print:pb-3">
       <div>
-        <p class="text-sm font-bold uppercase tracking-[0.3em] text-accent-2">Curriculum Vitae</p>
-        <h1 class="mt-2 font-display text-4xl font-extrabold text-paper">{resume.name}</h1>
-        <p class="mt-3 max-w-lg text-paper-dim">{resume.tagline}</p>
+        <p class="text-sm font-bold uppercase tracking-[0.3em] text-accent-2 print:text-neutral-500">Curriculum Vitae</p>
+        <h1 class="mt-2 font-display text-4xl font-extrabold text-paper print:text-black">{resume.name}</h1>
+        <p class="mt-3 max-w-lg text-paper-dim print:text-neutral-700">{resume.tagline}</p>
       </div>
       <a
         href={resume.cvUrl}
         download
-        class="inline-flex w-fit shrink-0 items-center gap-2 rounded-none bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all hover:-translate-y-0.5 hover:bg-accent-2"
+        class="inline-flex w-fit shrink-0 items-center gap-2 rounded-none bg-accent px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink-950 transition-all hover:-translate-y-0.5 hover:bg-accent-2 print:hidden"
       >
         Download PDF
       </a>
     </div>
 
-    <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-paper-dim">
-      <a href={`mailto:${resume.email}`} class="hover:text-accent-2">{resume.email}</a>
+    <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-paper-dim print:text-neutral-700">
+      <a href={`mailto:${resume.email}`} class="hover:text-accent-2 print:text-neutral-700">{resume.email}</a>
       {isUrl(resume.artstationUrl) && (
-        <a href={resume.artstationUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2">ArtStation</a>
+        <a href={resume.artstationUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2 print:text-neutral-700">ArtStation</a>
       )}
       {isUrl(resume.githubUrl) && (
-        <a href={resume.githubUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2">GitHub</a>
+        <a href={resume.githubUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2 print:text-neutral-700">GitHub</a>
       )}
       {isUrl(resume.youtubeUrl) && (
-        <a href={resume.youtubeUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2">YouTube</a>
+        <a href={resume.youtubeUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2 print:text-neutral-700">YouTube</a>
       )}
       {isUrl(resume.xUrl) && (
-        <a href={resume.xUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2">X</a>
+        <a href={resume.xUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2 print:text-neutral-700">X</a>
       )}
       {isUrl(resume.instagramUrl) && (
-        <a href={resume.instagramUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2">Instagram</a>
+        <a href={resume.instagramUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2 print:text-neutral-700">Instagram</a>
       )}
       {isUrl(resume.linkedinUrl) && (
-        <a href={resume.linkedinUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2">LinkedIn</a>
+        <a href={resume.linkedinUrl} target="_blank" rel="noreferrer" class="hover:text-accent-2 print:text-neutral-700">LinkedIn</a>
       )}
     </div>
 
-    <section class="mt-12">
-      <h2 class="font-display text-xl font-bold text-paper">Skills</h2>
-      <div class="mt-4 grid gap-6 sm:grid-cols-3">
+    <section class="mt-12 print:mt-5">
+      <h2 class="font-display text-xl font-bold text-paper print:text-black">Skills</h2>
+      <div class="mt-4 grid gap-6 sm:grid-cols-3 print:grid-cols-3 print:gap-4">
         {resume.skills.map((group) => (
           <div>
-            <p class="text-xs font-bold uppercase tracking-wide text-accent-2">{group.category}</p>
-            <ul class="mt-2 space-y-1 text-sm text-paper-dim">
+            <p class="text-xs font-bold uppercase tracking-wide text-accent-2 print:text-neutral-500">{group.category}</p>
+            <ul class="mt-2 space-y-1 text-sm text-paper-dim print:text-neutral-700">
               {group.items.map((item) => (
                 <li>{item}</li>
               ))}
@@ -66,16 +70,16 @@ const historyEntries = (await getCollection('history'))
       </div>
     </section>
 
-    <section class="mt-12">
-      <h2 class="font-display text-xl font-bold text-paper">Experience</h2>
-      <p class="mt-1 text-xs text-paper-dim">Pulled from the site's career timeline — edit entries there to update this section.</p>
-      <ol class="mt-4 space-y-6 border-l border-border pl-6">
+    <section class="mt-12 print:mt-5">
+      <h2 class="font-display text-xl font-bold text-paper print:text-black">Experience</h2>
+      <p class="mt-1 text-xs text-paper-dim print:hidden">Pulled from the site's career timeline — edit entries there to update this section.</p>
+      <ol class="mt-4 space-y-6 border-l border-border pl-6 print:mt-2 print:space-y-2 print:border-neutral-300">
         {historyEntries.map((entry) => (
           <li class="relative">
-            <span class="absolute -left-[27px] mt-1.5 h-2.5 w-2.5 rounded-none bg-accent" />
-            <p class="text-xs font-bold uppercase tracking-wide text-accent-2">{formatDate(entry.date)}</p>
-            <h3 class="mt-1 font-display font-semibold text-paper">{entry.title}</h3>
-            <p class="mt-1 text-sm text-paper-dim">{entry.description}</p>
+            <span class="absolute -left-[27px] mt-1.5 h-2.5 w-2.5 rounded-none bg-accent print:bg-black" />
+            <p class="text-xs font-bold uppercase tracking-wide text-accent-2 print:text-neutral-500">{formatDate(entry.date)}</p>
+            <h3 class="mt-1 font-display font-semibold text-paper print:text-black">{entry.title}</h3>
+            <p class="mt-1 text-sm text-paper-dim print:text-neutral-700">{entry.description}</p>
           </li>
         ))}
       </ol>

@@ -84,12 +84,13 @@ export default function CaseStudySidebar({ slug, onClose, basePath = '/projects'
       {/* Pinned to this panel's own left edge, vertically centered, instead
           of the far top-right corner — that put it as far as possible from
           wherever the visitor actually clicked to open this panel, on the
-          opposite edge from the still-visible page behind it. A solid pill
-          background keeps it legible regardless of what's behind it here,
-          since this edge sits on the gradient's transparent side. */}
+          opposite edge from the still-visible page behind it. A bordered,
+          shadowed chip (rather than bare text over the artwork) reads as a
+          distinct floating control instead of something sitting on top of
+          the image underneath it. */}
       <button
         onClick={onClose}
-        className="absolute left-4 top-1/2 z-10 flex -translate-y-1/2 items-center gap-2 rounded-none bg-ink-950/80 px-3 py-2 text-xs font-bold uppercase tracking-[0.2em] text-paper backdrop-blur-sm transition-colors hover:text-accent-2 sm:left-6"
+        className="absolute left-3 top-1/2 z-10 flex -translate-y-1/2 items-center gap-2 border border-paper/25 bg-ink-950/90 px-3 py-2.5 text-xs font-bold uppercase tracking-[0.2em] text-paper shadow-xl backdrop-blur-md transition-colors hover:border-paper/60 hover:text-accent-2 sm:left-4"
       >
         <span aria-hidden="true">✕</span> Close
       </button>

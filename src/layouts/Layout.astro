@@ -54,8 +54,8 @@ const historyEntries = (await getCollection('history'))
       })();
     </script>
   </head>
-  <body class="min-h-screen bg-ink-950 text-paper antialiased">
-    <header class="fixed inset-x-0 top-0 z-50 bg-gradient-to-b from-ink-950/90 to-transparent">
+  <body class="min-h-screen bg-ink-950 text-paper antialiased print:bg-white print:text-black">
+    <header class="fixed inset-x-0 top-0 z-50 bg-gradient-to-b from-ink-950/90 to-transparent print:hidden">
       <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-5 sm:px-8">
         <a href="/" class="truncate font-display text-lg font-extrabold tracking-tight text-paper hover:text-accent-2">
           {resume.name}
@@ -79,7 +79,7 @@ const historyEntries = (await getCollection('history'))
       <slot />
     </main>
 
-    <footer class="border-t border-border">
+    <footer class="border-t border-border print:hidden">
       <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-8 text-xs text-paper-dim sm:flex-row">
         <p>&copy; {new Date().getFullYear()} {resume.name}. All rights reserved.</p>
         <div class="flex gap-5 font-semibold uppercase tracking-wide">
@@ -94,16 +94,18 @@ const historyEntries = (await getCollection('history'))
       </div>
     </footer>
 
-    <HistorySidebar client:load entries={historyEntries} />
-    <ClickEffectLayer client:load />
-    <FloatingSocialDock
-      client:load
-      githubUrl={isUrl(resume.githubUrl) ? resume.githubUrl : undefined}
-      artstationUrl={isUrl(resume.artstationUrl) ? resume.artstationUrl : undefined}
-      youtubeUrl={isUrl(resume.youtubeUrl) ? resume.youtubeUrl : undefined}
-      xUrl={isUrl(resume.xUrl) ? resume.xUrl : undefined}
-      instagramUrl={isUrl(resume.instagramUrl) ? resume.instagramUrl : undefined}
-      linkedinUrl={isUrl(resume.linkedinUrl) ? resume.linkedinUrl : undefined}
-    />
+    <div class="print:hidden">
+      <HistorySidebar client:load entries={historyEntries} />
+      <ClickEffectLayer client:load />
+      <FloatingSocialDock
+        client:load
+        githubUrl={isUrl(resume.githubUrl) ? resume.githubUrl : undefined}
+        artstationUrl={isUrl(resume.artstationUrl) ? resume.artstationUrl : undefined}
+        youtubeUrl={isUrl(resume.youtubeUrl) ? resume.youtubeUrl : undefined}
+        xUrl={isUrl(resume.xUrl) ? resume.xUrl : undefined}
+        instagramUrl={isUrl(resume.instagramUrl) ? resume.instagramUrl : undefined}
+        linkedinUrl={isUrl(resume.linkedinUrl) ? resume.linkedinUrl : undefined}
+      />
+    </div>
   </body>
 </html>
