@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import ProfessionalShowcase from './ProfessionalShowcase';
 
-const entries = (await getCollection('professional'))
+const entries = (await getCollection('professional', ({ data }) => !data.hidden))
   .sort((a, b) => a.data.order - b.data.order)
   .map((entry) => ({
     slug: entry.data.slug,
@@ -14,6 +14,7 @@ const entries = (await getCollection('professional'))
   }));
 ---
 
+{entries.length > 0 && (
 <section id="professional-projects">
   <div class="mx-auto max-w-7xl px-6 pb-10 pt-24 sm:px-8">
     <p class="text-sm font-bold uppercase tracking-[0.3em] text-accent-2">Professional Work</p>
@@ -26,3 +27,4 @@ const entries = (await getCollection('professional'))
        feel like an afterthought next to that full-width section. -->
   <ProfessionalShowcase client:visible entries={entries} />
 </section>
+)}

@@ -26,6 +26,14 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - {
+          label: "Hide from site",
+          name: "hidden",
+          widget: "boolean",
+          default: false,
+          required: false,
+          hint: "Removes it from the gallery and its project page without deleting the entry — turn back on to bring it back.",
+        }
+      - {
           label: "Slug",
           name: "slug",
           widget: "string",
@@ -170,6 +178,14 @@ collections:
     sortable_fields: ["order", "date", "title"]
     fields:
       - { label: "Title", name: "title", widget: "string" }
+      - {
+          label: "Hide from site",
+          name: "hidden",
+          widget: "boolean",
+          default: false,
+          required: false,
+          hint: "Removes it from the grid and its write-up page without deleting the entry — turn back on to bring it back.",
+        }
       - {
           label: "Slug",
           name: "slug",
@@ -393,6 +409,14 @@ collections:
                 widget: "object"
                 fields:
                   - {
+                      label: "Hide this slide",
+                      name: "hidden",
+                      widget: "boolean",
+                      default: false,
+                      required: false,
+                      hint: "Skip it in the hero rotation without deleting it.",
+                    }
+                  - {
                       label: "Media (image or video — detected automatically from the file)",
                       name: "src",
                       widget: "file",
@@ -416,6 +440,14 @@ collections:
                     - { src: "", label: "" }
                     - { src: "", label: "" }
                 fields:
+                  - {
+                      label: "Hide this slide",
+                      name: "hidden",
+                      widget: "boolean",
+                      default: false,
+                      required: false,
+                      hint: "Skip it in the hero rotation without deleting it.",
+                    }
                   - label: "Combine Mode"
                     name: "mode"
                     widget: "select"

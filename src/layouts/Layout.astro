@@ -18,9 +18,11 @@ const {
   description = resume.tagline
 } = Astro.props;
 
+const hasVisibleProfessionalWork = (await getCollection('professional', ({ data }) => !data.hidden)).length > 0;
+
 const navLinks = [
   { href: '/#projects', label: 'Projects' },
-  { href: '/#professional-projects', label: 'Professional' },
+  ...(hasVisibleProfessionalWork ? [{ href: '/#professional-projects', label: 'Professional' }] : []),
   { href: '/#skills', label: 'Skills' },
   { href: '/#contact', label: 'Contact' }
 ];

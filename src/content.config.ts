@@ -34,7 +34,8 @@ const projects = defineCollection({
     galleryVideoPlayback: z.enum(['fixed', 'full']).default('fixed'),
     techStack: z.array(z.string()).default([]),
     description: z.string(),
-    order: z.number().default(0)
+    order: z.number().default(0),
+    hidden: z.boolean().default(false)
   })
 });
 
@@ -63,7 +64,8 @@ const professional = defineCollection({
     company: z.string().optional(),
     companyUrl: z.string().optional(),
     description: z.string(),
-    order: z.number().default(0)
+    order: z.number().default(0),
+    hidden: z.boolean().default(false)
   })
 });
 

@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import ProjectShowcase from './ProjectShowcase';
 
-const projects = (await getCollection('projects'))
+const projects = (await getCollection('projects', ({ data }) => !data.hidden))
   .sort((a, b) => a.data.order - b.data.order)
   .map((project) => ({
     slug: project.data.slug,

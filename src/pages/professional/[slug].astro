@@ -4,7 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import { formatDate } from '../../lib/date';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('professional');
+  const entries = await getCollection('professional', ({ data }) => !data.hidden);
 
   return entries.map((entry) => ({
     params: { slug: entry.data.slug },
