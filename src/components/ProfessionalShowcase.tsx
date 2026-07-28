@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDate } from '../lib/date';
 import CaseStudySidebar from './CaseStudySidebar';
 
@@ -13,6 +13,21 @@ export interface ProfessionalEntry {
 
 export default function ProfessionalShowcase({ entries }: { entries: ProfessionalEntry[] }) {
   const [caseStudySlug, setCaseStudySlug] = useState<string | null>(null);
+  const [revealed, setRevealed] = useState(false);
+
+  // client:visible already delays this component's own hydration until the
+  // section is scrolled into view, so triggering the reveal right on mount
+  // (same technique ProjectShowcase uses) is enough — no separate
+  // IntersectionObserver needed.
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setRevealed(true));
+    return () => cancelAnimationFrame(t);
+  }, []);
+
+  // The CSS column layout balances items into the left column first, then
+  // the right — with every card the same height, that split is just the
+  // first half of entries by count, matching what the browser actually does.
+  const leftColumnCount = Math.ceil(entries.length / 2);
 
   return (
     <>
@@ -21,10 +36,13 @@ export default function ProfessionalShowcase({ entries }: { entries: Professiona
           this section's cards are meant to read as a stacked set of credits
           rather than a uniform tile grid. */}
       <div className="columns-1 gap-0.5 sm:columns-2">
-        {entries.map((entry) => (
+        {entries.map((entry, i) => {
+          const isLeft = i < leftColumnCount;
+          return (
           <button
             key={entry.slug}
             onClick={() => setCaseStudySlug(entry.slug)}
+            style={{ transitionDelay: revealed ? `${i * 80}ms` : '0ms' }}
             // Wide banner aspect ratio instead of the cover image's own
             // proportions — keeps every card the same shape so the
             // column-fill grid reads as one continuous, gapless wall rather
@@ -33,7 +51,12 @@ export default function ProfessionalShowcase({ entries }: { entries: Professiona
             // horizontal banner rather than growing squarer — each column
             // is wider, so the card is still noticeably bigger in absolute
             // size even at the same aspect ratio.
-            className="group relative mb-0.5 block aspect-[4/1] w-full break-inside-avoid overflow-hidden border-0 bg-transparent p-0 text-left"
+            //
+            // Slides in from whichever side its own column sits on — left
+            // column from the left, right column from the right — on load.
+            className={`group relative mb-0.5 block aspect-[4/1] w-full break-inside-avoid overflow-hidden border-0 bg-transparent p-0 text-left transition-all duration-700 ease-out ${
+              revealed ? 'translate-x-0 opacity-100' : `opacity-0 ${isLeft ? '-translate-x-16' : 'translate-x-16'}`
+            }`}
           >
             <img
               src={entry.cover}
@@ -48,7 +71,8 @@ export default function ProfessionalShowcase({ entries }: { entries: Professiona
               </p>
             </div>
           </button>
-        ))}
+          );
+        })}
       </div>
 
       <CaseStudySidebar slug={caseStudySlug} onClose={() => setCaseStudySlug(null)} basePath="/professional" />
