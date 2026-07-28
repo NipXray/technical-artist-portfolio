@@ -81,11 +81,17 @@ export default function CaseStudySidebar({ slug, onClose, basePath = '/projects'
     >
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-ink-950/95 to-ink-950 md:via-ink-950/90" />
 
+      {/* Pinned to this panel's own left edge, vertically centered, instead
+          of the far top-right corner — that put it as far as possible from
+          wherever the visitor actually clicked to open this panel, on the
+          opposite edge from the still-visible page behind it. A solid pill
+          background keeps it legible regardless of what's behind it here,
+          since this edge sits on the gradient's transparent side. */}
       <button
         onClick={onClose}
-        className="absolute right-6 top-8 z-10 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-paper transition-colors hover:text-accent-2 sm:right-10 sm:top-10"
+        className="absolute left-4 top-1/2 z-10 flex -translate-y-1/2 items-center gap-2 rounded-none bg-ink-950/80 px-3 py-2 text-xs font-bold uppercase tracking-[0.2em] text-paper backdrop-blur-sm transition-colors hover:text-accent-2 sm:left-6"
       >
-        Close <span aria-hidden="true">✕</span>
+        <span aria-hidden="true">✕</span> Close
       </button>
 
       <div ref={scrollRef} className="relative h-full overflow-y-auto px-6 pb-16 pt-24 sm:px-14 sm:pt-28">

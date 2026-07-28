@@ -194,7 +194,14 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
               rotated ancestor, a 2px-wide line rasterized as disconnected
               fragments instead of one continuous stroke. */}
           <div
-            className="absolute right-0 w-0.5 bg-paper"
+            // Inset 3px from this band's own (now-extended) right edge so the
+            // line lands back on the original, unshifted seam coordinate.
+            // The middle band paints after this one in DOM order, so if the
+            // line sat flush with the extended edge instead, it would land
+            // inside the middle band's span and render underneath it —
+            // visible on the right line (which paints after the middle band,
+            // so nothing covers it) but dimmed out on this one.
+            className="absolute right-[3px] w-0.5 bg-paper"
             style={{
               top: '50%',
               height: LINE_LENGTH,
@@ -238,7 +245,11 @@ export default function IntroSequence({ title, style = 'elegant' }: { title: str
           }}
         >
           <div
-            className="absolute left-0 w-0.5 bg-paper"
+            // Same 3px compensating inset as the left line, mirrored — this
+            // side wasn't visibly broken (this band paints after the middle
+            // band, so nothing hides it), but it had still quietly drifted
+            // 3px off the nominal seam; inset it back for an exact mirror.
+            className="absolute left-[3px] w-0.5 bg-paper"
             style={{
               top: '50%',
               height: LINE_LENGTH,
