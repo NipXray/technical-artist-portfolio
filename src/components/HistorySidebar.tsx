@@ -18,7 +18,12 @@ const TAG_COLORS: Record<string, string> = {
 
 export default function HistorySidebar({ entries }: { entries: HistoryEntry[] }) {
   const [open, setOpen] = useState(false);
-  const [currentYear, setCurrentYear] = useState(entries[0]?.date.split('-')[0] ?? '');
+  // Which entry's description is expanded — driven entirely by scroll
+  // position (whichever entry sits nearest the top), not clicks: scrolling
+  // down closes the current entry and opens the next one it reaches, and
+  // the big year marker above just reads off this same active entry.
+  const [activeIndex, setActiveIndex] = useState(0);
+  const currentYear = entries[activeIndex]?.date.split('-')[0] ?? entries[0]?.date.split('-')[0] ?? '';
   const panelRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<number, HTMLLIElement>>(new Map());
@@ -50,17 +55,26 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
 
     document.addEventListener('mousedown', handlePointerDown);
     document.addEventListener('keydown', handleKeyDown);
-    const previousOverflow = document.body.style.overflow;
+    // global.css sets an explicit overflow-x on <html>, which stops browsers
+    // from propagating <body>'s own overflow to the viewport's scrolling
+    // box the way they normally would — locking body alone left the page
+    // still scrollable out from under the panel. Lock both.
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
     return () => {
       document.removeEventListener('mousedown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
     };
   }, [open]);
 
-  // Sticky "current year" marker that follows scroll position through the timeline.
+  // Drives both the accordion (which entry is expanded) and the sticky
+  // year marker off the same signal: whichever entry currently sits
+  // nearest the top of the scroll area.
   useEffect(() => {
     if (!open) return undefined;
     const root = scrollRef.current;
@@ -73,7 +87,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
         const topMost = visible.reduce((a, b) => (a.boundingClientRect.top < b.boundingClientRect.top ? a : b));
         const index = Number(topMost.target.getAttribute('data-index'));
         if (!Number.isNaN(index) && entries[index]) {
-          setCurrentYear(entries[index].date.split('-')[0]);
+          setActiveIndex(index);
         }
       },
       { root, rootMargin: '0px 0px -65% 0px', threshold: 0 }
@@ -83,12 +97,12 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
 
     // The IntersectionObserver's trigger zone sits near the top of the panel,
     // so the last entry can never scroll far enough to reach it before hitting
-    // the bottom of the scroll range. Force the final year once fully scrolled.
+    // the bottom of the scroll range. Force it active once fully scrolled.
     function handleScroll() {
       if (!root) return;
       const atBottom = root.scrollTop + root.clientHeight >= root.scrollHeight - 4;
       if (atBottom && entries.length > 0) {
-        setCurrentYear(entries[entries.length - 1].date.split('-')[0]);
+        setActiveIndex(entries.length - 1);
       }
     }
     root.addEventListener('scroll', handleScroll);
@@ -215,7 +229,12 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                 ref={(el) => {
                   if (el) itemRefs.current.set(i, el);
                 }}
-                className="mb-8 select-none last:mb-0"
+                // A reserved minimum height per entry, not just its own
+                // content — collapsed, six title-only entries are short
+                // enough to fit most panel heights with room to spare,
+                // which would leave nothing to scroll and the accordion
+                // would never advance past the first entry.
+                className="mb-8 min-h-[220px] select-none last:mb-0"
               >
                 <span
                   className={`absolute -left-[7px] mt-1.5 h-3 w-3 rounded-none border-2 border-ink-900 ${
@@ -223,8 +242,25 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                   }`}
                 />
                 <p className="text-xs font-bold uppercase tracking-wide text-accent-2">{formatDate(entry.date)}</p>
-                <h3 className="mt-1 font-display font-semibold text-paper">{entry.title}</h3>
-                <p className="mt-1 text-sm text-paper-dim">{entry.description}</p>
+                <h3
+                  className={`mt-1 font-display font-semibold transition-colors duration-300 ${
+                    i === activeIndex ? 'text-paper' : 'text-paper-dim'
+                  }`}
+                >
+                  {entry.title}
+                </h3>
+                {/* grid-template-rows 0fr->1fr is what makes this transition to
+                    the description's real (auto) height instead of a guessed
+                    max-height — only the entry nearest the top of the scroll
+                    area is open, so scrolling down closes this one and opens
+                    whichever entry it reaches next. */}
+                <div
+                  className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out ${
+                    i === activeIndex ? 'mt-1 grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
+                >
+                  <p className="min-h-0 overflow-hidden text-sm text-paper-dim">{entry.description}</p>
+                </div>
               </li>
             ))}
           </ol>

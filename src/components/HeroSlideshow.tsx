@@ -60,7 +60,22 @@ function SyncedVideo({ src, active, className }: { src: string; active: boolean;
     }
   }, [active]);
 
-  return <video ref={ref} className={className} src={src} muted loop playsInline />;
+  // Chromium shows a hover-triggered Picture-in-Picture pop-out button on
+  // any playing <video> by default, controls or not — disablePictureInPicture
+  // is the actual opt-out; disableRemotePlayback also drops the cast icon
+  // some browsers show alongside it. Neither belongs on a muted background loop.
+  return (
+    <video
+      ref={ref}
+      className={className}
+      src={src}
+      muted
+      loop
+      playsInline
+      disablePictureInPicture
+      disableRemotePlayback
+    />
+  );
 }
 
 function clipPathFor(mode: 'split-horizontal' | 'split-vertical', index: number, count: number) {
