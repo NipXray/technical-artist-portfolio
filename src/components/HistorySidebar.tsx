@@ -300,13 +300,19 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
               const isActiveYear = group.some(({ index }) => index === activeIndex);
               return (
                 <div key={year} className="mb-4 last:mb-0">
-                  <p
-                    className={`font-display text-2xl font-extrabold transition-colors duration-300 ${
-                      isActiveYear ? 'text-paper' : 'text-paper-dim/50'
+                  <button
+                    type="button"
+                    // Jumps to this year's first entry — same effect as
+                    // scrolling into it, just immediate. If the year's
+                    // already active, this is a no-op rather than jumping
+                    // backward to its first month.
+                    onClick={() => setActiveIndex((i) => (isActiveYear ? i : group[0].index))}
+                    className={`block w-full cursor-pointer appearance-none border-0 bg-transparent p-0 text-left font-display text-2xl font-extrabold transition-colors duration-300 ${
+                      isActiveYear ? 'text-paper' : 'text-paper-dim/50 hover:text-paper-dim'
                     }`}
                   >
                     {year}
-                  </p>
+                  </button>
                   <div
                     className={`grid overflow-hidden transition-[grid-template-rows] duration-500 ease-out ${
                       isActiveYear ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
@@ -333,16 +339,22 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                             TAG_COLORS[entry.tag ?? ''] ?? 'bg-accent'
                           }`}
                         />
-                        <p className="text-xs font-bold uppercase tracking-wide text-accent-2">
-                          {formatMonth(entry.date) || formatDate(entry.date)}
-                        </p>
-                        <h3
-                          className={`mt-1 font-display font-semibold transition-colors duration-300 ${
-                            index === activeIndex ? 'text-paper' : 'text-paper-dim'
-                          }`}
+                        <button
+                          type="button"
+                          onClick={() => setActiveIndex(index)}
+                          className="block w-full cursor-pointer appearance-none border-0 bg-transparent p-0 text-left"
                         >
-                          {entry.title}
-                        </h3>
+                          <p className="text-xs font-bold uppercase tracking-wide text-accent-2">
+                            {formatMonth(entry.date) || formatDate(entry.date)}
+                          </p>
+                          <h3
+                            className={`mt-1 font-display font-semibold transition-colors duration-300 ${
+                              index === activeIndex ? 'text-paper' : 'text-paper-dim'
+                            }`}
+                          >
+                            {entry.title}
+                          </h3>
+                        </button>
                         {/* grid-template-rows 0fr->1fr is what makes this transition to
                             the description's real (auto) height instead of a guessed
                             max-height — only the entry nearest the top of the scroll
