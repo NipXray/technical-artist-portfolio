@@ -1,8 +1,9 @@
 ---
-date: "2023-07"
-title: "Senior Technical Artist"
-titleId: "Technical Artist Senior"
-tag: "job"
-description: "Promoted to senior. Led procedural tooling initiatives spanning Houdini and Unity across two projects."
-descriptionId: "Dipromosikan menjadi senior. Memimpin inisiatif tooling prosedural yang mencakup Houdini dan Unity di dua proyek."
+date: 2024-07
+title: Middle Technical Artist
+titleId: Technical Artist Middle
+description: Promoted to Middle. Led procedural tooling initiatives spanning Blender
+descriptionId: Dipromosikan menjadi Middle. Memimpin inisiatif tooling
+  prosedural yang mencaku Blender
+tag: job
 ---

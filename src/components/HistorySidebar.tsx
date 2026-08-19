@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { formatDate, formatMonth } from '../lib/date';
+import { formatDate, formatMonth, inferEndDates } from '../lib/date';
+import { isExperienceTag } from '../lib/history-tags';
 
 export interface HistoryEntry {
   date: string;
@@ -41,6 +42,13 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
     });
     return [...map.entries()];
   }, [entries]);
+
+  // Duration-bearing entries (real roles, not one-off milestones) get a
+  // "start – end" range instead of just a start month, same as the CV.
+  const rangeEnds = useMemo(
+    () => inferEndDates(entries.filter((entry) => isExperienceTag(entry.tag)), 'Present'),
+    [entries]
+  );
 
   const panelRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -345,7 +353,9 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                           className="block w-full cursor-pointer appearance-none border-0 bg-transparent p-0 text-left"
                         >
                           <p className="text-xs font-bold uppercase tracking-wide text-accent-2">
-                            {formatMonth(entry.date) || formatDate(entry.date)}
+                            {rangeEnds.has(entry)
+                              ? `${formatDate(entry.date)} – ${rangeEnds.get(entry)}`
+                              : formatMonth(entry.date) || formatDate(entry.date)}
                           </p>
                           <h3
                             className={`mt-1 font-display font-semibold transition-colors duration-300 ${

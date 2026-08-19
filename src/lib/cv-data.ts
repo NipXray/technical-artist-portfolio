@@ -1,4 +1,5 @@
-import { formatDate } from './date';
+import { formatDate, inferEndDates } from './date';
+import { isEducationTag, isExperienceTag } from './history-tags';
 import { CV_LABELS, type CvLang } from './cv-translations';
 
 interface HistoryEntryData {
@@ -26,14 +27,6 @@ function toBullets(text: string) {
     .filter(Boolean);
 }
 
-// "origin" (personal milestones) and "highlight" (lighter moments/side
-// projects) are meant for the on-site career timeline only — everything
-// else (job/current/release) counts as real professional experience;
-// "education" gets its own section.
-const isExperience = (entry: HistoryEntryData) =>
-  entry.tag !== 'origin' && entry.tag !== 'education' && entry.tag !== 'highlight';
-const isEducation = (entry: HistoryEntryData) => entry.tag === 'education';
-
 export function buildCvSections(entries: HistoryEntryData[], lang: CvLang) {
   const t = CV_LABELS[lang];
   const pick = (en: string, translated?: string) => (lang === 'id' && translated ? translated : en);
@@ -47,21 +40,14 @@ export function buildCvSections(entries: HistoryEntryData[], lang: CvLang) {
     };
   }
 
-  // Each role's end date is inferred as the start of the next (more recent)
-  // entry — this is a career timeline of sequential milestones, not
-  // independent jobs with their own tracked end dates, so there's no other
-  // source for it. The most recent entry runs to "Present"/"Sekarang".
-  const experienceAsc = entries.filter(isExperience).sort((a, b) => a.date.localeCompare(b.date));
-  const experience = experienceAsc
-    .map((entry, i) => {
-      const next = experienceAsc[i + 1];
-      const end = next ? formatDate(next.date) : t.present;
-      return toItem(entry, `${formatDate(entry.date)} – ${end}`);
-    })
-    .reverse();
+  const experienceEntries = entries.filter((entry) => isExperienceTag(entry.tag));
+  const experienceEnds = inferEndDates(experienceEntries, t.present);
+  const experience = [...experienceEntries]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .map((entry) => toItem(entry, `${formatDate(entry.date)} – ${experienceEnds.get(entry)}`));
 
   const education = entries
-    .filter(isEducation)
+    .filter((entry) => isEducationTag(entry.tag))
     .sort((a, b) => b.date.localeCompare(a.date))
     .map((entry) => toItem(entry, `${t.graduated} ${entry.date.slice(0, 4)}`));
 
