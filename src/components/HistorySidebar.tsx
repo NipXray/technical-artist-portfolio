@@ -290,15 +290,16 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
             <span className="font-display text-5xl font-extrabold text-accent/25">{currentYear}</span>
           </div>
 
-          {/* Year is the parent, months are its children — the wheel stepper
-              advances through the flat entries array in this same order, so
-              it can't leave a year until every month entry in it has had
-              its turn, whether that year has 1 entry or 7. */}
+          {/* Year is the parent, months are its children, and only the
+              active year's children are actually shown — collapsed years
+              display as just their number until the wheel stepper (which
+              still just advances through the flat entries array) reaches
+              an entry that belongs to them. */}
           <div className="relative">
             {yearGroups.map(([year, group]) => {
               const isActiveYear = group.some(({ index }) => index === activeIndex);
               return (
-                <div key={year} className="mb-8 last:mb-0">
+                <div key={year} className="mb-4 last:mb-0">
                   <p
                     className={`font-display text-2xl font-extrabold transition-colors duration-300 ${
                       isActiveYear ? 'text-paper' : 'text-paper-dim/50'
@@ -306,7 +307,12 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                   >
                     {year}
                   </p>
-                  <ol className="relative mt-3 border-l border-border pl-6">
+                  <div
+                    className={`grid overflow-hidden transition-[grid-template-rows] duration-500 ease-out ${
+                      isActiveYear ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                    }`}
+                  >
+                  <ol className="relative mt-3 min-h-0 overflow-hidden border-l border-border pl-6">
                     {group.map(({ entry, index }) => (
                       <li
                         key={`${entry.date}-${index}`}
@@ -352,6 +358,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                       </li>
                     ))}
                   </ol>
+                  </div>
                 </div>
               );
             })}
