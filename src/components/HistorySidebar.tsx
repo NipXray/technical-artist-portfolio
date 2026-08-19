@@ -31,6 +31,11 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
   const autoscroll = useRef<{ originY: number; speed: number } | null>(null);
   const autoscrollFrame = useRef<number | null>(null);
   const [autoscrollIndicator, setAutoscrollIndicator] = useState<{ x: number; y: number } | null>(null);
+  // Set while a wheel-triggered smooth scroll-into-view is still animating,
+  // so the position-based observer below doesn't fight it mid-transition —
+  // several entries can briefly cross its trigger zone while easing toward
+  // the one the wheel stepper already decided on.
+  const programmaticScroll = useRef(false);
 
   useEffect(() => {
     const trigger = document.getElementById('history-trigger');
@@ -73,9 +78,42 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
     };
   }, [open]);
 
-  // Drives both the accordion (which entry is expanded) and the sticky
-  // year marker off the same signal: whichever entry currently sits
-  // nearest the top of the scroll area.
+  // Advances/retreats the active entry by exactly one step per accumulated
+  // chunk of wheel movement, instead of mapping raw scroll position 1:1 to
+  // which entry is "nearest the top" — that let a fast flick skip straight
+  // past several entries with no chance to read them. Wheel input is
+  // intercepted (preventDefault) so the panel never actually races ahead of
+  // the step logic; the entry list itself stays compact (so the whole
+  // timeline, first year to latest, is still visible at a glance) and the
+  // active entry is instead brought into view explicitly below.
+  useEffect(() => {
+    if (!open) return undefined;
+    const root = scrollRef.current;
+    if (!root) return undefined;
+
+    let accumulated = 0;
+    const STEP_THRESHOLD = 180;
+
+    function handleWheel(e: WheelEvent) {
+      e.preventDefault();
+      accumulated += e.deltaY;
+      if (accumulated >= STEP_THRESHOLD) {
+        accumulated = 0;
+        setActiveIndex((i) => Math.min(i + 1, entries.length - 1));
+      } else if (accumulated <= -STEP_THRESHOLD) {
+        accumulated = 0;
+        setActiveIndex((i) => Math.max(i - 1, 0));
+      }
+    }
+
+    root.addEventListener('wheel', handleWheel, { passive: false });
+    return () => root.removeEventListener('wheel', handleWheel);
+  }, [open, entries.length]);
+
+  // Touch/trackpad drag and the middle-click autoscroll below still move
+  // scrollTop directly rather than going through the wheel stepper, so this
+  // keeps the active entry (and the year marker, which just reads off it)
+  // in sync with wherever a non-wheel scroll actually lands.
   useEffect(() => {
     if (!open) return undefined;
     const root = scrollRef.current;
@@ -83,6 +121,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
 
     const observer = new IntersectionObserver(
       (observedEntries) => {
+        if (programmaticScroll.current) return;
         const visible = observedEntries.filter((entry) => entry.isIntersecting);
         if (visible.length === 0) return;
         const topMost = visible.reduce((a, b) => (a.boundingClientRect.top < b.boundingClientRect.top ? a : b));
@@ -96,11 +135,8 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
 
     itemRefs.current.forEach((el) => observer.observe(el));
 
-    // The IntersectionObserver's trigger zone sits near the top of the panel,
-    // so the last entry can never scroll far enough to reach it before hitting
-    // the bottom of the scroll range. Force it active once fully scrolled.
     function handleScroll() {
-      if (!root) return;
+      if (!root || programmaticScroll.current) return;
       const atBottom = root.scrollTop + root.clientHeight >= root.scrollHeight - 4;
       if (atBottom && entries.length > 0) {
         setActiveIndex(entries.length - 1);
@@ -113,6 +149,21 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
       root.removeEventListener('scroll', handleScroll);
     };
   }, [open, entries]);
+
+  // Brings whichever entry is now active into view, so the visible scroll
+  // position follows the active index instead of the other way around.
+  // For a touch/autoscroll-driven change the panel's already roughly there,
+  // so this just settles it; for a wheel-driven step the flag it sets stops
+  // the observer above from fighting the animation while it's in flight.
+  useEffect(() => {
+    if (!open) return undefined;
+    programmaticScroll.current = true;
+    itemRefs.current.get(activeIndex)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const t = window.setTimeout(() => {
+      programmaticScroll.current = false;
+    }, 500);
+    return () => window.clearTimeout(t);
+  }, [activeIndex, open]);
 
   // Middle-click autoscroll: click the middle mouse button once to arm it,
   // then move the mouse up/down (no need to hold anything) to scroll
@@ -230,16 +281,12 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                 ref={(el) => {
                   if (el) itemRefs.current.set(i, el);
                 }}
-                // A reserved minimum height per entry, not just its own
-                // content — collapsed entries are short enough to fit most
-                // panel heights with room to spare, which would leave
-                // nothing to scroll and the accordion would never advance.
-                // Sized off the viewport (not a fixed px value) so each
-                // entry takes a deliberate, substantial scroll distance to
-                // pass through regardless of window size — the earlier
-                // fixed 220px let a couple of wheel notches blow straight
-                // through several entries before there was time to read one.
-                className="mb-8 min-h-[45vh] select-none last:mb-0"
+                // Kept compact rather than padded out with reserved empty
+                // space — the whole timeline (first year to latest) stays
+                // visible together this way. Reading pace is handled by the
+                // wheel stepper above instead of by making each entry take
+                // a fixed amount of scroll distance to get through.
+                className="mb-6 select-none last:mb-0"
               >
                 <span
                   className={`absolute -left-[7px] mt-1.5 h-3 w-3 rounded-none border-2 border-ink-900 ${
