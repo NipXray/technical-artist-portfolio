@@ -5,6 +5,7 @@ import resume from '../data/resume.json';
 import HistorySidebar from '../components/HistorySidebar';
 import ClickEffectLayer from '../components/ClickEffectLayer';
 import FloatingSocialDock from '../components/FloatingSocialDock';
+import LiquidBackground from '../components/LiquidBackground.astro';
 
 const isUrl = (value?: string) => !!value && /^https?:\/\//.test(value);
 
@@ -57,6 +58,7 @@ const historyEntries = (await getCollection('history'))
     </script>
   </head>
   <body class="min-h-screen bg-ink-950 text-paper antialiased print:bg-white print:text-black">
+    <LiquidBackground />
     <header class="fixed inset-x-0 top-0 z-50 bg-gradient-to-b from-ink-950/90 to-transparent print:hidden">
       <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-5 sm:px-8">
         <a href="/" class="truncate font-display text-lg font-extrabold tracking-tight text-paper hover:text-accent-2">

@@ -503,6 +503,86 @@ pre.astro-code {
 }
 
 /* ---------------------------------------------------------------- */
+/* Liquid background (LiquidBackground.astro)                        */
+/* ---------------------------------------------------------------- */
+.liquid-bg {
+  /* Ramps in across the Hero's own height (h-screen) instead of switching
+     on instantly the moment the transparent section after Hero begins. */
+  mask-image: linear-gradient(to bottom, transparent 0, transparent 15vh, black 100vh);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 15vh, black 100vh);
+}
+.liquid-layer {
+  will-change: transform;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.liquid-layer-a {
+  animation-name: liquid-drift-a;
+  animation-duration: 46s;
+}
+.liquid-layer-b {
+  animation-name: liquid-drift-b;
+  animation-duration: 38s;
+}
+/* First and last keyframes match on both, so the loop never jumps. */
+@keyframes liquid-drift-a {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(2%, 3%) rotate(2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+@keyframes liquid-drift-b {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-2.5%, 2%) rotate(-3deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.liquid-bubble {
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform, opacity;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.liquid-bubble-1 {
+  animation-name: liquid-bubble-wave-1;
+  animation-duration: 17s;
+}
+.liquid-bubble-2 {
+  animation-name: liquid-bubble-wave-2;
+  animation-duration: 22s;
+  animation-delay: -6s;
+}
+.liquid-bubble-3 {
+  animation-name: liquid-bubble-wave-3;
+  animation-duration: 14s;
+  animation-delay: -3s;
+}
+/* Each bubble bobs on its own slightly different arc/duration so the three
+   never sync up into an obviously repeating unit despite each individually
+   looping cleanly (first and last keyframe match). */
+@keyframes liquid-bubble-wave-1 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  50% { transform: translate(3%, -8%) scale(1.15); opacity: 0.7; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+@keyframes liquid-bubble-wave-2 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  50% { transform: translate(-4%, 6%) scale(0.9); opacity: 0.6; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+@keyframes liquid-bubble-wave-3 {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  50% { transform: translate(2%, -5%) scale(1.25); opacity: 0.65; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-layer,
+  .liquid-bubble {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------- */
 /* Themed scrollbar + drag-to-scroll (HistorySidebar.tsx)             */
 /* ---------------------------------------------------------------- */
 .themed-scrollbar {

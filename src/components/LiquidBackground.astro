@@ -1,0 +1,95 @@
+---
+// Persistent whole-site background layer: a black outer field with an
+// organic grey "inner layer" bleeding through, split by a liquid-looking
+// boundary. Pure SVG + SMIL/CSS (no JS animation loop) since this sits
+// behind every page and animates continuously — a requestAnimationFrame
+// loop here would burn a frame budget for a purely decorative layer.
+---
+
+<!-- Faded in gradually over the Hero's own height (Hero.astro is h-screen)
+     via a mask, rather than switching on the instant the transparent section
+     below Hero begins — Hero's own overlay is fully opaque black right to
+     its bottom edge, so without this the liquid layer would otherwise snap
+     into view as a hard seam exactly at that boundary. -->
+<div class="liquid-bg pointer-events-none fixed inset-0 -z-10 overflow-hidden print:hidden" aria-hidden="true">
+  <svg class="h-full w-full" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <filter id="liquid-distort-a" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.010 0.014" numOctaves="2" seed="7" result="noise">
+          <animate
+            attributeName="baseFrequency"
+            dur="34s"
+            values="0.010 0.014;0.014 0.009;0.009 0.016;0.010 0.014"
+            repeatCount="indefinite"
+          />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="50" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+        <!-- Blurred well past the displacement wobble itself — the point is to
+             hide exactly where the edge sits, not just soften its jaggedness. -->
+        <feGaussianBlur in="displaced" stdDeviation="22" />
+      </filter>
+      <filter id="liquid-distort-b" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.014 0.018" numOctaves="2" seed="23" result="noise">
+          <animate
+            attributeName="baseFrequency"
+            dur="26s"
+            values="0.014 0.018;0.018 0.012;0.012 0.02;0.014 0.018"
+            repeatCount="indefinite"
+          />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="40" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+        <feGaussianBlur in="displaced" stdDeviation="18" />
+      </filter>
+      <filter id="liquid-bubble-blur" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="14" />
+      </filter>
+      <!-- Radial fill instead of a flat one: lighter grey at the core,
+           fading through the darker grey and out to fully transparent
+           (i.e. back to plain black) at the rim. That falloff is what
+           reads as a lit cavity sitting inside the black surface rather
+           than a flat grey shape laid on top of it. -->
+      <radialGradient id="liquid-grad-a" cx="38%" cy="42%" r="72%">
+        <stop offset="0%" stop-color="var(--color-ink-600)" stop-opacity="0.95" />
+        <stop offset="55%" stop-color="var(--color-ink-800)" stop-opacity="0.65" />
+        <stop offset="100%" stop-color="var(--color-ink-950)" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="liquid-grad-b" cx="42%" cy="38%" r="68%">
+        <stop offset="0%" stop-color="var(--color-ink-600)" stop-opacity="0.8" />
+        <stop offset="55%" stop-color="var(--color-ink-700)" stop-opacity="0.5" />
+        <stop offset="100%" stop-color="var(--color-ink-950)" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <!-- Back layer: darker grey, larger, slower drift -->
+    <g class="liquid-layer liquid-layer-a" filter="url(#liquid-distort-a)">
+      <path
+        fill="url(#liquid-grad-a)"
+        d="M -100,-100 C 120,-40 260,120 220,320 C 180,510 340,560 320,760 C 305,900 140,970 -100,940 Z"
+      ></path>
+    </g>
+
+    <!-- Front layer: lighter grey, smaller, faster drift, offset for depth -->
+    <g class="liquid-layer liquid-layer-b" filter="url(#liquid-distort-b)">
+      <path
+        fill="url(#liquid-grad-b)"
+        d="M -100,60 C 60,10 190,140 170,320 C 150,480 260,540 230,700 C 210,820 90,860 -100,800 Z"
+      ></path>
+    </g>
+
+    <!-- Up to three soft bubbles drifting near the boundary, each with its
+         own gentle rise-and-bob wave so they don't read as a repeating loop
+         moving in lockstep with each other. -->
+    <g filter="url(#liquid-bubble-blur)">
+      <circle class="liquid-bubble liquid-bubble-1" cx="140" cy="620" r="34" fill="var(--color-paper)" opacity="0.06"></circle>
+      <circle class="liquid-bubble liquid-bubble-2" cx="260" cy="260" r="22" fill="var(--color-paper)" opacity="0.05"></circle>
+      <circle class="liquid-bubble liquid-bubble-3" cx="90" cy="880" r="16" fill="var(--color-paper)" opacity="0.07"></circle>
+    </g>
+  </svg>
+</div>
+
+<script is:inline>
+  (function () {
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('.liquid-bg svg').forEach((svg) => svg.pauseAnimations && svg.pauseAnimations());
+  })();
+</script>
