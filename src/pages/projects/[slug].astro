@@ -90,5 +90,11 @@ const VIDEO_EXTENSION = /\.(mp4|webm|mov|m4v|mkv)$/i;
 </Layout>
 
 <script>
-  import '@google/model-viewer';
+  // Loads the ~1MB model-viewer library only on the project pages that
+  // actually use it, instead of on every project page regardless of
+  // whether it has a 3D model — same check CaseStudySidebar already does
+  // for the fetched-in-place version of this same content.
+  if (document.querySelector('model-viewer')) {
+    import('@google/model-viewer');
+  }
 </script>

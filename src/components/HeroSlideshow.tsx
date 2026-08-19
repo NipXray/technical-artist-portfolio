@@ -138,9 +138,31 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
   const [reduceMotion, setReduceMotion] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
+  // Every slide is mounted permanently (just faded via opacity) so looping
+  // back to an already-seen slide doesn't refetch it — but that means
+  // rendering a real <img>/<video> for ALL of them up front would make the
+  // browser fetch every hero asset simultaneously on first load, competing
+  // with the one actually visible for bandwidth. Instead each slide's media
+  // stays unmounted until it's about to be needed: the first slide (the
+  // real LCP candidate) plus a one-slide-ahead prefetch as the show advances.
+  const [loaded, setLoaded] = useState<Set<number>>(() => new Set(slides.length ? [0] : []));
+
   useEffect(() => {
     setReduceMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }, []);
+
+  useEffect(() => {
+    if (slides.length < 2) return undefined;
+    const upcoming = (active + 1) % slides.length;
+    // Waits a couple seconds into the current slide before fetching the
+    // next one, instead of firing the instant this slide becomes active —
+    // an immediate prefetch would still compete with the current (possibly
+    // still-loading) slide for bandwidth right when it matters most.
+    const t = window.setTimeout(() => {
+      setLoaded((prev) => (prev.has(upcoming) ? prev : new Set(prev).add(upcoming)));
+    }, 2000);
+    return () => window.clearTimeout(t);
+  }, [active, slides.length]);
 
   // Slides always advance on a timer — "reduce motion" trims the fade
   // transition below, it doesn't freeze the slideshow on slide one.
@@ -164,6 +186,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
       {slides.map((slide, i) => {
         const isActive = i === active;
         const key = isCompareSlide(slide) ? `compare-${slide.sources[0]?.src ?? i}` : slide.src;
+        if (!loaded.has(i)) return null;
         return (
           <div
             key={key + i}
@@ -176,7 +199,15 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
             ) : isVideoSrc(slide.src, slide.type) ? (
               <SyncedVideo src={slide.src} active={isActive} className="h-full w-full object-cover" />
             ) : (
-              <img src={slide.src} alt={slide.caption ?? ''} className="h-full w-full object-cover" />
+              <img
+                src={slide.src}
+                alt={slide.caption ?? ''}
+                className="h-full w-full object-cover"
+                // The very first slide is this page's LCP candidate — everything
+                // else stays lazy since it's only mounted right before its turn.
+                fetchPriority={i === 0 ? 'high' : undefined}
+                loading={i === 0 ? 'eager' : 'lazy'}
+              />
             )}
           </div>
         );

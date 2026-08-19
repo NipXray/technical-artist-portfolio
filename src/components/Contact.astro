@@ -1,5 +1,10 @@
 ---
 import resume from '../data/resume.json';
+
+const isUrl = (value?: string) => !!value && /^https?:\/\//.test(value);
+const hasGithub = isUrl(resume.githubUrl);
+const hasArtstation = isUrl(resume.artstationUrl);
+const linkClass = 'text-accent-2 underline underline-offset-2 hover:text-paper';
 ---
 
 <section id="contact">
@@ -7,10 +12,18 @@ import resume from '../data/resume.json';
     <p class="text-sm font-bold uppercase tracking-[0.3em] text-accent-2">Get In Touch</p>
     <h2 class="mt-2 font-display text-3xl font-extrabold text-paper sm:text-4xl">Let's Work Together</h2>
     <p class="mt-4 max-w-xl text-paper-dim">
-      Have a character, world, or effect you'd like brought to life? Send a message, or find me on{' '}
-      <a href={resume.githubUrl} target="_blank" rel="noreferrer" class="text-accent-2 hover:underline">GitHub</a>{' '}
-      and{' '}
-      <a href={resume.artstationUrl} target="_blank" rel="noreferrer" class="text-accent-2 hover:underline">ArtStation</a>.
+      Have a character, world, or effect you'd like brought to life? Send a message{(hasGithub || hasArtstation) && ', or find me on'}
+      {hasGithub && (
+        <>
+          {' '}<a href={resume.githubUrl} target="_blank" rel="noreferrer" class={linkClass}>GitHub</a>
+        </>
+      )}
+      {hasGithub && hasArtstation && ' and'}
+      {hasArtstation && (
+        <>
+          {' '}<a href={resume.artstationUrl} target="_blank" rel="noreferrer" class={linkClass}>ArtStation</a>
+        </>
+      )}.
     </p>
 
     <form
