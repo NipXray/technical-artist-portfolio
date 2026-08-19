@@ -6,10 +6,18 @@ const visibleSlides = (resume.heroSlides ?? []).filter((slide) => !slide.hidden)
 ---
 
 <section class="relative flex h-screen min-h-[640px] items-end overflow-hidden">
-  <HeroSlideshow client:load slides={visibleSlides} />
-
-  <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/60 to-ink-950/10"></div>
-  <div class="absolute inset-0 bg-gradient-to-r from-ink-950/70 via-transparent to-transparent"></div>
+  <!-- The slideshow + its overlays are wrapped so only THIS group fades out
+       in the last stretch of Hero's height — without it, Hero's own overlay
+       is fully opaque right up to the section's exact bottom edge, and the
+       liquid background layer behind it (LiquidBackground.astro) only ever
+       shows through starting at that precise DOM boundary, reading as a
+       hard line instead of a blend. The text/buttons below sit outside this
+       wrapper so they stay fully opaque regardless. -->
+  <div class="hero-bg-fade absolute inset-0">
+    <HeroSlideshow client:load slides={visibleSlides} />
+    <div class="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/60 to-ink-950/10"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-ink-950/70 via-transparent to-transparent"></div>
+  </div>
 
   <div class="relative mx-auto w-full max-w-7xl px-6 pb-24 pt-40 sm:px-8">
     <p class="mb-4 text-sm font-bold uppercase tracking-[0.3em] text-accent-2">{resume.role}</p>
