@@ -19,8 +19,7 @@
           />
         </feTurbulence>
         <!-- Displacement only, no blur — the wavy edge stays a crisp, clearly
-             legible cut. Volume comes from the fill's own shading below, not
-             from softening the silhouette into a haze. -->
+             legible cut. -->
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="55" xChannelSelector="R" yChannelSelector="G" />
       </filter>
       <filter id="liquid-distort-b" x="-30%" y="-30%" width="160%" height="160%">
@@ -48,22 +47,41 @@
         <stop offset="45%" stop-color="var(--color-ink-600)" />
         <stop offset="100%" stop-color="var(--color-ink-800)" />
       </radialGradient>
+
+      <!-- The turbulence/displacement is applied only to a plain white
+           silhouette here, used purely as a mask — not to the gradient
+           itself. Running the filter on the gradient directly (the
+           previous approach) warps its internal color rings along with
+           the edge, and a fold in the noise field could pinch part of a
+           ring into an isolated dark patch mid-shape. Keeping the mask and
+           the gradient in separate passes gives a wavy edge with fill
+           shading that stays coherent regardless of how the edge bends. -->
+      <mask id="liquid-mask-a" maskUnits="userSpaceOnUse" x="-600" y="-600" width="2200" height="2200">
+        <g filter="url(#liquid-distort-a)">
+          <path
+            fill="#fff"
+            d="M -100,-100 C 120,-40 260,120 220,320 C 180,510 340,560 320,760 C 305,900 140,970 -100,940 Z"
+          ></path>
+        </g>
+      </mask>
+      <mask id="liquid-mask-b" maskUnits="userSpaceOnUse" x="-600" y="-600" width="2200" height="2200">
+        <g filter="url(#liquid-distort-b)">
+          <path
+            fill="#fff"
+            d="M -100,60 C 60,10 190,140 170,320 C 150,480 260,540 230,700 C 210,820 90,860 -100,800 Z"
+          ></path>
+        </g>
+      </mask>
     </defs>
 
     <!-- Back layer: darker grey, larger, slower drift -->
-    <g class="liquid-layer liquid-layer-a" filter="url(#liquid-distort-a)">
-      <path
-        fill="url(#liquid-grad-a)"
-        d="M -100,-100 C 120,-40 260,120 220,320 C 180,510 340,560 320,760 C 305,900 140,970 -100,940 Z"
-      ></path>
+    <g class="liquid-layer liquid-layer-a">
+      <rect x="-600" y="-600" width="2200" height="2200" fill="url(#liquid-grad-a)" mask="url(#liquid-mask-a)"></rect>
     </g>
 
     <!-- Front layer: lighter grey, smaller, faster drift, offset for depth -->
-    <g class="liquid-layer liquid-layer-b" filter="url(#liquid-distort-b)">
-      <path
-        fill="url(#liquid-grad-b)"
-        d="M -100,60 C 60,10 190,140 170,320 C 150,480 260,540 230,700 C 210,820 90,860 -100,800 Z"
-      ></path>
+    <g class="liquid-layer liquid-layer-b">
+      <rect x="-600" y="-600" width="2200" height="2200" fill="url(#liquid-grad-b)" mask="url(#liquid-mask-b)"></rect>
     </g>
   </svg>
 </div>

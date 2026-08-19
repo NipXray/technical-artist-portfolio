@@ -521,27 +521,42 @@ pre.astro-code {
 /* ---------------------------------------------------------------- */
 .liquid-layer {
   will-change: transform;
-  animation-timing-function: ease-in-out;
+  /* linear, not ease-in-out — ease-in-out speeds up and slows down inside
+     every cycle, which combined with an out-and-back path read as the
+     blob visibly reversing/staggering instead of a steady lava-lamp
+     drift. A closed loop with constant-speed linear timing never slows,
+     speeds up, or doubles back on itself. */
+  animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
 .liquid-layer-a {
   animation-name: liquid-drift-a;
-  animation-duration: 46s;
+  animation-duration: 70s;
 }
 .liquid-layer-b {
   animation-name: liquid-drift-b;
-  animation-duration: 38s;
+  animation-duration: 58s;
 }
-/* First and last keyframes match on both, so the loop never jumps. */
+/* A loose closed loop (roughly circular/elliptical) rather than a single
+   out-and-back path — the blob keeps moving "forward" around the loop the
+   whole time instead of ever reversing direction. Evenly spaced keyframes
+   at constant angular spacing + linear timing keep the speed constant
+   throughout, so there's no surge/stall anywhere in the cycle either. */
 @keyframes liquid-drift-a {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  50% { transform: translate(2%, 3%) rotate(2deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+  0% { transform: translate(0%, 0%) rotate(0deg); }
+  20% { transform: translate(1.6%, 1.2%) rotate(1.5deg); }
+  40% { transform: translate(1.8%, 3%) rotate(2.5deg); }
+  60% { transform: translate(0.4%, 3.4%) rotate(1.5deg); }
+  80% { transform: translate(-0.8%, 1.8%) rotate(-0.5deg); }
+  100% { transform: translate(0%, 0%) rotate(0deg); }
 }
 @keyframes liquid-drift-b {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  50% { transform: translate(-2.5%, 2%) rotate(-3deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+  0% { transform: translate(0%, 0%) rotate(0deg); }
+  20% { transform: translate(-1.4%, 1%) rotate(-1.8deg); }
+  40% { transform: translate(-2.2%, -0.6%) rotate(-3deg); }
+  60% { transform: translate(-1.2%, -2.2%) rotate(-1.6deg); }
+  80% { transform: translate(0.6%, -1%) rotate(0.6deg); }
+  100% { transform: translate(0%, 0%) rotate(0deg); }
 }
 @media (prefers-reduced-motion: reduce) {
   .liquid-layer {
