@@ -318,9 +318,9 @@ collections:
           label: "Tag",
           name: "tag",
           widget: "select",
-          options: ["origin", "education", "job", "release", "current"],
+          options: ["origin", "education", "job", "release", "current", "highlight"],
           required: false,
-          hint: "Controls the timeline marker color. Also controls the CV: \"education\" entries go under Education, everything except \"origin\" goes under Professional Experience — \"origin\" entries (personal milestones) show on the on-site timeline only, not the downloadable CV.",
+          hint: "Controls the timeline marker color. Also controls the CV: \"education\" entries go under Education, everything except \"origin\" and \"highlight\" goes under Professional Experience. \"origin\" (personal milestones) and \"highlight\" (lighter moments/side projects) show on the on-site timeline only, not the downloadable CV.",
         }
 
   - name: "settings"

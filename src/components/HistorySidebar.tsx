@@ -13,7 +13,8 @@ const TAG_COLORS: Record<string, string> = {
   education: 'bg-accent-3',
   job: 'bg-accent',
   release: 'bg-accent',
-  current: 'bg-accent-2'
+  current: 'bg-accent-2',
+  highlight: 'bg-paper-dim'
 };
 
 export default function HistorySidebar({ entries }: { entries: HistoryEntry[] }) {
@@ -230,11 +231,15 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                   if (el) itemRefs.current.set(i, el);
                 }}
                 // A reserved minimum height per entry, not just its own
-                // content — collapsed, six title-only entries are short
-                // enough to fit most panel heights with room to spare,
-                // which would leave nothing to scroll and the accordion
-                // would never advance past the first entry.
-                className="mb-8 min-h-[220px] select-none last:mb-0"
+                // content — collapsed entries are short enough to fit most
+                // panel heights with room to spare, which would leave
+                // nothing to scroll and the accordion would never advance.
+                // Sized off the viewport (not a fixed px value) so each
+                // entry takes a deliberate, substantial scroll distance to
+                // pass through regardless of window size — the earlier
+                // fixed 220px let a couple of wheel notches blow straight
+                // through several entries before there was time to read one.
+                className="mb-8 min-h-[45vh] select-none last:mb-0"
               >
                 <span
                   className={`absolute -left-[7px] mt-1.5 h-3 w-3 rounded-none border-2 border-ink-900 ${

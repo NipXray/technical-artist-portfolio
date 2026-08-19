@@ -12,11 +12,12 @@ const toLines = (text: string) => text.split('\n').map((line) => line.trim()).fi
 
 const historyEntries = (await getCollection('history')).map((entry) => entry.data);
 
-// "origin" entries are personal milestones meant for this on-site career
-// timeline, not a formal document — everything else (job/current/release)
-// reads as real professional experience; "education" gets its own section.
+// "origin" (personal milestones) and "highlight" (lighter moments/side
+// projects) are meant for the on-site career timeline, not a formal
+// document — everything else (job/current/release) reads as real
+// professional experience; "education" gets its own section.
 const experience = historyEntries
-  .filter((entry) => entry.tag !== 'origin' && entry.tag !== 'education')
+  .filter((entry) => entry.tag !== 'origin' && entry.tag !== 'education' && entry.tag !== 'highlight')
   .sort((a, b) => b.date.localeCompare(a.date));
 const education = historyEntries
   .filter((entry) => entry.tag === 'education')

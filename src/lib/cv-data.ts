@@ -26,10 +26,12 @@ function toBullets(text: string) {
     .filter(Boolean);
 }
 
-// "origin" entries are personal milestones meant for the on-site career
-// timeline only — everything else (job/current/release) counts as real
-// professional experience; "education" gets its own section.
-const isExperience = (entry: HistoryEntryData) => entry.tag !== 'origin' && entry.tag !== 'education';
+// "origin" (personal milestones) and "highlight" (lighter moments/side
+// projects) are meant for the on-site career timeline only — everything
+// else (job/current/release) counts as real professional experience;
+// "education" gets its own section.
+const isExperience = (entry: HistoryEntryData) =>
+  entry.tag !== 'origin' && entry.tag !== 'education' && entry.tag !== 'highlight';
 const isEducation = (entry: HistoryEntryData) => entry.tag === 'education';
 
 export function buildCvSections(entries: HistoryEntryData[], lang: CvLang) {
