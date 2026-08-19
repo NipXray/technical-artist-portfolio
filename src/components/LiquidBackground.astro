@@ -10,13 +10,19 @@
   <svg class="h-full w-full" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
     <defs>
       <filter id="liquid-distort-a" x="-30%" y="-30%" width="160%" height="160%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.014 0.0125" numOctaves="2" seed="7" result="noise">
-          <!-- Same fix as the layer drift below: a true sinusoid sampled at
-               12 evenly-spaced points, not a handful of hand-picked values.
-               Equal time between values here doesn't mean equal PERCEIVED
-               change unless the values themselves trace a smooth curve —
-               hand-picked ones caused the edge wobble to visibly pause
-               and burst even though each segment interpolates linearly. -->
+        <!-- numOctaves 2→1: the pixel-level grain at the edge wasn't really
+             a rendering defect to blur away — fractalNoise's second octave
+             is genuinely high-frequency per-pixel detail, and displacing by
+             raw high-frequency noise is what read as speckled/jagged. One
+             octave keeps the same organic large-scale wobble with none of
+             that fine texture, so the edge is crisp with no grain and no
+             blur needed at all (blur was reading as "the background is out
+             of focus / far away," not what we want). -->
+        <feTurbulence type="fractalNoise" baseFrequency="0.014 0.0125" numOctaves="1" seed="7" result="noise">
+          <!-- A true sinusoid sampled at 12 evenly-spaced points, not a
+               handful of hand-picked values — equal time between values
+               here doesn't mean equal PERCEIVED change unless the values
+               trace a smooth curve, or the wobble visibly pauses/bursts. -->
           <animate
             attributeName="baseFrequency"
             dur="34s"
@@ -24,14 +30,10 @@
             repeatCount="indefinite"
           />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="55" xChannelSelector="R" yChannelSelector="G" result="displaced" />
-        <!-- Just enough blur to anti-alias the raw turbulence grain (which
-             otherwise shows as speckled/jagged pixels right at the edge) —
-             far too small to soften the actual wave-scale silhouette. -->
-        <feGaussianBlur in="displaced" stdDeviation="2" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="55" xChannelSelector="R" yChannelSelector="G" />
       </filter>
       <filter id="liquid-distort-b" x="-30%" y="-30%" width="160%" height="160%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.019 0.0165" numOctaves="2" seed="23" result="noise">
+        <feTurbulence type="fractalNoise" baseFrequency="0.019 0.0165" numOctaves="1" seed="23" result="noise">
           <animate
             attributeName="baseFrequency"
             dur="26s"
@@ -39,11 +41,46 @@
             repeatCount="indefinite"
           />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="42" xChannelSelector="R" yChannelSelector="G" result="displaced" />
-        <feGaussianBlur in="displaced" stdDeviation="2" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="42" xChannelSelector="R" yChannelSelector="G" />
       </filter>
-      <filter id="liquid-bubble-soft" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur stdDeviation="5" />
+      <!-- Bubble edges get the same treatment at a smaller scale: a genuine
+           wobbling silhouette (not a rigid circle) via turbulence
+           displacement, sharp — no blur — with a much higher baseFrequency
+           and smaller displacement scale so the wobble fits a ~70-90 unit
+           circle instead of the ~1000-unit main shapes. Three distinct
+           seeds/rates so the three bubbles don't wobble in lockstep. -->
+      <filter id="liquid-bubble-distort-a" x="-70%" y="-70%" width="240%" height="240%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" seed="11" result="noise">
+          <animate
+            attributeName="baseFrequency"
+            dur="14s"
+            values="0.062;0.0585;0.050;0.0415;0.038;0.0415;0.050;0.0585;0.062"
+            repeatCount="indefinite"
+          />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="liquid-bubble-distort-b" x="-70%" y="-70%" width="240%" height="240%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="1" seed="31" result="noise">
+          <animate
+            attributeName="baseFrequency"
+            dur="11s"
+            values="0.079;0.0749;0.065;0.0551;0.051;0.0551;0.065;0.0749;0.079"
+            repeatCount="indefinite"
+          />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="liquid-bubble-distort-c" x="-70%" y="-70%" width="240%" height="240%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.058" numOctaves="1" seed="51" result="noise">
+          <animate
+            attributeName="baseFrequency"
+            dur="17s"
+            values="0.069;0.0658;0.058;0.0502;0.047;0.0502;0.058;0.0658;0.069"
+            repeatCount="indefinite"
+          />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
       </filter>
       <!-- Fully opaque at every stop — only the color shifts, from a lighter
            grey where light would catch a solid blob to a darker grey at the
@@ -105,12 +142,11 @@
     <!-- Three dark "bubbles" drifting/pulsing inside the grey area, lava-lamp
          style. Each orbits a small closed loop at constant speed (same
          technique as the two layers above) so none of them ever pause or
-         suddenly speed up either. -->
-    <g filter="url(#liquid-bubble-soft)">
-      <circle class="liquid-bubble liquid-bubble-1" cx="150" cy="300" r="42" fill="var(--color-ink-950)" opacity="0.6"></circle>
-      <circle class="liquid-bubble liquid-bubble-2" cx="95" cy="600" r="32" fill="var(--color-ink-950)" opacity="0.7"></circle>
-      <circle class="liquid-bubble liquid-bubble-3" cx="180" cy="460" r="36" fill="var(--color-ink-950)" opacity="0.6"></circle>
-    </g>
+         suddenly speed up, and each has its own wobbling silhouette (not a
+         rigid circle) via its own turbulence filter. -->
+    <circle class="liquid-bubble liquid-bubble-1" filter="url(#liquid-bubble-distort-a)" cx="150" cy="300" r="42" fill="var(--color-ink-950)" opacity="0.6"></circle>
+    <circle class="liquid-bubble liquid-bubble-2" filter="url(#liquid-bubble-distort-b)" cx="95" cy="600" r="32" fill="var(--color-ink-950)" opacity="0.7"></circle>
+    <circle class="liquid-bubble liquid-bubble-3" filter="url(#liquid-bubble-distort-c)" cx="180" cy="460" r="36" fill="var(--color-ink-950)" opacity="0.6"></circle>
   </svg>
 </div>
 
