@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { formatDate } from '../lib/date';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { formatDate, formatMonth } from '../lib/date';
 
 export interface HistoryEntry {
   date: string;
@@ -25,6 +25,23 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
   // the big year marker above just reads off this same active entry.
   const [activeIndex, setActiveIndex] = useState(0);
   const currentYear = entries[activeIndex]?.date.split('-')[0] ?? entries[0]?.date.split('-')[0] ?? '';
+
+  // Entries are already date-sorted, so grouping them by year here just
+  // makes that structure visible — every entry for a year stays together
+  // as that year's "children" before the next year's group starts, and
+  // since the wheel stepper below advances through the flat entries array
+  // in this same order, it naturally can't leave a year until every month
+  // in it has been stepped through.
+  const yearGroups = useMemo(() => {
+    const map = new Map<string, { entry: HistoryEntry; index: number }[]>();
+    entries.forEach((entry, index) => {
+      const year = entry.date.split('-')[0];
+      if (!map.has(year)) map.set(year, []);
+      map.get(year)!.push({ entry, index });
+    });
+    return [...map.entries()];
+  }, [entries]);
+
   const panelRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<number, HTMLLIElement>>(new Map());
@@ -273,49 +290,72 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
             <span className="font-display text-5xl font-extrabold text-accent/25">{currentYear}</span>
           </div>
 
-          <ol className="relative border-l border-border pl-6">
-            {entries.map((entry, i) => (
-              <li
-                key={`${entry.date}-${i}`}
-                data-index={i}
-                ref={(el) => {
-                  if (el) itemRefs.current.set(i, el);
-                }}
-                // Kept compact rather than padded out with reserved empty
-                // space — the whole timeline (first year to latest) stays
-                // visible together this way. Reading pace is handled by the
-                // wheel stepper above instead of by making each entry take
-                // a fixed amount of scroll distance to get through.
-                className="mb-6 select-none last:mb-0"
-              >
-                <span
-                  className={`absolute -left-[7px] mt-1.5 h-3 w-3 rounded-none border-2 border-ink-900 ${
-                    TAG_COLORS[entry.tag ?? ''] ?? 'bg-accent'
-                  }`}
-                />
-                <p className="text-xs font-bold uppercase tracking-wide text-accent-2">{formatDate(entry.date)}</p>
-                <h3
-                  className={`mt-1 font-display font-semibold transition-colors duration-300 ${
-                    i === activeIndex ? 'text-paper' : 'text-paper-dim'
-                  }`}
-                >
-                  {entry.title}
-                </h3>
-                {/* grid-template-rows 0fr->1fr is what makes this transition to
-                    the description's real (auto) height instead of a guessed
-                    max-height — only the entry nearest the top of the scroll
-                    area is open, so scrolling down closes this one and opens
-                    whichever entry it reaches next. */}
-                <div
-                  className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out ${
-                    i === activeIndex ? 'mt-1 grid-rows-[1fr]' : 'grid-rows-[0fr]'
-                  }`}
-                >
-                  <p className="min-h-0 overflow-hidden text-sm text-paper-dim">{entry.description}</p>
+          {/* Year is the parent, months are its children — the wheel stepper
+              advances through the flat entries array in this same order, so
+              it can't leave a year until every month entry in it has had
+              its turn, whether that year has 1 entry or 7. */}
+          <div className="relative">
+            {yearGroups.map(([year, group]) => {
+              const isActiveYear = group.some(({ index }) => index === activeIndex);
+              return (
+                <div key={year} className="mb-8 last:mb-0">
+                  <p
+                    className={`font-display text-2xl font-extrabold transition-colors duration-300 ${
+                      isActiveYear ? 'text-paper' : 'text-paper-dim/50'
+                    }`}
+                  >
+                    {year}
+                  </p>
+                  <ol className="relative mt-3 border-l border-border pl-6">
+                    {group.map(({ entry, index }) => (
+                      <li
+                        key={`${entry.date}-${index}`}
+                        data-index={index}
+                        ref={(el) => {
+                          if (el) itemRefs.current.set(index, el);
+                        }}
+                        // Kept compact rather than padded out with reserved
+                        // empty space — the whole timeline (first year to
+                        // latest) stays visible together this way. Reading
+                        // pace is handled by the wheel stepper above instead
+                        // of by making each entry take a fixed scroll
+                        // distance to get through.
+                        className="mb-6 select-none last:mb-0"
+                      >
+                        <span
+                          className={`absolute -left-[7px] mt-1.5 h-3 w-3 rounded-none border-2 border-ink-900 ${
+                            TAG_COLORS[entry.tag ?? ''] ?? 'bg-accent'
+                          }`}
+                        />
+                        <p className="text-xs font-bold uppercase tracking-wide text-accent-2">
+                          {formatMonth(entry.date) || formatDate(entry.date)}
+                        </p>
+                        <h3
+                          className={`mt-1 font-display font-semibold transition-colors duration-300 ${
+                            index === activeIndex ? 'text-paper' : 'text-paper-dim'
+                          }`}
+                        >
+                          {entry.title}
+                        </h3>
+                        {/* grid-template-rows 0fr->1fr is what makes this transition to
+                            the description's real (auto) height instead of a guessed
+                            max-height — only the entry nearest the top of the scroll
+                            area is open, so scrolling down closes this one and opens
+                            whichever entry it reaches next. */}
+                        <div
+                          className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out ${
+                            index === activeIndex ? 'mt-1 grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                          }`}
+                        >
+                          <p className="min-h-0 overflow-hidden text-sm text-paper-dim">{entry.description}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
-              </li>
-            ))}
-          </ol>
+              );
+            })}
+          </div>
         </div>
       </div>
 

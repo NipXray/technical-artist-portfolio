@@ -7,3 +7,11 @@ export function formatDate(date: string) {
   const month = new Date(`${date}-01T00:00:00`).toLocaleString('en-US', { month: 'short' });
   return `${month} ${year}`;
 }
+
+// Just the month name, no year — for entries grouped under a year heading
+// that already supplies that context. Empty string for a year-only date.
+export function formatMonth(date: string) {
+  const parts = date.split('-');
+  if (parts.length < 2) return '';
+  return new Date(`${date}-01T00:00:00`).toLocaleString('en-US', { month: 'long' });
+}
