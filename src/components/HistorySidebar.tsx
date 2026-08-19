@@ -353,10 +353,10 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                         // pace is handled by the wheel stepper above instead
                         // of by making each entry take a fixed scroll
                         // distance to get through.
-                        className="mb-6 select-none last:mb-0"
+                        className="relative mb-6 select-none last:mb-0"
                       >
                         <span
-                          className={`absolute -left-[7px] mt-1.5 h-3 w-3 rounded-none border-2 border-ink-900 ${
+                          className={`absolute -left-[30px] mt-1.5 h-3 w-3 rounded-none border-2 border-ink-900 ${
                             TAG_COLORS[entry.tag ?? ''] ?? 'bg-accent'
                           }`}
                         />
