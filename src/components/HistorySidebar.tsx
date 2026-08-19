@@ -339,7 +339,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                       isActiveYear ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
                     }`}
                   >
-                  <ol className="relative mt-3 min-h-0 overflow-hidden pl-6">
+                  <ol className="relative mt-3 min-h-0 overflow-hidden border-l border-border pl-6">
                     {group.map(({ entry, index }) => (
                       <li
                         key={`${entry.date}-${index}`}
