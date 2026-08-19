@@ -307,14 +307,16 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
               active year's children are actually shown — collapsed years
               display as just their number until the wheel stepper (which
               still just advances through the flat entries array) reaches
-              an entry that belongs to them. */}
+              an entry that belongs to them. Each year gets its own
+              self-contained branch line for its own months (not one line
+              spanning the whole list) — a single spine that reached all
+              the way to the top of the scroll area ran straight through
+              the big sticky year number above instead of stopping short
+              of it, and collapsed years genuinely have nothing to connect
+              (there's no content there to draw a line next to) so a
+              broken-looking gap between two expanded years' branches was
+              never actually a bug to begin with. */}
           <div className="relative">
-            {/* One continuous spine for the whole list instead of a
-                separate border per year — each year's own <ol> used to draw
-                its own border-l, so the line broke wherever a collapsed
-                (zero-height) year sat between two expanded ones instead of
-                reading as a single connected timeline. */}
-            <div aria-hidden="true" className="pointer-events-none absolute inset-y-1 left-6 w-px bg-border" />
             {yearGroups.map(([year, group]) => {
               const isActiveYear = group.some(({ index }) => index === activeIndex);
               return (
