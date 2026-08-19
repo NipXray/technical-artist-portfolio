@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 import resume from '../data/resume.json';
-import { formatDate, inferEndDates } from '../lib/date';
+import { formatDate, inferEndDates, resolveEndLabel } from '../lib/date';
 import { isEducationTag, isExperienceTag } from '../lib/history-tags';
 
 const isUrl = (value?: string) => !!value && /^https?:\/\//.test(value);
@@ -103,7 +103,7 @@ const education = historyEntries
             <li class="relative">
               <span class="absolute -left-[27px] mt-1.5 h-2.5 w-2.5 rounded-none bg-accent" />
               <p class="text-xs font-bold uppercase tracking-wide text-accent-2">
-                {formatDate(entry.date)} &ndash; {experienceEnds.get(entry)}
+                {formatDate(entry.date)} &ndash; {resolveEndLabel(entry.endDate, experienceEnds.get(entry))}
               </p>
               <h3 class="mt-1 font-display font-semibold text-paper">
                 {entry.title}

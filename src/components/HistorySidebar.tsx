@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { formatDate, formatMonth, inferEndDates } from '../lib/date';
+import { formatDate, formatMonth, inferEndDates, resolveEndLabel } from '../lib/date';
 import { isExperienceTag } from '../lib/history-tags';
 
 export interface HistoryEntry {
@@ -7,6 +7,7 @@ export interface HistoryEntry {
   title: string;
   description: string;
   tag?: string;
+  endDate?: string;
 }
 
 const TAG_COLORS: Record<string, string> = {
@@ -354,7 +355,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                         >
                           <p className="text-xs font-bold uppercase tracking-wide text-accent-2">
                             {rangeEnds.has(entry)
-                              ? `${formatDate(entry.date)} – ${rangeEnds.get(entry)}`
+                              ? `${formatDate(entry.date)} – ${resolveEndLabel(entry.endDate, rangeEnds.get(entry))}`
                               : formatMonth(entry.date) || formatDate(entry.date)}
                           </p>
                           <h3

@@ -1,4 +1,4 @@
-import { formatDate, inferEndDates } from './date';
+import { formatDate, inferEndDates, resolveEndLabel } from './date';
 import { isEducationTag, isExperienceTag } from './history-tags';
 import { CV_LABELS, type CvLang } from './cv-translations';
 
@@ -11,6 +11,7 @@ interface HistoryEntryData {
   description: string;
   descriptionId?: string;
   tag?: string;
+  endDate?: string;
 }
 
 export interface CvItem {
@@ -41,10 +42,13 @@ export function buildCvSections(entries: HistoryEntryData[], lang: CvLang) {
   }
 
   const experienceEntries = entries.filter((entry) => isExperienceTag(entry.tag));
-  const experienceEnds = inferEndDates(experienceEntries, t.present);
+  const inferredEnds = inferEndDates(experienceEntries, t.present);
   const experience = [...experienceEntries]
     .sort((a, b) => b.date.localeCompare(a.date))
-    .map((entry) => toItem(entry, `${formatDate(entry.date)} – ${experienceEnds.get(entry)}`));
+    .map((entry) => {
+      const end = resolveEndLabel(entry.endDate, inferredEnds.get(entry));
+      return toItem(entry, `${formatDate(entry.date)} – ${end}`);
+    });
 
   const education = entries
     .filter((entry) => isEducationTag(entry.tag))

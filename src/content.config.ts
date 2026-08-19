@@ -49,7 +49,8 @@ const history = defineCollection({
     organizationId: z.string().optional(),
     description: z.string(),
     descriptionId: z.string().optional(),
-    tag: z.string().optional()
+    tag: z.string().optional(),
+    endDate: z.string().optional()
   })
 });
 

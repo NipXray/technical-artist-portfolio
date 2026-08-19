@@ -279,6 +279,13 @@ collections:
           hint: "YYYY or YYYY-MM, e.g. 2021-02 — controls the timeline order",
           pattern: ["^\\d{4}(-\\d{2})?$", "Use YYYY or YYYY-MM"],
         }
+      - {
+          label: "End Date (optional override)",
+          name: "endDate",
+          widget: "string",
+          required: false,
+          hint: "Only matters for Tag = job/current/release, where an end is otherwise guessed as the start of whichever entry comes next — set this to override that guess with a real one, e.g. for a gap between roles, or a past role that isn't ongoing. Accepts YYYY or YYYY-MM (formatted to match everything else), or free text like \"Present\" / \"Ongoing\" shown exactly as typed. Leave blank to keep the automatic guess.",
+        }
       - { label: "Title", name: "title", widget: "string" }
       - {
           label: "Title (Bahasa Indonesia)",

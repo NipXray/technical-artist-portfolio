@@ -31,3 +31,13 @@ export function inferEndDates<T extends { date: string }>(items: T[], presentLab
   });
   return map;
 }
+
+// A manually-entered End Date always wins over the guess above — there's no
+// way to infer a real gap between roles, or an end date for the most recent
+// one if it isn't actually still ongoing. "YYYY" or "YYYY-MM" gets the same
+// formatting as every other date here; anything else (e.g. someone typing
+// "Present" or "Ongoing" directly) is shown exactly as written.
+export function resolveEndLabel(manualEndDate: string | undefined, inferredLabel: string | undefined) {
+  if (!manualEndDate) return inferredLabel;
+  return /^\d{4}(-\d{2})?$/.test(manualEndDate) ? formatDate(manualEndDate) : manualEndDate;
+}
