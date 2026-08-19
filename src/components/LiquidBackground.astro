@@ -49,11 +49,15 @@
            and smaller displacement scale so the wobble fits a ~70-90 unit
            circle instead of the ~1000-unit main shapes. Three distinct
            seeds/rates so the three bubbles don't wobble in lockstep. -->
+      <!-- Wobble durations brought up into the same range as the main
+           layers' own turbulence cycles (26-34s) instead of 11-17s — the
+           bubbles animating noticeably faster than the background they sit
+           in was exactly what read as inconsistent/spiky pacing. -->
       <filter id="liquid-bubble-distort-a" x="-70%" y="-70%" width="240%" height="240%">
         <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" seed="11" result="noise">
           <animate
             attributeName="baseFrequency"
-            dur="14s"
+            dur="30s"
             values="0.062;0.0585;0.050;0.0415;0.038;0.0415;0.050;0.0585;0.062"
             repeatCount="indefinite"
           />
@@ -64,7 +68,7 @@
         <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="1" seed="31" result="noise">
           <animate
             attributeName="baseFrequency"
-            dur="11s"
+            dur="24s"
             values="0.079;0.0749;0.065;0.0551;0.051;0.0551;0.065;0.0749;0.079"
             repeatCount="indefinite"
           />
@@ -75,7 +79,7 @@
         <feTurbulence type="fractalNoise" baseFrequency="0.058" numOctaves="1" seed="51" result="noise">
           <animate
             attributeName="baseFrequency"
-            dur="17s"
+            dur="36s"
             values="0.069;0.0658;0.058;0.0502;0.047;0.0502;0.058;0.0658;0.069"
             repeatCount="indefinite"
           />
@@ -144,9 +148,9 @@
          technique as the two layers above) so none of them ever pause or
          suddenly speed up, and each has its own wobbling silhouette (not a
          rigid circle) via its own turbulence filter. -->
-    <circle class="liquid-bubble liquid-bubble-1" filter="url(#liquid-bubble-distort-a)" cx="150" cy="300" r="42" fill="var(--color-ink-950)" opacity="0.6"></circle>
-    <circle class="liquid-bubble liquid-bubble-2" filter="url(#liquid-bubble-distort-b)" cx="95" cy="600" r="32" fill="var(--color-ink-950)" opacity="0.7"></circle>
-    <circle class="liquid-bubble liquid-bubble-3" filter="url(#liquid-bubble-distort-c)" cx="180" cy="460" r="36" fill="var(--color-ink-950)" opacity="0.6"></circle>
+    <circle class="liquid-bubble liquid-bubble-1" filter="url(#liquid-bubble-distort-a)" cx="150" cy="300" r="42" fill="var(--color-ink-950)"></circle>
+    <circle class="liquid-bubble liquid-bubble-2" filter="url(#liquid-bubble-distort-b)" cx="95" cy="600" r="32" fill="var(--color-ink-950)"></circle>
+    <circle class="liquid-bubble liquid-bubble-3" filter="url(#liquid-bubble-distort-c)" cx="180" cy="460" r="36" fill="var(--color-ink-950)"></circle>
   </svg>
 </div>
 

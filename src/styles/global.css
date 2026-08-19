@@ -584,50 +584,54 @@ pre.astro-code {
 }
 .liquid-bubble-1 {
   animation-name: liquid-bubble-orbit-cw;
-  animation-duration: 24s;
+  animation-duration: 64s;
 }
 .liquid-bubble-2 {
   animation-name: liquid-bubble-orbit-ccw;
-  animation-duration: 19s;
-  animation-delay: -6s;
+  animation-duration: 52s;
+  animation-delay: -18s;
 }
 .liquid-bubble-3 {
   animation-name: liquid-bubble-orbit-cw;
-  animation-duration: 31s;
-  animation-delay: -14s;
+  animation-duration: 70s;
+  animation-delay: -34s;
 }
 /* Same true-ellipse technique as the two main layers, plus a scale pulse
-   riding the same angle so the "breathing" is just as constant-speed —
-   opacity stays fixed so bubbles never blink in/out, only drift and swell. */
+   riding the exact same angle (scale = 1 ± amplitude*cos(angle), computed
+   precisely rather than eyeballed) so the "breathing" is just as
+   constant-speed as the drift — any rounding-error wobble in the scale
+   values was its own small source of unevenness on top of the orbit
+   speed itself. Durations brought up to the 52-70s range to match the
+   main layers' own pacing (58-70s) instead of running 2-3x faster. */
 @keyframes liquid-bubble-orbit-cw {
-  0%    { transform: translate(9%, 0%) scale(1.12); }
-  8.33% { transform: translate(7.79%, 4.5%) scale(1.1); }
-  16.67%{ transform: translate(4.5%, 7.79%) scale(1.04); }
-  25%   { transform: translate(0%, 9%) scale(0.97); }
-  33.33%{ transform: translate(-4.5%, 7.79%) scale(0.9); }
-  41.67%{ transform: translate(-7.79%, 4.5%) scale(0.86); }
+  0%    { transform: translate(9%, 0%) scale(1.15); }
+  8.33% { transform: translate(7.79%, 4.5%) scale(1.13); }
+  16.67%{ transform: translate(4.5%, 7.79%) scale(1.075); }
+  25%   { transform: translate(0%, 9%) scale(1); }
+  33.33%{ transform: translate(-4.5%, 7.79%) scale(0.925); }
+  41.67%{ transform: translate(-7.79%, 4.5%) scale(0.87); }
   50%   { transform: translate(-9%, 0%) scale(0.85); }
-  58.33%{ transform: translate(-7.79%, -4.5%) scale(0.86); }
-  66.67%{ transform: translate(-4.5%, -7.79%) scale(0.9); }
-  75%   { transform: translate(0%, -9%) scale(0.97); }
-  83.33%{ transform: translate(4.5%, -7.79%) scale(1.04); }
-  91.67%{ transform: translate(7.79%, -4.5%) scale(1.1); }
-  100%  { transform: translate(9%, 0%) scale(1.12); }
+  58.33%{ transform: translate(-7.79%, -4.5%) scale(0.87); }
+  66.67%{ transform: translate(-4.5%, -7.79%) scale(0.925); }
+  75%   { transform: translate(0%, -9%) scale(1); }
+  83.33%{ transform: translate(4.5%, -7.79%) scale(1.075); }
+  91.67%{ transform: translate(7.79%, -4.5%) scale(1.13); }
+  100%  { transform: translate(9%, 0%) scale(1.15); }
 }
 @keyframes liquid-bubble-orbit-ccw {
-  0%    { transform: translate(-8%, 0%) scale(0.9); }
-  8.33% { transform: translate(-6.93%, -4%) scale(0.95); }
-  16.67%{ transform: translate(-4%, -6.93%) scale(1.03); }
-  25%   { transform: translate(0%, -8%) scale(1.1); }
-  33.33%{ transform: translate(4%, -6.93%) scale(1.14); }
-  41.67%{ transform: translate(6.93%, -4%) scale(1.15); }
-  50%   { transform: translate(8%, 0%) scale(1.14); }
-  58.33%{ transform: translate(6.93%, 4%) scale(1.1); }
-  66.67%{ transform: translate(4%, 6.93%) scale(1.03); }
-  75%   { transform: translate(0%, 8%) scale(0.95); }
-  83.33%{ transform: translate(-4%, 6.93%) scale(0.9); }
+  0%    { transform: translate(-8%, 0%) scale(0.85); }
+  8.33% { transform: translate(-6.93%, -4%) scale(0.87); }
+  16.67%{ transform: translate(-4%, -6.93%) scale(0.925); }
+  25%   { transform: translate(0%, -8%) scale(1); }
+  33.33%{ transform: translate(4%, -6.93%) scale(1.075); }
+  41.67%{ transform: translate(6.93%, -4%) scale(1.13); }
+  50%   { transform: translate(8%, 0%) scale(1.15); }
+  58.33%{ transform: translate(6.93%, 4%) scale(1.13); }
+  66.67%{ transform: translate(4%, 6.93%) scale(1.075); }
+  75%   { transform: translate(0%, 8%) scale(1); }
+  83.33%{ transform: translate(-4%, 6.93%) scale(0.925); }
   91.67%{ transform: translate(-6.93%, 4%) scale(0.87); }
-  100%  { transform: translate(-8%, 0%) scale(0.9); }
+  100%  { transform: translate(-8%, 0%) scale(0.85); }
 }
 
 @media (prefers-reduced-motion: reduce) {
