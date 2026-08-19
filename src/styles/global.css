@@ -537,29 +537,102 @@ pre.astro-code {
   animation-name: liquid-drift-b;
   animation-duration: 58s;
 }
-/* A loose closed loop (roughly circular/elliptical) rather than a single
-   out-and-back path — the blob keeps moving "forward" around the loop the
-   whole time instead of ever reversing direction. Evenly spaced keyframes
-   at constant angular spacing + linear timing keep the speed constant
-   throughout, so there's no surge/stall anywhere in the cycle either. */
+/* A true parametric ellipse (12 points at equal 30deg steps, x=rx*cos,
+   y=ry*sin) rather than a handful of eyeballed waypoints — with hand-picked
+   points, equal TIME between keyframes doesn't mean equal DISTANCE between
+   them, so even linear timing still visibly sped up and slowed down at
+   each waypoint. Equal angle steps around a real ellipse means equal time
+   always covers equal arc length, so the speed is genuinely constant with
+   no kinks anywhere in the loop. */
 @keyframes liquid-drift-a {
-  0% { transform: translate(0%, 0%) rotate(0deg); }
-  20% { transform: translate(1.6%, 1.2%) rotate(1.5deg); }
-  40% { transform: translate(1.8%, 3%) rotate(2.5deg); }
-  60% { transform: translate(0.4%, 3.4%) rotate(1.5deg); }
-  80% { transform: translate(-0.8%, 1.8%) rotate(-0.5deg); }
-  100% { transform: translate(0%, 0%) rotate(0deg); }
+  0%    { transform: translate(2.4%, 0%) rotate(0deg); }
+  8.33% { transform: translate(2.08%, 1.5%) rotate(1deg); }
+  16.67%{ transform: translate(1.2%, 2.6%) rotate(1.73deg); }
+  25%   { transform: translate(0%, 3%) rotate(2deg); }
+  33.33%{ transform: translate(-1.2%, 2.6%) rotate(1.73deg); }
+  41.67%{ transform: translate(-2.08%, 1.5%) rotate(1deg); }
+  50%   { transform: translate(-2.4%, 0%) rotate(0deg); }
+  58.33%{ transform: translate(-2.08%, -1.5%) rotate(-1deg); }
+  66.67%{ transform: translate(-1.2%, -2.6%) rotate(-1.73deg); }
+  75%   { transform: translate(0%, -3%) rotate(-2deg); }
+  83.33%{ transform: translate(1.2%, -2.6%) rotate(-1.73deg); }
+  91.67%{ transform: translate(2.08%, -1.5%) rotate(-1deg); }
+  100%  { transform: translate(2.4%, 0%) rotate(0deg); }
 }
 @keyframes liquid-drift-b {
-  0% { transform: translate(0%, 0%) rotate(0deg); }
-  20% { transform: translate(-1.4%, 1%) rotate(-1.8deg); }
-  40% { transform: translate(-2.2%, -0.6%) rotate(-3deg); }
-  60% { transform: translate(-1.2%, -2.2%) rotate(-1.6deg); }
-  80% { transform: translate(0.6%, -1%) rotate(0.6deg); }
-  100% { transform: translate(0%, 0%) rotate(0deg); }
+  0%    { transform: translate(2%, 0%) rotate(0deg); }
+  8.33% { transform: translate(1.73%, -1.3%) rotate(-1.25deg); }
+  16.67%{ transform: translate(1%, -2.25%) rotate(-2.17deg); }
+  25%   { transform: translate(0%, -2.6%) rotate(-2.5deg); }
+  33.33%{ transform: translate(-1%, -2.25%) rotate(-2.17deg); }
+  41.67%{ transform: translate(-1.73%, -1.3%) rotate(-1.25deg); }
+  50%   { transform: translate(-2%, 0%) rotate(0deg); }
+  58.33%{ transform: translate(-1.73%, 1.3%) rotate(1.25deg); }
+  66.67%{ transform: translate(-1%, 2.25%) rotate(2.17deg); }
+  75%   { transform: translate(0%, 2.6%) rotate(2.5deg); }
+  83.33%{ transform: translate(1%, 2.25%) rotate(2.17deg); }
+  91.67%{ transform: translate(1.73%, 1.3%) rotate(1.25deg); }
+  100%  { transform: translate(2%, 0%) rotate(0deg); }
 }
+
+.liquid-bubble {
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.liquid-bubble-1 {
+  animation-name: liquid-bubble-orbit-cw;
+  animation-duration: 24s;
+}
+.liquid-bubble-2 {
+  animation-name: liquid-bubble-orbit-ccw;
+  animation-duration: 19s;
+  animation-delay: -6s;
+}
+.liquid-bubble-3 {
+  animation-name: liquid-bubble-orbit-cw;
+  animation-duration: 31s;
+  animation-delay: -14s;
+}
+/* Same true-ellipse technique as the two main layers, plus a scale pulse
+   riding the same angle so the "breathing" is just as constant-speed —
+   opacity stays fixed so bubbles never blink in/out, only drift and swell. */
+@keyframes liquid-bubble-orbit-cw {
+  0%    { transform: translate(9%, 0%) scale(1.12); }
+  8.33% { transform: translate(7.79%, 4.5%) scale(1.1); }
+  16.67%{ transform: translate(4.5%, 7.79%) scale(1.04); }
+  25%   { transform: translate(0%, 9%) scale(0.97); }
+  33.33%{ transform: translate(-4.5%, 7.79%) scale(0.9); }
+  41.67%{ transform: translate(-7.79%, 4.5%) scale(0.86); }
+  50%   { transform: translate(-9%, 0%) scale(0.85); }
+  58.33%{ transform: translate(-7.79%, -4.5%) scale(0.86); }
+  66.67%{ transform: translate(-4.5%, -7.79%) scale(0.9); }
+  75%   { transform: translate(0%, -9%) scale(0.97); }
+  83.33%{ transform: translate(4.5%, -7.79%) scale(1.04); }
+  91.67%{ transform: translate(7.79%, -4.5%) scale(1.1); }
+  100%  { transform: translate(9%, 0%) scale(1.12); }
+}
+@keyframes liquid-bubble-orbit-ccw {
+  0%    { transform: translate(-8%, 0%) scale(0.9); }
+  8.33% { transform: translate(-6.93%, -4%) scale(0.95); }
+  16.67%{ transform: translate(-4%, -6.93%) scale(1.03); }
+  25%   { transform: translate(0%, -8%) scale(1.1); }
+  33.33%{ transform: translate(4%, -6.93%) scale(1.14); }
+  41.67%{ transform: translate(6.93%, -4%) scale(1.15); }
+  50%   { transform: translate(8%, 0%) scale(1.14); }
+  58.33%{ transform: translate(6.93%, 4%) scale(1.1); }
+  66.67%{ transform: translate(4%, 6.93%) scale(1.03); }
+  75%   { transform: translate(0%, 8%) scale(0.95); }
+  83.33%{ transform: translate(-4%, 6.93%) scale(0.9); }
+  91.67%{ transform: translate(-6.93%, 4%) scale(0.87); }
+  100%  { transform: translate(-8%, 0%) scale(0.9); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .liquid-layer {
+  .liquid-layer,
+  .liquid-bubble {
     animation: none;
   }
 }
