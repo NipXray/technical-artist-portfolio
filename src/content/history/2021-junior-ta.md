@@ -1,5 +1,6 @@
 ---
 date: 2021-02
+endDate: 2022-06
 title: Intern Technical Artist
 titleId: Technical Artist Intern
 description: Hired full-time. Shipped the rigging pipeline for the studio's

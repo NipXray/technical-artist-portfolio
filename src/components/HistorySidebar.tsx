@@ -27,6 +27,10 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
   // the big year marker above just reads off this same active entry.
   const [activeIndex, setActiveIndex] = useState(0);
   const currentYear = entries[activeIndex]?.date.split('-')[0] ?? entries[0]?.date.split('-')[0] ?? '';
+  // Thumb size for the custom progress indicator below — proportional to
+  // how much of the timeline one entry represents, with a floor so it's
+  // never so thin it disappears when there are a lot of entries.
+  const thumbHeightPercent = Math.max(12, 100 / Math.max(1, entries.length));
 
   // Entries are already date-sorted, so grouping them by year here just
   // makes that structure visible — every entry for a year stays together
@@ -305,6 +309,12 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
               still just advances through the flat entries array) reaches
               an entry that belongs to them. */}
           <div className="relative">
+            {/* One continuous spine for the whole list instead of a
+                separate border per year — each year's own <ol> used to draw
+                its own border-l, so the line broke wherever a collapsed
+                (zero-height) year sat between two expanded ones instead of
+                reading as a single connected timeline. */}
+            <div aria-hidden="true" className="pointer-events-none absolute inset-y-1 left-6 w-px bg-border" />
             {yearGroups.map(([year, group]) => {
               const isActiveYear = group.some(({ index }) => index === activeIndex);
               return (
@@ -327,7 +337,7 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
                       isActiveYear ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
                     }`}
                   >
-                  <ol className="relative mt-3 min-h-0 overflow-hidden border-l border-border pl-6">
+                  <ol className="relative mt-3 min-h-0 overflow-hidden pl-6">
                     {group.map(({ entry, index }) => (
                       <li
                         key={`${entry.date}-${index}`}
@@ -386,6 +396,23 @@ export default function HistorySidebar({ entries }: { entries: HistoryEntry[] })
               );
             })}
           </div>
+        </div>
+
+        {/* A persistent progress indicator, not the native scrollbar — the
+            list is intentionally compact now (collapsed years take almost
+            no height), so there often isn't enough real overflow left for
+            the browser to bother drawing its own scrollbar at all, which
+            reads as "this doesn't scroll, only click it" rather than the
+            wheel-driven interaction it actually has. This also doubles as
+            a "how far through the timeline am I" cue the native one never gave. */}
+        <div aria-hidden="true" className="pointer-events-none absolute bottom-6 right-2 top-24 w-1 rounded-full bg-ink-800">
+          <div
+            className="absolute inset-x-0 rounded-full bg-accent transition-[top,height] duration-300 ease-out"
+            style={{
+              height: `${thumbHeightPercent}%`,
+              top: `${entries.length > 1 ? (activeIndex / (entries.length - 1)) * (100 - thumbHeightPercent) : 0}%`
+            }}
+          />
         </div>
       </div>
 

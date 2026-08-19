@@ -1,9 +1,12 @@
 ---
-date: 2024-07
-title: Middle Technical Artist
-titleId: Technical Artist Middle
-description: Promoted to Middle. Led procedural tooling initiatives spanning Blender
-descriptionId: Dipromosikan menjadi Middle. Memimpin inisiatif tooling
-  prosedural yang mencaku Blender
+date: 2023-12
+endDate: 2026-08
+title: Lead Rigging Artist
+titleId: Lead Rigging Artist
+description: Leader Job - Promoted to Middle. Led Rigging tooling initiatives
+  spanning Blender, and Project Pipeline in rigging division, have team that are
+  full intern
+descriptionId: Leader Job - Dipromosikan menjadi Middle. Memimpin inisiatif
+  tooling Rigging yang mencakup Blender
 tag: job
 ---
