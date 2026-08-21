@@ -72,6 +72,17 @@
         </feTurbulence>
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
       </filter>
+      <filter id="liquid-bubble-distort-d" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.062" numOctaves="1" seed="67" result="noise">
+          <animate
+            attributeName="baseFrequency"
+            dur="27s"
+            values="0.073;0.0693;0.062;0.0533;0.049;0.0533;0.062;0.0693;0.073"
+            repeatCount="indefinite"
+          />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
 
       <!-- Turbulence/displacement distorts only a plain white silhouette
            here, used purely as a mask — not the black fill itself. -->
@@ -104,6 +115,7 @@
     <circle class="liquid-bubble liquid-bubble-1" filter="url(#liquid-bubble-distort-a)" cx="470" cy="330" r="38" fill="var(--color-ink-950)"></circle>
     <circle class="liquid-bubble liquid-bubble-2" filter="url(#liquid-bubble-distort-b)" cx="830" cy="520" r="44" fill="var(--color-ink-950)"></circle>
     <circle class="liquid-bubble liquid-bubble-3" filter="url(#liquid-bubble-distort-c)" cx="620" cy="800" r="30" fill="var(--color-ink-950)"></circle>
+    <circle class="liquid-bubble liquid-bubble-4" filter="url(#liquid-bubble-distort-d)" cx="500" cy="600" r="34" fill="var(--color-ink-950)"></circle>
   </svg>
 </div>
 

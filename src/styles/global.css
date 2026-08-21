@@ -577,6 +577,11 @@ pre.astro-code {
   animation-duration: 70s;
   animation-delay: -34s;
 }
+.liquid-bubble-4 {
+  animation-name: liquid-bubble-orbit-ccw;
+  animation-duration: 60s;
+  animation-delay: -40s;
+}
 /* Same true-ellipse technique as the two main layers, plus a scale pulse
    riding the exact same angle (scale = 1 ± amplitude*cos(angle), computed
    precisely rather than eyeballed) so the "breathing" is just as
