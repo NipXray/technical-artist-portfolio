@@ -1,22 +1,10 @@
 ---
 // Persistent whole-site background layer: a solid grey backdrop with a
 // wavy black shape drifting on top of it, like the black is a moving
-// surface layer sitting over a plain grey base. The ambient drift/wobble
-// is pure SVG + SMIL/CSS (no JS animation loop) since it runs continuously
-// behind every page.
-//
-// On top of that, the wave and every bubble also react to the cursor:
-// moving the mouse near one locally agitates its own ambient turbulence,
-// like a finger dragged through oil, which then settles back to rest once
-// the cursor stops. This part genuinely needs live pointer input, so it's
-// JS-driven — via feImage.href pointed at a generated data-URI (not a
-// same-document element reference: feImage referencing a live local
-// element by fragment ID turned out to render inconsistently in testing,
-// producing no visible effect despite the DOM wiring being correct: a
-// data-URI is loaded as a real image resource, which is the reliable path
-// browsers actually support well). The regeneration loop only runs via
-// requestAnimationFrame while the effect is actively playing (movement +
-// its short decay tail), then stops — not a persistent idle loop.
+// surface layer sitting over a plain grey base. Pure SVG + SMIL/CSS (no
+// JS animation loop) since this sits behind every page and animates
+// continuously — a requestAnimationFrame loop here would burn a frame
+// budget for a purely decorative layer.
 ---
 
 <div class="liquid-bg pointer-events-none fixed inset-0 -z-10 overflow-hidden print:hidden" aria-hidden="true">
@@ -41,25 +29,16 @@
             repeatCount="indefinite"
           />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="46" xChannelSelector="R" yChannelSelector="G" result="ambient" />
-        <!-- Interactive stage: blend the same ambient noise toward neutral
-             (0.5 = no displacement) everywhere except near the cursor,
-             using a JS-updated blurred-circle image as the blend strength.
-             Reusing the ambient noise (rather than a separate generator)
-             means the push still reads as the same "material" as the rest
-             of the wave, just locally agitated — like a finger dragged
-             through it — instead of a foreign ripple pattern. -->
-        <feImage class="liquid-smear-feimage" x="-600" y="-600" width="2200" height="2200" result="smearMask" preserveAspectRatio="none" />
-        <feComposite in="noise" in2="smearMask" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="localNoise" />
-        <feDisplacementMap in="ambient" in2="localNoise" scale="70" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="46" xChannelSelector="R" yChannelSelector="G" />
       </filter>
       <!-- Bubble edges get the same treatment at a smaller scale: a genuine
            wobbling silhouette (not a rigid circle) via turbulence
            displacement, sharp — no blur — with a much higher baseFrequency
            and smaller displacement scale so the wobble fits a ~70-90 unit
-           circle instead of the ~1000-unit main shape. Four distinct
-           seeds/rates so the bubbles don't wobble in lockstep, and each
-           also gets the same cursor-reactive push as the wave. -->
+           circle instead of the ~1000-unit main shape. Three distinct
+           seeds/rates so the three bubbles don't wobble in lockstep, and
+           durations matched to the main layer's own pacing (26-34s) so
+           they don't feel faster/spikier than the background. -->
       <filter id="liquid-bubble-distort-a" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" seed="11" result="noise">
           <animate
@@ -69,10 +48,7 @@
             repeatCount="indefinite"
           />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" result="ambient" />
-        <feImage class="liquid-smear-feimage" x="-600" y="-600" width="2200" height="2200" result="smearMask" preserveAspectRatio="none" />
-        <feComposite in="noise" in2="smearMask" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="localNoise" />
-        <feDisplacementMap in="ambient" in2="localNoise" scale="26" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" />
       </filter>
       <filter id="liquid-bubble-distort-b" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="1" seed="31" result="noise">
@@ -83,10 +59,7 @@
             repeatCount="indefinite"
           />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" result="ambient" />
-        <feImage class="liquid-smear-feimage" x="-600" y="-600" width="2200" height="2200" result="smearMask" preserveAspectRatio="none" />
-        <feComposite in="noise" in2="smearMask" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="localNoise" />
-        <feDisplacementMap in="ambient" in2="localNoise" scale="26" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" />
       </filter>
       <filter id="liquid-bubble-distort-c" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.058" numOctaves="1" seed="51" result="noise">
@@ -97,10 +70,7 @@
             repeatCount="indefinite"
           />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" result="ambient" />
-        <feImage class="liquid-smear-feimage" x="-600" y="-600" width="2200" height="2200" result="smearMask" preserveAspectRatio="none" />
-        <feComposite in="noise" in2="smearMask" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="localNoise" />
-        <feDisplacementMap in="ambient" in2="localNoise" scale="26" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
       </filter>
       <filter id="liquid-bubble-distort-d" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.062" numOctaves="1" seed="67" result="noise">
@@ -111,10 +81,7 @@
             repeatCount="indefinite"
           />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" result="ambient" />
-        <feImage class="liquid-smear-feimage" x="-600" y="-600" width="2200" height="2200" result="smearMask" preserveAspectRatio="none" />
-        <feComposite in="noise" in2="smearMask" operator="arithmetic" k1="1" k2="0" k3="-0.5" k4="0.5" result="localNoise" />
-        <feDisplacementMap in="ambient" in2="localNoise" scale="26" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
       </filter>
 
       <!-- Turbulence/displacement distorts only a plain white silhouette
@@ -154,71 +121,7 @@
 
 <script is:inline>
   (function () {
-    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var svgEl = document.querySelector('.liquid-bg svg');
-    var feImages = document.querySelectorAll('.liquid-smear-feimage');
-    if (reduceMotion) {
-      document.querySelectorAll('.liquid-bg svg').forEach((svg) => svg.pauseAnimations && svg.pauseAnimations());
-    }
-    if (reduceMotion || !svgEl || !feImages.length) return;
-
-    var pt = svgEl.createSVGPoint();
-    var targetX = 500;
-    var targetY = 500;
-    var intensity = 0;
-    var lastMoveTime = 0;
-    var rafId = null;
-    var DECAY_MS = 1800;
-    var HOLD_MS = 60;
-
-    function buildDataUri(x, y, alpha) {
-      var svg =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000">' +
-        '<defs><filter id="b" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="30"/></filter></defs>' +
-        '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="130" fill="#fff" fill-opacity="' + alpha.toFixed(3) + '" filter="url(#b)"/>' +
-        '</svg>';
-      return 'data:image/svg+xml;base64,' + btoa(svg);
-    }
-
-    function applyFrame() {
-      var uri = buildDataUri(targetX, targetY, intensity);
-      feImages.forEach(function (el) {
-        el.setAttribute('href', uri);
-      });
-    }
-
-    function tick() {
-      var elapsed = performance.now() - lastMoveTime;
-      if (elapsed <= HOLD_MS) {
-        intensity = 1;
-      } else {
-        intensity = Math.max(0, 1 - (elapsed - HOLD_MS) / DECAY_MS);
-      }
-      applyFrame();
-      if (intensity > 0.01) {
-        rafId = requestAnimationFrame(tick);
-      } else {
-        intensity = 0;
-        applyFrame();
-        rafId = null;
-      }
-    }
-
-    function handlePointerMove(e) {
-      var ctm = svgEl.getScreenCTM();
-      if (!ctm) return;
-      pt.x = e.clientX;
-      pt.y = e.clientY;
-      var svgPt = pt.matrixTransform(ctm.inverse());
-      targetX = svgPt.x;
-      targetY = svgPt.y;
-      lastMoveTime = performance.now();
-      if (rafId === null) {
-        rafId = requestAnimationFrame(tick);
-      }
-    }
-
-    applyFrame();
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('.liquid-bg svg').forEach((svg) => svg.pauseAnimations && svg.pauseAnimations());
   })();
 </script>
