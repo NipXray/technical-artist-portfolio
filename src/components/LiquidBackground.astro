@@ -85,15 +85,15 @@
       </mask>
     </defs>
 
-    <!-- Solid grey base — no mask, no filter, no animation. Just the flat
-         backdrop color everywhere; the wave lives entirely in the black
+    <!-- Solid black base — no mask, no filter, no animation. Just the flat
+         backdrop color everywhere; the wave lives entirely in the grey
          shape drawn on top of it. -->
-    <rect x="0" y="0" width="1000" height="1000" fill="var(--color-ink-700)"></rect>
+    <rect x="0" y="0" width="1000" height="1000" fill="var(--color-ink-950)"></rect>
 
-    <!-- The one wavy shape: solid black, drifting/wobbling on top of the
-         grey base. -->
+    <!-- The one wavy shape: solid grey, drifting/wobbling on top of the
+         black base. -->
     <g class="liquid-layer liquid-layer-a">
-      <rect x="-600" y="-600" width="2200" height="2200" fill="var(--color-ink-950)" mask="url(#liquid-mask-a)"></rect>
+      <rect x="-600" y="-600" width="2200" height="2200" fill="var(--color-ink-700)" mask="url(#liquid-mask-a)"></rect>
     </g>
 
     <!-- Three dark "bubbles" drifting/pulsing on top of the grey, lava-lamp
