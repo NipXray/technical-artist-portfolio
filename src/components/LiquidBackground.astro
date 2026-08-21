@@ -9,7 +9,7 @@
 <div class="liquid-bg pointer-events-none fixed inset-0 -z-10 overflow-hidden print:hidden" aria-hidden="true">
   <svg class="h-full w-full" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
     <defs>
-      <filter id="liquid-distort-a" x="-30%" y="-30%" width="160%" height="160%">
+      <filter id="liquid-distort-a" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
         <!-- numOctaves 2→1: the pixel-level grain at the edge wasn't really
              a rendering defect to blur away — fractalNoise's second octave
              is genuinely high-frequency per-pixel detail, and displacing by
@@ -30,9 +30,9 @@
             repeatCount="indefinite"
           />
         </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="55" xChannelSelector="R" yChannelSelector="G" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="46" xChannelSelector="R" yChannelSelector="G" />
       </filter>
-      <filter id="liquid-distort-b" x="-30%" y="-30%" width="160%" height="160%">
+      <filter id="liquid-distort-b" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.019 0.0165" numOctaves="1" seed="23" result="noise">
           <animate
             attributeName="baseFrequency"
@@ -53,7 +53,7 @@
            layers' own turbulence cycles (26-34s) instead of 11-17s — the
            bubbles animating noticeably faster than the background they sit
            in was exactly what read as inconsistent/spiky pacing. -->
-      <filter id="liquid-bubble-distort-a" x="-70%" y="-70%" width="240%" height="240%">
+      <filter id="liquid-bubble-distort-a" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" seed="11" result="noise">
           <animate
             attributeName="baseFrequency"
@@ -64,7 +64,7 @@
         </feTurbulence>
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="9" xChannelSelector="R" yChannelSelector="G" />
       </filter>
-      <filter id="liquid-bubble-distort-b" x="-70%" y="-70%" width="240%" height="240%">
+      <filter id="liquid-bubble-distort-b" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="1" seed="31" result="noise">
           <animate
             attributeName="baseFrequency"
@@ -75,7 +75,7 @@
         </feTurbulence>
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" />
       </filter>
-      <filter id="liquid-bubble-distort-c" x="-70%" y="-70%" width="240%" height="240%">
+      <filter id="liquid-bubble-distort-c" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.058" numOctaves="1" seed="51" result="noise">
           <animate
             attributeName="baseFrequency"
@@ -113,7 +113,7 @@
         <g filter="url(#liquid-distort-a)">
           <path
             fill="#fff"
-            d="M -100,-100 C 120,-40 260,120 220,320 C 180,510 340,560 320,760 C 305,900 140,970 -100,940 Z"
+            d="M -100,-100 C 120,-40 260,120 220,320 C 210,480 300,600 320,760 C 305,900 140,970 -100,940 Z"
           ></path>
         </g>
       </mask>
@@ -121,7 +121,7 @@
         <g filter="url(#liquid-distort-b)">
           <path
             fill="#fff"
-            d="M -100,60 C 60,10 190,140 170,320 C 150,480 260,540 230,700 C 210,820 90,860 -100,800 Z"
+            d="M -100,60 C 60,10 190,140 170,320 C 190,480 240,600 230,700 C 210,820 90,860 -100,800 Z"
           ></path>
         </g>
       </mask>
@@ -148,9 +148,16 @@
          technique as the two layers above) so none of them ever pause or
          suddenly speed up, and each has its own wobbling silhouette (not a
          rigid circle) via its own turbulence filter. -->
-    <circle class="liquid-bubble liquid-bubble-1" filter="url(#liquid-bubble-distort-a)" cx="150" cy="300" r="42" fill="var(--color-ink-950)"></circle>
-    <circle class="liquid-bubble liquid-bubble-2" filter="url(#liquid-bubble-distort-b)" cx="95" cy="600" r="32" fill="var(--color-ink-950)"></circle>
-    <circle class="liquid-bubble liquid-bubble-3" filter="url(#liquid-bubble-distort-c)" cx="180" cy="460" r="36" fill="var(--color-ink-950)"></circle>
+    <!-- Kept well clear of the grey/black boundary's own excursion range
+         (the layer masks wobble by roughly ±(scale + drift) ~60-100 units
+         around their resting edge) — a bubble sitting near that boundary
+         reads as a flat black disc pasted over the grey rather than an
+         object floating fully inside it, since bubbles are the only
+         literally-black shapes drawn (everything else is either grey fill
+         or the page's own black showing through empty space). -->
+    <circle class="liquid-bubble liquid-bubble-1" filter="url(#liquid-bubble-distort-a)" cx="105" cy="300" r="40" fill="var(--color-ink-950)"></circle>
+    <circle class="liquid-bubble liquid-bubble-2" filter="url(#liquid-bubble-distort-b)" cx="60" cy="600" r="30" fill="var(--color-ink-950)"></circle>
+    <circle class="liquid-bubble liquid-bubble-3" filter="url(#liquid-bubble-distort-c)" cx="110" cy="460" r="34" fill="var(--color-ink-950)"></circle>
   </svg>
 </div>
 
