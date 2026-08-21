@@ -168,8 +168,33 @@
     var intensity = 0;
     var lastMoveTime = 0;
     var rafId = null;
+    var lastTickTime = 0;
     var DECAY_MS = 1800;
     var HOLD_MS = 60;
+    // Setting href on a feImage re-runs that shape's ENTIRE filter chain
+    // (feTurbulence + two feDisplacementMap passes) — by far the most
+    // expensive part of this effect. Two independent cuts on that cost:
+    // throttle how often it happens at all (a slow liquid push doesn't
+    // need 60fps), and only touch shapes the cursor is actually near
+    // instead of re-triggering all 5 filter chains on every single frame
+    // regardless of whether the cursor is anywhere close to most of them.
+    var UPDATE_INTERVAL_MS = 45; // ~22 updates/sec cap, down from up to 60/sec
+    var NEUTRAL_URI = buildDataUri(0, 0, 0);
+    // DOM order of .liquid-smear-feimage matches filter declaration order:
+    // the wave first, then the 4 bubbles — each entry's x/y/r approximates
+    // that shape's own footprint (bubbles: their cx/cy + a margin; the
+    // wave: a generous box covering its typical drift range) used purely
+    // to decide whether it's worth updating this frame.
+    var targets = [
+      { x: 120, y: 420, r: 480 }, // wave
+      { x: 470, y: 330, r: 200 }, // bubble 1
+      { x: 830, y: 520, r: 200 }, // bubble 2
+      { x: 620, y: 800, r: 200 }, // bubble 3
+      { x: 500, y: 600, r: 200 } // bubble 4
+    ];
+    var targetCleared = targets.map(function () {
+      return true;
+    });
 
     function buildDataUri(x, y, alpha) {
       var svg =
@@ -181,14 +206,32 @@
     }
 
     function applyFrame() {
-      var uri = buildDataUri(targetX, targetY, intensity);
-      feImages.forEach(function (el) {
-        el.setAttribute('href', uri);
-      });
+      var uri = null;
+      for (var i = 0; i < targets.length; i++) {
+        var t = targets[i];
+        var dx = targetX - t.x;
+        var dy = targetY - t.y;
+        var inRange = dx * dx + dy * dy <= t.r * t.r;
+        if (!inRange) {
+          if (!targetCleared[i]) {
+            feImages[i].setAttribute('href', NEUTRAL_URI);
+            targetCleared[i] = true;
+          }
+          continue;
+        }
+        if (uri === null) uri = buildDataUri(targetX, targetY, intensity);
+        feImages[i].setAttribute('href', uri);
+        targetCleared[i] = false;
+      }
     }
 
-    function tick() {
-      var elapsed = performance.now() - lastMoveTime;
+    function tick(now) {
+      if (now - lastTickTime < UPDATE_INTERVAL_MS) {
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
+      lastTickTime = now;
+      var elapsed = now - lastMoveTime;
       if (elapsed <= HOLD_MS) {
         intensity = 1;
       } else {
@@ -218,7 +261,6 @@
       }
     }
 
-    applyFrame();
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
   })();
 </script>
