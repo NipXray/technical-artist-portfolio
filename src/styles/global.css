@@ -531,7 +531,7 @@ pre.astro-code {
 }
 .liquid-layer-a {
   animation-name: liquid-drift-a;
-  animation-duration: 70s;
+  animation-duration: 140s;
 }
 /* A true parametric ellipse (12 points at equal 30deg steps, x=rx*cos,
    y=ry*sin) rather than a handful of eyeballed waypoints — with hand-picked
@@ -565,22 +565,22 @@ pre.astro-code {
 }
 .liquid-bubble-1 {
   animation-name: liquid-bubble-orbit-cw;
-  animation-duration: 64s;
+  animation-duration: 128s;
 }
 .liquid-bubble-2 {
   animation-name: liquid-bubble-orbit-ccw;
-  animation-duration: 52s;
-  animation-delay: -18s;
+  animation-duration: 104s;
+  animation-delay: -36s;
 }
 .liquid-bubble-3 {
   animation-name: liquid-bubble-orbit-cw;
-  animation-duration: 70s;
-  animation-delay: -34s;
+  animation-duration: 140s;
+  animation-delay: -68s;
 }
 .liquid-bubble-4 {
   animation-name: liquid-bubble-orbit-ccw;
-  animation-duration: 60s;
-  animation-delay: -40s;
+  animation-duration: 120s;
+  animation-delay: -80s;
 }
 /* Same true-ellipse technique as the two main layers, plus a scale pulse
    riding the exact same angle (scale = 1 ± amplitude*cos(angle), computed
