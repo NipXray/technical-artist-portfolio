@@ -1,23 +1,22 @@
 ---
-// Persistent whole-site background layer: a black outer field with an
-// organic grey "inner layer" bleeding through, split by a liquid-looking
-// boundary. Pure SVG + SMIL/CSS (no JS animation loop) since this sits
-// behind every page and animates continuously — a requestAnimationFrame
-// loop here would burn a frame budget for a purely decorative layer.
+// Persistent whole-site background layer: a solid grey backdrop with a
+// wavy black shape drifting on top of it, like the black is a moving
+// surface layer sitting over a plain grey base. Pure SVG + SMIL/CSS (no
+// JS animation loop) since this sits behind every page and animates
+// continuously — a requestAnimationFrame loop here would burn a frame
+// budget for a purely decorative layer.
 ---
 
 <div class="liquid-bg pointer-events-none fixed inset-0 -z-10 overflow-hidden print:hidden" aria-hidden="true">
   <svg class="h-full w-full" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
     <defs>
       <filter id="liquid-distort-a" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-        <!-- numOctaves 2→1: the pixel-level grain at the edge wasn't really
-             a rendering defect to blur away — fractalNoise's second octave
-             is genuinely high-frequency per-pixel detail, and displacing by
-             raw high-frequency noise is what read as speckled/jagged. One
+        <!-- numOctaves=1 rather than 2: fractalNoise's second octave is
+             genuinely high-frequency per-pixel detail, and displacing by
+             raw high-frequency noise is what reads as speckled/jagged. One
              octave keeps the same organic large-scale wobble with none of
              that fine texture, so the edge is crisp with no grain and no
-             blur needed at all (blur was reading as "the background is out
-             of focus / far away," not what we want). -->
+             blur needed at all. -->
         <feTurbulence type="fractalNoise" baseFrequency="0.014 0.0125" numOctaves="1" seed="7" result="noise">
           <!-- A true sinusoid sampled at 12 evenly-spaced points, not a
                handful of hand-picked values — equal time between values
@@ -32,27 +31,14 @@
         </feTurbulence>
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="46" xChannelSelector="R" yChannelSelector="G" />
       </filter>
-      <filter id="liquid-distort-b" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.019 0.0165" numOctaves="1" seed="23" result="noise">
-          <animate
-            attributeName="baseFrequency"
-            dur="26s"
-            values="0.0190 0.0165;0.0185 0.0185;0.0173 0.0200;0.0155 0.0205;0.0138 0.0200;0.0125 0.0185;0.0120 0.0165;0.0125 0.0145;0.0138 0.0130;0.0155 0.0125;0.0173 0.0130;0.0185 0.0145;0.0190 0.0165"
-            repeatCount="indefinite"
-          />
-        </feTurbulence>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="42" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
       <!-- Bubble edges get the same treatment at a smaller scale: a genuine
            wobbling silhouette (not a rigid circle) via turbulence
            displacement, sharp — no blur — with a much higher baseFrequency
            and smaller displacement scale so the wobble fits a ~70-90 unit
-           circle instead of the ~1000-unit main shapes. Three distinct
-           seeds/rates so the three bubbles don't wobble in lockstep. -->
-      <!-- Wobble durations brought up into the same range as the main
-           layers' own turbulence cycles (26-34s) instead of 11-17s — the
-           bubbles animating noticeably faster than the background they sit
-           in was exactly what read as inconsistent/spiky pacing. -->
+           circle instead of the ~1000-unit main shape. Three distinct
+           seeds/rates so the three bubbles don't wobble in lockstep, and
+           durations matched to the main layer's own pacing (26-34s) so
+           they don't feel faster/spikier than the background. -->
       <filter id="liquid-bubble-distort-a" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" seed="11" result="noise">
           <animate
@@ -86,29 +72,9 @@
         </feTurbulence>
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
       </filter>
-      <!-- Fully opaque at every stop — only the color shifts, from a lighter
-           grey where light would catch a solid blob to a darker grey at the
-           rim. That's what reads as a lit, shaded volume without ever
-           fading the silhouette itself into fog. -->
-      <radialGradient id="liquid-grad-a" cx="34%" cy="38%" r="78%">
-        <stop offset="0%" stop-color="var(--color-ink-600)" />
-        <stop offset="45%" stop-color="var(--color-ink-700)" />
-        <stop offset="100%" stop-color="var(--color-ink-900)" />
-      </radialGradient>
-      <radialGradient id="liquid-grad-b" cx="38%" cy="34%" r="72%">
-        <stop offset="0%" stop-color="#454545" />
-        <stop offset="45%" stop-color="var(--color-ink-600)" />
-        <stop offset="100%" stop-color="var(--color-ink-800)" />
-      </radialGradient>
 
-      <!-- The turbulence/displacement is applied only to a plain white
-           silhouette here, used purely as a mask — not to the gradient
-           itself. Running the filter on the gradient directly warps its
-           internal color rings along with the edge, and a fold in the
-           noise field could pinch part of a ring into an isolated dark
-           patch mid-shape. Keeping the mask and the gradient in separate
-           passes gives a wavy edge with fill shading that stays coherent
-           regardless of how the edge bends. -->
+      <!-- Turbulence/displacement distorts only a plain white silhouette
+           here, used purely as a mask — not the black fill itself. -->
       <mask id="liquid-mask-a" maskUnits="userSpaceOnUse" x="-600" y="-600" width="2200" height="2200">
         <g filter="url(#liquid-distort-a)">
           <path
@@ -117,47 +83,27 @@
           ></path>
         </g>
       </mask>
-      <mask id="liquid-mask-b" maskUnits="userSpaceOnUse" x="-600" y="-600" width="2200" height="2200">
-        <g filter="url(#liquid-distort-b)">
-          <path
-            fill="#fff"
-            d="M -100,60 C 60,10 190,140 170,320 C 190,480 240,600 230,700 C 210,820 90,860 -100,800 Z"
-          ></path>
-        </g>
-      </mask>
     </defs>
 
-    <!-- Back layer: darker grey, larger, slower drift -->
+    <!-- Solid grey base — no mask, no filter, no animation. Just the flat
+         backdrop color everywhere; the wave lives entirely in the black
+         shape drawn on top of it. -->
+    <rect x="0" y="0" width="1000" height="1000" fill="var(--color-ink-700)"></rect>
+
+    <!-- The one wavy shape: solid black, drifting/wobbling on top of the
+         grey base. -->
     <g class="liquid-layer liquid-layer-a">
-      <rect x="-600" y="-600" width="2200" height="2200" fill="url(#liquid-grad-a)" mask="url(#liquid-mask-a)"></rect>
+      <rect x="-600" y="-600" width="2200" height="2200" fill="var(--color-ink-950)" mask="url(#liquid-mask-a)"></rect>
     </g>
 
-    <!-- Front layer: lighter grey, smaller, faster drift, offset for depth —
-         two layers rather than one is what makes the background read as
-         genuinely layered/nested rather than a single flat grey shape, per
-         the original "make it look layered" request: the darker layer-a
-         shows through wherever layer-b's own silhouette doesn't cover it,
-         so their two independently-wobbling edges are what create the
-         nested "nested coastline" look visible in the screenshots. -->
-    <g class="liquid-layer liquid-layer-b">
-      <rect x="-600" y="-600" width="2200" height="2200" fill="url(#liquid-grad-b)" mask="url(#liquid-mask-b)"></rect>
-    </g>
-
-    <!-- Three dark "bubbles" drifting/pulsing inside the grey area, lava-lamp
+    <!-- Three dark "bubbles" drifting/pulsing on top of the grey, lava-lamp
          style. Each orbits a small closed loop at constant speed (same
-         technique as the two layers above) so none of them ever pause or
+         technique as the layer above) so none of them ever pause or
          suddenly speed up, and each has its own wobbling silhouette (not a
          rigid circle) via its own turbulence filter. -->
-    <!-- Kept well clear of the grey/black boundary's own excursion range
-         (the layer masks wobble by roughly ±(scale + drift) ~60-100 units
-         around their resting edge) — a bubble sitting near that boundary
-         reads as a flat black disc pasted over the grey rather than an
-         object floating fully inside it, since bubbles are the only
-         literally-black shapes drawn (everything else is either grey fill
-         or the page's own black showing through empty space). -->
-    <circle class="liquid-bubble liquid-bubble-1" filter="url(#liquid-bubble-distort-a)" cx="105" cy="300" r="40" fill="var(--color-ink-950)"></circle>
-    <circle class="liquid-bubble liquid-bubble-2" filter="url(#liquid-bubble-distort-b)" cx="60" cy="600" r="30" fill="var(--color-ink-950)"></circle>
-    <circle class="liquid-bubble liquid-bubble-3" filter="url(#liquid-bubble-distort-c)" cx="110" cy="460" r="34" fill="var(--color-ink-950)"></circle>
+    <circle class="liquid-bubble liquid-bubble-1" filter="url(#liquid-bubble-distort-a)" cx="150" cy="300" r="42" fill="var(--color-ink-950)"></circle>
+    <circle class="liquid-bubble liquid-bubble-2" filter="url(#liquid-bubble-distort-b)" cx="95" cy="600" r="32" fill="var(--color-ink-950)"></circle>
+    <circle class="liquid-bubble liquid-bubble-3" filter="url(#liquid-bubble-distort-c)" cx="180" cy="460" r="36" fill="var(--color-ink-950)"></circle>
   </svg>
 </div>
 
